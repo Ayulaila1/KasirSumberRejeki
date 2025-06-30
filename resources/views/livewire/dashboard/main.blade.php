@@ -1,7 +1,5 @@
 <div>
     <div class="card mb-3">
-        <div class="card-body">
-            Selamat datang di Dashboard 🎉
-        </div>
+        <a href="{{ route('admin.dashboard') }}" class="nav-link">Dashboard</a>
     </div>
 </div>
