@@ -1,3 +1,4 @@
+{{--
 <!DOCTYPE html>
 <html lang="id">
 
@@ -1013,9 +1014,9 @@
             }
         }
     </style>
-</head>
+</head> --}}
 
-<body>
+<div>
     <div class="pos-container">
         <!-- Product Section -->
         <div class="product-section">
@@ -1389,8 +1390,10 @@
         </div>
     </div>
 
-    <script>
-        // Data produk lengkap
+
+</div>
+<script>
+    // Data produk lengkap
         const products = [
             { id: 1, name: "Cappuccino", price: 25000, category: "Minuman", image: "https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2FwcHVjY2lub3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60" },
             { id: 2, name: "Teh Tarik", price: 15000, category: "Minuman", image: "https://images.unsplash.com/photo-1568649929103-28ffbefaca1e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8dGVoJTIwdGFyaWt8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60" },
@@ -2004,7 +2007,8 @@
             // Set default payment method to cash
             selectPaymentMethod('cash');
         });
-    </script>
-</body>
+</script>
 
-</html>
+{{--
+
+</html> --}}
