@@ -1,9 +1,5 @@
 <?php
 namespace App\Models;
-use App\Models\Supplier;
-use App\Models\Pembeliandtl;
-use App\Models\Penjualandtl;
-use App\Models\KategoriProduk;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -19,11 +15,15 @@ class Produk extends Model
         'image',
         'jenisproduk',
         'satuan',
+        'stok',
         'supplier_idsupplier',
         'harga_jual',
         'harga_beli',
         'tanggal_kedaluwarsa',
         'stok_minimum',
+        'is_titipan',
+        'created_at',
+        'updated_at'
     ];
     //aktifkan jika id tidak increment
 // public $keyType = 'string';
@@ -36,14 +36,17 @@ class Produk extends Model
         $query->where('idproduk', 'like', "%{$value}%")
             ->orWhere('nama', 'like', "%{$value}%")
             ->orWhere('image', 'like', "%{$value}%")
-            ->orWhere('kategoriproduk_idkategoriproduk', 'like', "%{$value}%")
-            ->orWhere('model', 'like', "%{$value}%")
-            ->orWhere('supplier_idsupplier', 'like', "%{$value}%")
+            ->orWhere('jenisproduk', 'like', "%{$value}%")
             ->orWhere('satuan', 'like', "%{$value}%")
+            ->orWhere('stok', 'like', "%{$value}%")
+            ->orWhere('supplier_idsupplier', 'like', "%{$value}%")
             ->orWhere('harga_jual', 'like', "%{$value}%")
             ->orWhere('harga_beli', 'like', "%{$value}%")
             ->orWhere('tanggal_kedaluwarsa', 'like', "%{$value}%")
             ->orWhere('stok_minimum', 'like', "%{$value}%")
+            ->orWhere('is_titipan', 'like', "%{$value}%")
+            ->orWhere('created_at', 'like', "%{$value}%")
+            ->orWhere('updated_at', 'like', "%{$value}%")
         ;
     }
 
