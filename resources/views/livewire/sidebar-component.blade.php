@@ -18,7 +18,8 @@
                 <span>Produk</span>
             </a>
 
-            <a href="#" class="menu-item">
+            <a href="{{ route('supplier.index') }}"
+                class="menu-item {{ request()->routeIs('supplier.index') ? 'active' : '' }}">
                 <i class="fas fa-users"></i>
                 <span>Supplier</span>
             </a>

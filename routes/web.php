@@ -3,7 +3,9 @@
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
 use App\Livewire\AdminDashboard;
+use App\Livewire\BahanComponent;
 use App\Livewire\ProdukComponent;
+use App\Livewire\SupplierComponent;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 
@@ -46,8 +48,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // Route::get('/dashboard', Main::class)->name('dashboard.index');
     Route::get('/dashboard', AdminDashboard::class)->name('admin.dashboard');
     Route::get('/produk', ProdukComponent::class)->name('produk.index');
-    // Route::get('/supplier', SupplierComponent::class)->name('supplier.index');
-    // Route::get('/bahan', BahanComponent::class)->name('bahan.index');
+    Route::get('/supplier', SupplierComponent::class)->name('supplier.index');
+    Route::get('/bahan', BahanComponent::class)->name('bahan.index');
     // Route::get('produkracikan/{id}', ProdukRacikanComponent::class);
 
 
