@@ -811,7 +811,10 @@
             <h2 class="mb-0">@yield('title')</h2>
         </div>
 
-        {{ $slot }}
+        <div class="mp-3">
+            {{ $slot }}
+        </div>
+
     </div>
 
     @livewireScripts
