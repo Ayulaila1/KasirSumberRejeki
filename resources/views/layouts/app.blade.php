@@ -10,9 +10,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
+    <!-- Tambahkan ini di head atau sebelum penutup body -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <!-- Custom CSS -->
-    {{--
-    <link rel="stylesheet" href="{{ asset('asset_offline/style.css') }}"> --}}
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
@@ -20,7 +21,21 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+    <!-- Boxicons CSS -->
+    <link href='https://cdn.boxicons.com/fonts/basic/boxicons.min.css' rel='stylesheet'>
+    <link href='https://cdn.boxicons.com/fonts/brands/boxicons-brands.min.css' rel='stylesheet'>
     <style>
+        .content-area-desktop-only {
+            margin-left: 0;
+        }
+
+        @media (min-width: 992px) {
+            .content-area-desktop-only {
+                margin-left: 270px;
+            }
+        }
+
         :root {
             --primary: #7a4b47;
             --secondary: #ffbe5e;
@@ -810,11 +825,9 @@
             </button> --}}
             <h2 class="mb-0">@yield('title')</h2>
         </div>
-
-        <div class="mp-3">
+        <div class="content-area-desktop-only">
             {{ $slot }}
         </div>
-
     </div>
 
     @livewireScripts

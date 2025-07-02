@@ -24,7 +24,7 @@ class ProdukComponent extends Component
     // use LivewireAlert;
 
     public $idproduk, $nama, $image, $jenisproduk, $satuan = 'pcs', $stok = 0, $supplier_idsupplier, $harga_jual, $harga_beli, $tanggal_kedaluwarsa, $stok_minimum, $is_titipan, $created_at, $updated_at;
-
+    public $supplierName;
     public $search = '';
     public $searchlov = '';
     public $tglstart = '';
@@ -34,7 +34,6 @@ class ProdukComponent extends Component
     public $isOpen = false;
     public $isEdit = false;
     public $idprodukToDelete;
-    // public $listSupplier = [];
 
     public function mount()
     {
@@ -88,7 +87,6 @@ class ProdukComponent extends Component
         ]);
         $this->isOpen = true;
         $this->isEdit = false;
-
 
     }
 
@@ -162,6 +160,7 @@ class ProdukComponent extends Component
         $this->satuan = $produk->satuan;
         $this->stok = $produk->stok;
         $this->supplier_idsupplier = $produk->supplier_idsupplier;
+        $this->supplierName = $produk->supplier->nama ?? '-';
         $this->harga_jual = $produk->harga_jual;
         $this->harga_beli = $produk->harga_beli;
         $this->tanggal_kedaluwarsa = $produk->tanggal_kedaluwarsa;
@@ -250,18 +249,33 @@ class ProdukComponent extends Component
         $this->dispatch('close-produk-modal');
     }
 
+    #[On('buka-modal-lov-supplier')]
+    public function bukaModal()
+    {
+        $this->isOpen = true;
+    }
 
+
+    #[On('supplierDipilih')]
+    public function supplierLov($id)
+    {
+        $supplier = Supplier::find($id);
+        $this->supplier_idsupplier = $supplier->idsupplier;
+        $this->supplierName = $supplier->nama;
+    }
 
     public function dataProduk()
     {
         return Produk::search($this->search)
+            ->with(['supplier']) // Eager load supplier relationship
             ->simplePaginate($this->perPage);
     }
 
     public function render()
     {
+
         return view('livewire.produk-component', [
-            'produks' => $this->dataProduk()
+            'produks' => $this->dataProduk(),
         ]);
     }
 }

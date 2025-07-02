@@ -1,14 +1,18 @@
 <?php
 
+use App\Livewire\Kasir;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
 use App\Livewire\AdminDashboard;
 use App\Livewire\BahanComponent;
+use App\Livewire\KasirComponent;
 use App\Livewire\ProdukComponent;
 use App\Livewire\SupplierComponent;
+use App\Livewire\PembelianComponent;
 use Illuminate\Support\Facades\Route;
+use App\Livewire\PembeliandtlComponent;
+use App\Livewire\ProdukRacikanComponent;
 use App\Http\Controllers\LoginController;
-
 
 Route::get('/', function () {
     return redirect('/login_1');
@@ -49,8 +53,13 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/dashboard', AdminDashboard::class)->name('admin.dashboard');
     Route::get('/produk', ProdukComponent::class)->name('produk.index');
     Route::get('/supplier', SupplierComponent::class)->name('supplier.index');
+    Route::get('/pembelian', PembelianComponent::class)->name('pembelian.index');
+    Route::get('/kasir', KasirComponent::class)->name('kasir.index');
     Route::get('/bahan', BahanComponent::class)->name('bahan.index');
-    // Route::get('produkracikan/{id}', ProdukRacikanComponent::class);
+
+    Route::get('/produkracikan/{id}', ProdukRacikanComponent::class)->name('produkracikan.index');
+    Route::get('/pembeliandtl/{id}', PembeliandtlComponent::class)->name('pembeliandtl.index');
+
 
 
     // dll

@@ -1017,383 +1017,398 @@
 </head> --}}
 
 <div>
-    <div class="pos-container">
-        <!-- Product Section -->
-        <div class="product-section">
-            <div class="header">
-                <h2><i class="fas fa-mug-hot"></i> Menu Cafe Suki</h2>
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Cari menu..." id="search-input">
+    <div>
+        <div class="pos-container">
+            <!-- Product Section -->
+            <div class="product-section">
+                <div class="header">
+                    <h2><i class="fas fa-mug-hot"></i> Menu Cafe Suki</h2>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Cari menu..." id="search-input">
+                    </div>
+                </div>
+
+                <div class="category-tabs">
+                    <div class="category-tab active" onclick="filterByCategory('Semua')">Semua</div>
+                    <div class="category-tab" onclick="filterByCategory('Minuman')"><i class="fas fa-coffee"></i>
+                        Minuman
+                    </div>
+                    <div class="category-tab" onclick="filterByCategory('Makanan')"><i class="fas fa-utensils"></i>
+                        Makanan
+                    </div>
+                    <div class="category-tab" onclick="filterByCategory('Snack')"><i class="fas fa-cookie"></i> Snack
+                    </div>
+                    <div class="category-tab" onclick="filterByCategory('Promo')"><i class="fas fa-tag"></i> Promo</div>
+                </div>
+
+                <div class="product-grid" id="product-grid">
+                    <!-- Minuman -->
+                    <div class="product-card" data-id="1" data-category="Minuman">
+                        <div class="product-image">
+                            <img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2FwcHVjY2lub3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60"
+                                alt="Cappuccino">
+                        </div>
+                        <div class="product-info">
+                            <div class="product-name">Cappuccino</div>
+                            <div class="product-price">Rp 25.000</div>
+                        </div>
+                    </div>
+
+                    <div class="product-card" data-id="2" data-category="Minuman">
+                        <div class="product-image">
+                            <img src="https://images.unsplash.com/photo-1568649929103-28ffbefaca1e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8dGVoJTIwdGFyaWt8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60"
+                                alt="Teh Tarik">
+                        </div>
+                        <div class="product-info">
+                            <div class="product-name">Teh Tarik</div>
+                            <div class="product-price">Rp 15.000</div>
+                        </div>
+                    </div>
+
+                    <div class="product-card" data-id="3" data-category="Minuman">
+                        <div class="product-image">
+                            <img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2FwcHVjY2lub3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60"
+                                alt="Kopi Susu">
+                        </div>
+                        <div class="product-info">
+                            <div class="product-name">Kopi Susu</div>
+                            <div class="product-price">Rp 20.000</div>
+                        </div>
+                    </div>
+
+                    <div class="product-card" data-id="4" data-category="Minuman">
+                        <div class="product-badge">New!</div>
+                        <div class="product-image">
+                            <img src="https://images.unsplash.com/photo-1551029506-0807df4e2031?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8bWFuZ29qfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60"
+                                alt="Jus Mangga">
+                        </div>
+                        <div class="product-info">
+                            <div class="product-name">Jus Mangga</div>
+                            <div class="product-price">Rp 18.000</div>
+                        </div>
+                    </div>
+
+                    <!-- Makanan -->
+                    <div class="product-card" data-id="5" data-category="Makanan">
+                        <div class="product-image">
+                            <img src="https://images.unsplash.com/photo-1630917765361-5e3f8a8a3b0d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fG5hc2klMjBnb3Jlbmd8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60"
+                                alt="Nasi Goreng">
+                        </div>
+                        <div class="product-info">
+                            <div class="product-name">Nasi Goreng Spesial</div>
+                            <div class="product-price">Rp 30.000</div>
+                        </div>
+                    </div>
+
+                    <div class="product-card" data-id="6" data-category="Makanan">
+                        <div class="product-badge">Hot!</div>
+                        <div class="product-image">
+                            <img src="https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bWllJTIwZ29yZW5nfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60"
+                                alt="Mie Goreng">
+                        </div>
+                        <div class="product-info">
+                            <div class="product-name">Mie Goreng Jawa</div>
+                            <div class="product-price">Rp 28.000</div>
+                        </div>
+                    </div>
+
+                    <div class="product-card" data-id="7" data-category="Makanan">
+                        <div class="product-image">
+                            <img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cm90aSUyMGJha2FyfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60"
+                                alt="Roti Bakar">
+                        </div>
+                        <div class="product-info">
+                            <div class="product-name">Roti Bakar Coklat Keju</div>
+                            <div class="product-price">Rp 22.000</div>
+                        </div>
+                    </div>
+
+                    <!-- Snack -->
+                    <div class="product-card" data-id="8" data-category="Snack">
+                        <div class="product-image">
+                            <img src="https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8a2VudGFuZyUyMGdvcmVuZ3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60"
+                                alt="Kentang Goreng">
+                        </div>
+                        <div class="product-info">
+                            <div class="product-name">Kentang Goreng</div>
+                            <div class="product-price">Rp 25.000</div>
+                        </div>
+                    </div>
+
+                    <div class="product-card" data-id="9" data-category="Snack">
+                        <div class="product-badge">Promo</div>
+                        <div class="product-image">
+                            <img src="https://images.unsplash.com/photo-1558312651-5b0c0c4a5b0a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cGFuY2FrZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60"
+                                alt="Pancake">
+                        </div>
+                        <div class="product-info">
+                            <div class="product-name">Pancake Maple</div>
+                            <div class="product-price">Rp 28.000</div>
+                        </div>
+                    </div>
+
+                    <div class="product-card" data-id="10" data-category="Snack">
+                        <div class="product-image">
+                            <img src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8ZG9udXR8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60"
+                                alt="Donat">
+                        </div>
+                        <div class="product-info">
+                            <div class="product-name">Donat Glaze</div>
+                            <div class="product-price">Rp 18.000</div>
+                        </div>
+                    </div>
+
+                    <!-- Promo Items -->
+                    <div class="product-card" data-id="11" data-category="Promo">
+                        <div class="product-badge">-20%</div>
+                        <div class="product-image">
+                            <img src="https://images.unsplash.com/photo-1510626176961-4b57d4fbad03?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8Y2FrZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60"
+                                alt="Red Velvet">
+                        </div>
+                        <div class="product-info">
+                            <div class="product-name">Red Velvet Cake</div>
+                            <div class="product-price"><span
+                                    style="text-decoration: line-through; color: #999; font-size: 13px;">Rp
+                                    45.000</span> Rp
+                                36.000</div>
+                        </div>
+                    </div>
+
+                    <div class="product-card" data-id="12" data-category="Promo">
+                        <div class="product-badge">Combo</div>
+                        <div class="product-image">
+                            <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YnVyZ2VyfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60"
+                                alt="Burger">
+                        </div>
+                        <div class="product-info">
+                            <div class="product-name">Burger + Kentang</div>
+                            <div class="product-price"><span
+                                    style="text-decoration: line-through; color: #999; font-size: 13px;">Rp
+                                    55.000</span> Rp
+                                45.000</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="category-tabs">
-                <div class="category-tab active" onclick="filterByCategory('Semua')">Semua</div>
-                <div class="category-tab" onclick="filterByCategory('Minuman')"><i class="fas fa-coffee"></i> Minuman
-                </div>
-                <div class="category-tab" onclick="filterByCategory('Makanan')"><i class="fas fa-utensils"></i> Makanan
-                </div>
-                <div class="category-tab" onclick="filterByCategory('Snack')"><i class="fas fa-cookie"></i> Snack</div>
-                <div class="category-tab" onclick="filterByCategory('Promo')"><i class="fas fa-tag"></i> Promo</div>
-            </div>
-
-            <div class="product-grid" id="product-grid">
-                <!-- Minuman -->
-                <div class="product-card" data-id="1" data-category="Minuman">
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2FwcHVjY2lub3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60"
-                            alt="Cappuccino">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">Cappuccino</div>
-                        <div class="product-price">Rp 25.000</div>
-                    </div>
+            <!-- Cart Section -->
+            <div class="cart-section">
+                <div class="cart-header">
+                    <h2><i class="fas fa-shopping-cart"></i> Pesanan</h2>
                 </div>
 
-                <div class="product-card" data-id="2" data-category="Minuman">
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1568649929103-28ffbefaca1e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8dGVoJTIwdGFyaWt8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60"
-                            alt="Teh Tarik">
+                <div class="cart-body">
+                    <div class="customer-info">
+                        <h4><i class="fas fa-user"></i> Informasi Pelanggan</h4>
+                        <input type="text" class="customer-input" placeholder="Nomor Meja" id="table-number">
+                        <input type="text" class="customer-input" placeholder="Nama Pelanggan (Opsional)"
+                            id="customer-name">
                     </div>
-                    <div class="product-info">
-                        <div class="product-name">Teh Tarik</div>
-                        <div class="product-price">Rp 15.000</div>
-                    </div>
-                </div>
 
-                <div class="product-card" data-id="3" data-category="Minuman">
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2FwcHVjY2lub3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60"
-                            alt="Kopi Susu">
+                    <div class="discount-section">
+                        <h4><i class="fas fa-tag"></i> Diskon</h4>
+                        <div class="discount-input">
+                            <input type="text" id="discount-code" placeholder="Kode diskon">
+                            <button onclick="applyDiscount()">Terapkan</button>
+                        </div>
+                        <div id="discount-info"
+                            style="display: none; margin-top: 10px; color: var(--success); font-size: 13px;"></div>
                     </div>
-                    <div class="product-info">
-                        <div class="product-name">Kopi Susu</div>
-                        <div class="product-price">Rp 20.000</div>
-                    </div>
-                </div>
 
-                <div class="product-card" data-id="4" data-category="Minuman">
-                    <div class="product-badge">New!</div>
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1551029506-0807df4e2031?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8bWFuZ29qfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60"
-                            alt="Jus Mangga">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">Jus Mangga</div>
-                        <div class="product-price">Rp 18.000</div>
-                    </div>
-                </div>
+                    <div class="payment-methods-section">
+                        <h4><i class="fas fa-credit-card"></i> Metode Pembayaran</h4>
+                        <div class="payment-methods">
+                            <div class="payment-method" onclick="selectPaymentMethod('cash')">
+                                <i class="fas fa-money-bill-wave"></i>
+                                <div>Tunai</div>
+                            </div>
+                            <div class="payment-method" onclick="selectPaymentMethod('debit')">
+                                <i class="fas fa-credit-card"></i>
+                                <div>Kartu Debit</div>
+                            </div>
+                            <div class="payment-method" onclick="selectPaymentMethod('credit')">
+                                <i class="far fa-credit-card"></i>
+                                <div>Kartu Kredit</div>
+                            </div>
+                            <div class="payment-method" onclick="selectPaymentMethod('qris')">
+                                <i class="fas fa-qrcode"></i>
+                                <div>QRIS</div>
+                            </div>
+                            <div class="payment-method" onclick="selectPaymentMethod('ewallet')">
+                                <i class="fas fa-wallet"></i>
+                                <div>E-Wallet</div>
+                            </div>
+                            <div class="payment-method" onclick="selectPaymentMethod('transfer')">
+                                <i class="fas fa-exchange-alt"></i>
+                                <div>Transfer</div>
+                            </div>
+                        </div>
 
-                <!-- Makanan -->
-                <div class="product-card" data-id="5" data-category="Makanan">
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1630917765361-5e3f8a8a3b0d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fG5hc2klMjBnb3Jlbmd8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60"
-                            alt="Nasi Goreng">
+                        <div id="cash-payment" class="change-section">
+                            <h5><i class="fas fa-calculator"></i> Pembayaran Tunai</h5>
+                            <div class="cash-input">
+                                <input type="number" id="cash-amount" placeholder="Jumlah uang">
+                                <button onclick="calculateChange()">Hitung</button>
+                            </div>
+                            <div id="change-result" style="margin-top: 10px; font-size: 14px;"></div>
+                        </div>
                     </div>
-                    <div class="product-info">
-                        <div class="product-name">Nasi Goreng Spesial</div>
-                        <div class="product-price">Rp 30.000</div>
-                    </div>
-                </div>
 
-                <div class="product-card" data-id="6" data-category="Makanan">
-                    <div class="product-badge">Hot!</div>
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bWllJTIwZ29yZW5nfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60"
-                            alt="Mie Goreng">
+                    <div class="notes-section">
+                        <h4><i class="fas fa-sticky-note"></i> Catatan</h4>
+                        <textarea id="order-notes"
+                            placeholder="Catatan untuk pesanan (contoh: pedas, tidak pakai bawang, dll)"></textarea>
                     </div>
-                    <div class="product-info">
-                        <div class="product-name">Mie Goreng Jawa</div>
-                        <div class="product-price">Rp 28.000</div>
-                    </div>
-                </div>
 
-                <div class="product-card" data-id="7" data-category="Makanan">
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cm90aSUyMGJha2FyfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60"
-                            alt="Roti Bakar">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">Roti Bakar Coklat Keju</div>
-                        <div class="product-price">Rp 22.000</div>
+                    <!-- Cart Items -->
+                    <div id="cart-items">
+                        <div class="empty-cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            <p>Belum ada pesanan</p>
+                            <p style="font-size: 14px; margin-top: 5px;">Klik item menu untuk menambahkan ke keranjang
+                            </p>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Snack -->
-                <div class="product-card" data-id="8" data-category="Snack">
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8a2VudGFuZyUyMGdvcmVuZ3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60"
-                            alt="Kentang Goreng">
+                <div class="cart-summary">
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">Rp 0</span>
                     </div>
-                    <div class="product-info">
-                        <div class="product-name">Kentang Goreng</div>
-                        <div class="product-price">Rp 25.000</div>
+                    <div class="summary-row">
+                        <span>Diskon:</span>
+                        <span id="discount-amount">Rp 0</span>
                     </div>
-                </div>
+                    <div class="summary-row">
+                        <span>Pajak (10%):</span>
+                        <span id="tax">Rp 0</span>
+                    </div>
+                    <div class="summary-row total-row">
+                        <span>Total:</span>
+                        <span id="total">Rp 0</span>
+                    </div>
 
-                <div class="product-card" data-id="9" data-category="Snack">
-                    <div class="product-badge">Promo</div>
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1558312651-5b0c0c4a5b0a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cGFuY2FrZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60"
-                            alt="Pancake">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">Pancake Maple</div>
-                        <div class="product-price">Rp 28.000</div>
-                    </div>
-                </div>
-
-                <div class="product-card" data-id="10" data-category="Snack">
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8ZG9udXR8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60"
-                            alt="Donat">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">Donat Glaze</div>
-                        <div class="product-price">Rp 18.000</div>
-                    </div>
-                </div>
-
-                <!-- Promo Items -->
-                <div class="product-card" data-id="11" data-category="Promo">
-                    <div class="product-badge">-20%</div>
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1510626176961-4b57d4fbad03?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8Y2FrZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60"
-                            alt="Red Velvet">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">Red Velvet Cake</div>
-                        <div class="product-price"><span
-                                style="text-decoration: line-through; color: #999; font-size: 13px;">Rp 45.000</span> Rp
-                            36.000</div>
-                    </div>
-                </div>
-
-                <div class="product-card" data-id="12" data-category="Promo">
-                    <div class="product-badge">Combo</div>
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YnVyZ2VyfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60"
-                            alt="Burger">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">Burger + Kentang</div>
-                        <div class="product-price"><span
-                                style="text-decoration: line-through; color: #999; font-size: 13px;">Rp 55.000</span> Rp
-                            45.000</div>
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary" onclick="clearCart()">
+                            <i class="fas fa-trash"></i> Kosongkan
+                        </button>
+                        <button class="btn btn-warning" onclick="holdOrder()">
+                            <i class="fas fa-pause"></i> Hold
+                        </button>
+                        <button class="btn btn-success" onclick="processPayment()">
+                            <i class="fas fa-print"></i> Bayar
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Cart Section -->
-        <div class="cart-section">
-            <div class="cart-header">
-                <h2><i class="fas fa-shopping-cart"></i> Pesanan</h2>
-            </div>
+        <!-- Notification badge for held orders -->
+        <div class="notification-badge" id="heldOrdersBadge" style="display: none;" onclick="showHeldOrders()">
+            <i class="fas fa-pause"></i>
+            <span id="heldOrdersCount"
+                style="position: absolute; font-size: 12px; bottom: -5px; right: -5px; background: var(--danger); width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center;"></span>
+        </div>
 
-            <div class="cart-body">
-                <div class="customer-info">
-                    <h4><i class="fas fa-user"></i> Informasi Pelanggan</h4>
-                    <input type="text" class="customer-input" placeholder="Nomor Meja" id="table-number">
-                    <input type="text" class="customer-input" placeholder="Nama Pelanggan (Opsional)"
-                        id="customer-name">
-                </div>
-
-                <div class="discount-section">
-                    <h4><i class="fas fa-tag"></i> Diskon</h4>
-                    <div class="discount-input">
-                        <input type="text" id="discount-code" placeholder="Kode diskon">
-                        <button onclick="applyDiscount()">Terapkan</button>
-                    </div>
-                    <div id="discount-info"
-                        style="display: none; margin-top: 10px; color: var(--success); font-size: 13px;"></div>
+        <!-- Held Orders Modal -->
+        <div class="receipt-modal" id="heldOrdersModal">
+            <div class="receipt-content" style="max-width: 500px;">
+                <div class="close-receipt" onclick="closeHeldOrders()">&times;</div>
+                <div class="receipt-header">
+                    <h3><i class="fas fa-pause"></i> Pesanan Tertahan</h3>
+                    <p>Daftar pesanan yang sedang dihold</p>
                 </div>
 
-                <div class="payment-methods-section">
-                    <h4><i class="fas fa-credit-card"></i> Metode Pembayaran</h4>
-                    <div class="payment-methods">
-                        <div class="payment-method" onclick="selectPaymentMethod('cash')">
-                            <i class="fas fa-money-bill-wave"></i>
-                            <div>Tunai</div>
-                        </div>
-                        <div class="payment-method" onclick="selectPaymentMethod('debit')">
-                            <i class="fas fa-credit-card"></i>
-                            <div>Kartu Debit</div>
-                        </div>
-                        <div class="payment-method" onclick="selectPaymentMethod('credit')">
-                            <i class="far fa-credit-card"></i>
-                            <div>Kartu Kredit</div>
-                        </div>
-                        <div class="payment-method" onclick="selectPaymentMethod('qris')">
-                            <i class="fas fa-qrcode"></i>
-                            <div>QRIS</div>
-                        </div>
-                        <div class="payment-method" onclick="selectPaymentMethod('ewallet')">
-                            <i class="fas fa-wallet"></i>
-                            <div>E-Wallet</div>
-                        </div>
-                        <div class="payment-method" onclick="selectPaymentMethod('transfer')">
-                            <i class="fas fa-exchange-alt"></i>
-                            <div>Transfer</div>
-                        </div>
-                    </div>
-
-                    <div id="cash-payment" class="change-section">
-                        <h5><i class="fas fa-calculator"></i> Pembayaran Tunai</h5>
-                        <div class="cash-input">
-                            <input type="number" id="cash-amount" placeholder="Jumlah uang">
-                            <button onclick="calculateChange()">Hitung</button>
-                        </div>
-                        <div id="change-result" style="margin-top: 10px; font-size: 14px;"></div>
-                    </div>
+                <div id="held-orders-list" style="max-height: 60vh; overflow-y: auto;">
+                    <!-- Held orders will be displayed here -->
                 </div>
 
-                <div class="notes-section">
-                    <h4><i class="fas fa-sticky-note"></i> Catatan</h4>
-                    <textarea id="order-notes"
-                        placeholder="Catatan untuk pesanan (contoh: pedas, tidak pakai bawang, dll)"></textarea>
-                </div>
-
-                <!-- Cart Items -->
-                <div id="cart-items">
-                    <div class="empty-cart">
-                        <i class="fas fa-shopping-cart"></i>
-                        <p>Belum ada pesanan</p>
-                        <p style="font-size: 14px; margin-top: 5px;">Klik item menu untuk menambahkan ke keranjang</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="cart-summary">
-                <div class="summary-row">
-                    <span>Subtotal:</span>
-                    <span id="subtotal">Rp 0</span>
-                </div>
-                <div class="summary-row">
-                    <span>Diskon:</span>
-                    <span id="discount-amount">Rp 0</span>
-                </div>
-                <div class="summary-row">
-                    <span>Pajak (10%):</span>
-                    <span id="tax">Rp 0</span>
-                </div>
-                <div class="summary-row total-row">
-                    <span>Total:</span>
-                    <span id="total">Rp 0</span>
-                </div>
-
-                <div class="action-buttons">
-                    <button class="btn btn-secondary" onclick="clearCart()">
-                        <i class="fas fa-trash"></i> Kosongkan
-                    </button>
-                    <button class="btn btn-warning" onclick="holdOrder()">
-                        <i class="fas fa-pause"></i> Hold
-                    </button>
-                    <button class="btn btn-success" onclick="processPayment()">
-                        <i class="fas fa-print"></i> Bayar
-                    </button>
+                <div class="receipt-footer">
+                    <p>Klik pesanan untuk memuatnya kembali ke keranjang</p>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Notification badge for held orders -->
-    <div class="notification-badge" id="heldOrdersBadge" style="display: none;" onclick="showHeldOrders()">
-        <i class="fas fa-pause"></i>
-        <span id="heldOrdersCount"
-            style="position: absolute; font-size: 12px; bottom: -5px; right: -5px; background: var(--danger); width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center;"></span>
-    </div>
+        <!-- Receipt Modal -->
+        <div class="receipt-modal" id="receiptModal">
+            <div class="receipt-content">
+                <div class="close-receipt" onclick="closeReceipt()">&times;</div>
+                <div class="receipt-header">
+                    <img src="https://via.placeholder.com/200x60?text=Cafe+Suki&font=poppins" alt="Cafe Suki">
+                    <h3>Struk Pembayaran</h3>
+                    <p>Jl. Contoh No. 123, Kota</p>
+                    <p>Telp: 08123456789</p>
+                </div>
 
-    <!-- Held Orders Modal -->
-    <div class="receipt-modal" id="heldOrdersModal">
-        <div class="receipt-content" style="max-width: 500px;">
-            <div class="close-receipt" onclick="closeHeldOrders()">&times;</div>
-            <div class="receipt-header">
-                <h3><i class="fas fa-pause"></i> Pesanan Tertahan</h3>
-                <p>Daftar pesanan yang sedang dihold</p>
-            </div>
+                <div class="receipt-details">
+                    <div><strong>No. Transaksi:</strong> TRX-<span id="receipt-number"></span></div>
+                    <div><strong>Tanggal:</strong> <span id="receipt-date"></span></div>
+                    <div><strong>Pelanggan:</strong> <span id="receipt-customer"></span></div>
+                    <div><strong>Kasir:</strong> <span id="receipt-cashier">Admin</span></div>
+                </div>
 
-            <div id="held-orders-list" style="max-height: 60vh; overflow-y: auto;">
-                <!-- Held orders will be displayed here -->
-            </div>
+                <div class="receipt-items">
+                    <div style="border-bottom: 1px dashed #333; padding-bottom: 5px; margin-bottom: 5px;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <div><strong>Item</strong></div>
+                            <div><strong>Total</strong></div>
+                        </div>
+                    </div>
+                    <div id="receipt-items-list"></div>
+                </div>
 
-            <div class="receipt-footer">
-                <p>Klik pesanan untuk memuatnya kembali ke keranjang</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Receipt Modal -->
-    <div class="receipt-modal" id="receiptModal">
-        <div class="receipt-content">
-            <div class="close-receipt" onclick="closeReceipt()">&times;</div>
-            <div class="receipt-header">
-                <img src="https://via.placeholder.com/200x60?text=Cafe+Suki&font=poppins" alt="Cafe Suki">
-                <h3>Struk Pembayaran</h3>
-                <p>Jl. Contoh No. 123, Kota</p>
-                <p>Telp: 08123456789</p>
-            </div>
-
-            <div class="receipt-details">
-                <div><strong>No. Transaksi:</strong> TRX-<span id="receipt-number"></span></div>
-                <div><strong>Tanggal:</strong> <span id="receipt-date"></span></div>
-                <div><strong>Pelanggan:</strong> <span id="receipt-customer"></span></div>
-                <div><strong>Kasir:</strong> <span id="receipt-cashier">Admin</span></div>
-            </div>
-
-            <div class="receipt-items">
-                <div style="border-bottom: 1px dashed #333; padding-bottom: 5px; margin-bottom: 5px;">
+                <div class="receipt-total">
                     <div style="display: flex; justify-content: space-between;">
-                        <div><strong>Item</strong></div>
-                        <div><strong>Total</strong></div>
+                        <div>Subtotal:</div>
+                        <div id="receipt-subtotal"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <div>Diskon:</div>
+                        <div id="receipt-discount"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <div>Pajak (10%):</div>
+                        <div id="receipt-tax"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-weight: bold;">
+                        <div>Total:</div>
+                        <div id="receipt-total"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                        <div>Pembayaran:</div>
+                        <div id="receipt-payment-method"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <div>Tunai:</div>
+                        <div id="receipt-cash"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-weight: bold;">
+                        <div>Kembalian:</div>
+                        <div id="receipt-change"></div>
                     </div>
                 </div>
-                <div id="receipt-items-list"></div>
-            </div>
 
-            <div class="receipt-total">
-                <div style="display: flex; justify-content: space-between;">
-                    <div>Subtotal:</div>
-                    <div id="receipt-subtotal"></div>
+                <div class="receipt-footer">
+                    <p>Terima kasih telah berkunjung ke Cafe Suki</p>
+                    <p>Barang yang sudah dibeli tidak dapat dikembalikan</p>
                 </div>
-                <div style="display: flex; justify-content: space-between;">
-                    <div>Diskon:</div>
-                    <div id="receipt-discount"></div>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                    <div>Pajak (10%):</div>
-                    <div id="receipt-tax"></div>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-weight: bold;">
-                    <div>Total:</div>
-                    <div id="receipt-total"></div>
-                </div>
-                <div style="display: flex; justify-content: space-between; margin-top: 10px;">
-                    <div>Pembayaran:</div>
-                    <div id="receipt-payment-method"></div>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                    <div>Tunai:</div>
-                    <div id="receipt-cash"></div>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-weight: bold;">
-                    <div>Kembalian:</div>
-                    <div id="receipt-change"></div>
-                </div>
-            </div>
-
-            <div class="receipt-footer">
-                <p>Terima kasih telah berkunjung ke Cafe Suki</p>
-                <p>Barang yang sudah dibeli tidak dapat dikembalikan</p>
             </div>
         </div>
-    </div>
 
+
+    </div>
+    <script>
+        // Data produk lengkap
 
 </div>
-<script>
-    // Data produk lengkap
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js">
+    </script>
+
+    <script>
+        // Data produk lengkap
         const products = [
             { id: 1, name: "Cappuccino", price: 25000, category: "Minuman", image: "https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2FwcHVjY2lub3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60" },
             { id: 2, name: "Teh Tarik", price: 15000, category: "Minuman", image: "https://images.unsplash.com/photo-1568649929103-28ffbefaca1e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8dGVoJTIwdGFyaWt8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60" },
@@ -2007,8 +2022,9 @@
             // Set default payment method to cash
             selectPaymentMethod('cash');
         });
-</script>
+    </script>
 
-{{--
+    {{--
 
 </html> --}}
+</script>
