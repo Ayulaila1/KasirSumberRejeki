@@ -4,10 +4,10 @@ namespace App\Livewire;
 
 use Livewire\Component;
 
-class Kasir extends Component
+class KasirComponent extends Component
 {
     public function render()
     {
-        return view('livewire.kasir');
+        return view('livewire.kasir-component');
     }
 }

@@ -82,12 +82,15 @@
                                         class="{{ $datas->stok <= $datas->stok_minimum ? 'bg-danger text-white' : '' }}">
                                         <td>{{ $bahans->firstItem() + $key }}</td>
                                         <td>
-                                            <button class="btn btn-sm btn-warning text-dark"
-                                                wire:click="editBahan('{{ $datas->idbahan }}')">Edit
-                                                {{-- <i class="fa-regular fa-pen-to-square"></i> --}}
-                                            </button>
-                                            <button class="btn btn-sm btn-danger"
-                                                wire:click="deleteConfirmationBahan('{{ $datas->idbahan }}')">Hapus</button>
+                                            <div class="d-flex gap-1">
+                                                <button class="btn btn-sm btn-warning text-dark"
+                                                    wire:click="editBahan('{{ $datas->idbahan }}')"><i
+                                                        class='bx bx-pen-alt'></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-danger"
+                                                    wire:click="deleteConfirmationBahan('{{ $datas->idbahan }}')"><i
+                                                        class='bx bx-trash'></i></button>
+                                            </div>
                                         </td>
                                         <td>{{ $datas->nama }}</td>
                                         {{-- <td>{{ $datas->created_at }}</td> --}}
