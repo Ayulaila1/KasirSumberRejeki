@@ -16,7 +16,7 @@ class SupplierComponent extends Component
     // use LivewireAlert;
 
     public $idsupplier, $nama, $kontak, $alamat, $created_at, $updated_at;
-
+    public $supplierName;
     public $search = '';
     public $searchlov = '';
     public $tglstart = '';
@@ -168,6 +168,17 @@ class SupplierComponent extends Component
 
         $this->dispatch('supplier-disimpan', ['pesan' => 'Supplier berhasil dihapus!']);
         $this->dispatch('close-supplier-modal');
+    }
+
+    public function supplierLOV($id)
+    {
+        $supplier = Supplier::where('idsupplier', $id)->first();
+        // $this->nama_relasi = $supplier ->idsupplier;  
+        $this->supplierName = $supplier->supplier;
+        $this->alert('success', 'Terpilih : ' . $supplier->supplier);
+        $this->resetPage('pageLOV');
+
+        $this->dispatch('close-modal-lov');
     }
 
 

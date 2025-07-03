@@ -1,5 +1,6 @@
 <?php
 namespace App\Models;
+use App\Models\Supplier;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -50,14 +51,14 @@ class Produk extends Model
         ;
     }
 
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class, 'supplier_idsupplier', 'idsupplier');
+    }
+
     // public function kategoriproduk()
     // {
     //     return $this->belongsTo(KategoriProduk::class, 'kategoriproduk_idkategoriproduk', 'idkategoriproduk');
-    // }
-
-    // public function supplier()
-    // {
-    //     return $this->belongsTo(Supplier::class, 'supplier_idsupplier', 'idsupplier');
     // }
 
     // public function scopeFilterProduk($query, $value)

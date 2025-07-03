@@ -15,7 +15,7 @@ class BahanComponent extends Component
     use WithPagination, WithFileUploads;
 
     public $idbahan, $nama, $created_at, $updated_at;
-
+    public $bahanName;
     public $search = '';
     public $searchlov = '';
     public $tglstart = '';

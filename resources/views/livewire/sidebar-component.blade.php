@@ -5,6 +5,10 @@
             <h3>Cafe Suki</h3>
         </div>
 
+        <div class="sidebar-section mt-3 px-3 text-muted fw-bold small">
+            Menu Dashboard
+        </div>
+
         <div class="sidebar-menu">
             <a href="{{ route('admin.dashboard') }}"
                 class="menu-item {{ $currentPage === 'dashboard' ? 'active' : '' }}">
@@ -12,10 +16,14 @@
                 <span>Dashboard</span>
             </a>
 
-            <a href="{{ route('produk.index') }}"
-                class="menu-item {{ request()->routeIs('produk.index') ? 'active' : '' }}">
-                <i class="fas fa-box"></i>
-                <span>Produk</span>
+            <div class="sidebar-section mt-3 px-3 text-muted fw-bold small">
+                Data Master
+            </div>
+
+            <a href="{{ route('bahan.index') }}"
+                class="menu-item {{ request()->routeIs('bahan.index') ? 'active' : '' }}">
+                <i class="fas fa-utensils"></i>
+                <span>Bahan</span>
             </a>
 
             <a href="{{ route('supplier.index') }}"
@@ -24,7 +32,18 @@
                 <span>Supplier</span>
             </a>
 
-            <a href="#" class="menu-item">
+            <div class="sidebar-section mt-3 px-3 text-muted fw-bold small">
+                Data Pembelian dan Penjualan
+            </div>
+
+            <a href="{{ route('produk.index') }}"
+                class="menu-item {{ request()->routeIs('produk.index') ? 'active' : '' }}">
+                <i class="fas fa-box"></i>
+                <span>Produk</span>
+            </a>
+
+            <a href="{{ route('pembelian.index') }}"
+                class="menu-item {{ request()->routeIs('pembelian.index') ? 'active' : '' }}">
                 <i class="fas fa-shopping-cart"></i>
                 <span>Pembelian</span>
             </a>
@@ -37,6 +56,12 @@
             <a href="#" class="menu-item">
                 <i class="fas fa-file-invoice-dollar"></i>
                 <span>Laporan</span>
+            </a>
+
+            <a href="{{ route('kasir.index') }}"
+                class="menu-item {{ request()->routeIs('kasir.index') ? 'active' : '' }}">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <span>Kasir</span>
             </a>
 
             <a href="#" class="menu-item has-submenu">

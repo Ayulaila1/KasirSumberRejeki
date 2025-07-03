@@ -16,7 +16,7 @@
                     {{-- <button class="btn btn-primary" style="z-index:9999; position:relative"
                         wire:click="$dispatch('show-add-produk-modal')"><i class="fa-solid fa-plus "></i></button> --}}
                     <button wire:click="tambahProduk" class="btn btn-primary">
-                        Tambah Produk
+                        <i class="bi bi-plus-lg"></i>
                     </button>
                 </div>
             </div>
@@ -91,16 +91,18 @@
                                         class="{{ $datas->stok <= $datas->stok_minimum ? 'bg-danger text-white' : '' }}">
                                         <td>{{ $produks->firstItem() + $key }}</td>
                                         <td>
-                                            <button class="btn btn-sm btn-warning text-dark"
-                                                wire:click="editProduk('{{ $datas->idproduk }}')">Edit
-                                                {{-- <i class="fa-regular fa-pen-to-square"></i> --}}
-                                            </button>
-                                            <button class="btn btn-sm btn-danger"
-                                                wire:click="deleteConfirmationProduk('{{ $datas->idproduk }}')">Hapus</button>
-
-                                            <a class="btn btn-sm text-white bg-success"
-                                                href="/produkracikan/{{ $datas->idproduk }}">Detail
-                                                <i class="fa-solid fa-list"></i> </a>
+                                            <div class="d-flex gap-1">
+                                                <button class="btn btn-sm btn-warning text-dark"
+                                                    wire:click="editProduk('{{ $datas->idproduk }}')"><i
+                                                        class='bx bx-pen-alt'></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-danger"
+                                                    wire:click="deleteConfirmationProduk('{{ $datas->idproduk }}')">
+                                                    <i class='bx bx-trash'></i></button>
+                                                <a class="btn btn-sm text-white bg-success"
+                                                    href="/produkracikan/{{ $datas->idproduk }}">
+                                                    <i class="fa-solid fa-list"></i> </a>
+                                            </div>
                                         </td>
                                         <td>{{ $datas->nama }}</td>
                                         <td><img src="{{ asset('storage/image-website/' . $datas->image) }}"
@@ -192,31 +194,17 @@
                     </div>
 
                     <div class="form-group row mb-3">
-                        <label for="supplier_idsupplier"
-                            class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Pilih Supplier</label>
-                        <div class="col-12 col-lg-9">
-                            <select wire:model="supplier_idsupplier" id="supplier_idsupplier" class="form-select">
-                                <option value="">-- Pilih Supplier --</option>
-                                @foreach($listSupplier as $supplier)
-                                <option value="{{ $supplier->idsupplier }}">{{ $supplier->nama }}</option>
-                                @endforeach
-                            </select>
-                            @error('supplier_idsupplier')
-                            <div class="text-danger small">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <div class="form-group row mb-3">
                         <label for="jenisproduk" class="col-12 col-lg-3 fw-bold text-lg-end">Jenis Produk<span
                                 class="text-danger">*</span></label>
                         <div class="col-12 col-lg-9">
-                            <input type="text" id="jenisproduk" class="form-control" wire:model="jenisproduk"
-                                placeholder="Misal: Racikan, Sachet">
+                            <select id="jenisproduk" class="form-control" wire:model="jenisproduk">
+                                <option value="">Pilih Jenis Produk</option>
+                                <option value="Racikan">Racikan</option>
+                                <option value="Sachet">Sachet</option>
+                            </select>
                             @error('jenisproduk') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
                     </div>
-
                     <div class="form-group row mb-3" readonly>
                         <label for="satuan"
                             class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Satuan</label>
@@ -245,8 +233,13 @@
                             class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Nama
                             Supplier<span class="text-danger">*</span></label>
                         <div class="col-12 col-lg-9">
-                            <input type="text" id="supplier_idsupplier" class="form-control"
-                                wire:model="supplier_idsupplier" placeholder="Masukkan supplier_idsupplier">
+                            <div class="d-flex justify-content-between align-items-center gap-1">
+                                <input class="form-control" id="supplierName" wire:model="supplierName">
+                                <button type="button" class="btn btn-primary"
+                                    wire:click="$dispatch('buka-modal-lov-supplier')">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </button>
+                            </div>
                             @error('supplier_idsupplier')
                             <span class="text-danger" style="font-size: 11.5px;">{{ $message }}</span>
                             @enderror
@@ -294,19 +287,16 @@
                         <label for="is_titipan" class="col-12 col-lg-3 fw-bold text-lg-end">Barang Titipan</label>
                         <div class="col-12 col-lg-9">
                             <select id="is_titipan" class="form-control" wire:model="is_titipan">
-                                <option value="0">Bukan Titipan</option>
-                                <option value="1">Titipan</option>
+                                <option value="Bukan Titipan">Bukan Titipan</option>
+                                <option value="Titipan">Titipan</option>
                             </select>
                             @error('is_titipan') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
                     </div>
 
-                    <!-- Form Input Produk -->
-                    {{-- @include('livewire.produk-form') --}}
-
                     <!-- Tombol Aksi -->
                     <div class="modal-footer">
-                        {{-- <button type="button" class="btn btn-secondary" wire:click="close">Batal</button> --}}
+                        <button type="button" class="btn btn-secondary" wire:click="close">Batal</button>
                         <button type="button" class="btn btn-success" wire:click="storeProduk">Simpan</button>
                     </div>
                 </div>
@@ -356,12 +346,14 @@
                         <label for="jenisproduk" class="col-12 col-lg-3 fw-bold text-lg-end">Jenis Produk<span
                                 class="text-danger">*</span></label>
                         <div class="col-12 col-lg-9">
-                            <input type="text" id="jenisproduk" class="form-control" wire:model="jenisproduk"
-                                placeholder="Misal: Racikan, Sachet">
+                            <select id="jenisproduk" class="form-control" wire:model="jenisproduk">
+                                <option value="">Pilih Jenis Produk</option>
+                                <option value="Racikan">Racikan</option>
+                                <option value="Sachet">Sachet</option>
+                            </select>
                             @error('jenisproduk') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
                     </div>
-
                     <div class="form-group row mb-3" readonly>
                         <label for="satuan"
                             class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Satuan</label>
@@ -390,8 +382,13 @@
                             class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Nama
                             Supplier<span class="text-danger">*</span></label>
                         <div class="col-12 col-lg-9">
-                            <input type="text" id="supplier_idsupplier" class="form-control"
-                                wire:model="supplier_idsupplier" placeholder="Masukkan supplier_idsupplier">
+                            <div class="d-flex justify-content-between align-items-center gap-1">
+                                <input class="form-control" id="supplierName" wire:model="supplierName">
+                                <button type="button" class="btn btn-primary"
+                                    wire:click="$dispatch('buka-modal-lov-supplier')">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </button>
+                            </div>
                             @error('supplier_idsupplier')
                             <span class="text-danger" style="font-size: 11.5px;">{{ $message }}</span>
                             @enderror
@@ -424,8 +421,8 @@
 
                     <div class="form-group row mb-3">
                         <label for="tanggal_kedaluwarsa"
-                            class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Tanggal Kedaluwarsa<span
-                                class="text-danger">*</span></label>
+                            class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Tanggal
+                            Kedaluwarsa<span class="text-danger">*</span></label>
                         <div class="col-12 col-lg-9">
                             <input type="date" id="tanggal_kedaluwarsa" class="form-control"
                                 wire:model="tanggal_kedaluwarsa" placeholder="Masukkan tanggal_kedaluwarsa">
@@ -446,9 +443,6 @@
                         </div>
                     </div>
 
-                    <!-- Form Input Produk -->
-                    {{-- @include('livewire.produk-form') --}}
-
                     <!-- Tombol Aksi -->
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" wire:click="close">Batal</button>
@@ -461,10 +455,10 @@
     @endif
 
 
-    {{-- @include('livewire.produk-lov') --}}
+    {{-- @livewire('produk-lov') --}}
+    @livewire('supplier-lov')
 
 </div>
-
 
 
 <script>
@@ -515,7 +509,6 @@
             $('#deleteProdukModal').modal('show'); 
         }); 
     
-        
  
 </script>
 
