@@ -85,11 +85,11 @@ class Pembelian extends Model
     */
 
 
-    //contoh relasi untu menampilkan tabel child atau detail 
+    //contoh relasi untu menampilkan tabel child atau detail
 /*
    public function status_table_detail()
    {
-   return $this->hasMany(status_model_child::class, 'status_kolom_relasi_tabel_child', 'status_kolom_primary_key_table_parent'); 
+   return $this->hasMany(status_model_child::class, 'status_kolom_relasi_tabel_child', 'status_kolom_primary_key_table_parent');
    }
 */
 
@@ -97,7 +97,7 @@ class Pembelian extends Model
 /*
    public function status_table_parent()
    {
-   return $this->belongsTo(status_model_parent::class, 'status_kolom_relasi_tabel_child', 'status_kolom_primary_key_table_parent'); 
+   return $this->belongsTo(status_model_parent::class, 'status_kolom_relasi_tabel_child', 'status_kolom_primary_key_table_parent');
    }
 */
 
