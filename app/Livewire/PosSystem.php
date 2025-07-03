@@ -118,7 +118,7 @@ class PosSystem extends Component
     // Clear cart
     public function clearCart()
     {
-        if (count($this->cart) {
+        if (count($this->cart)) {
             $this->cart = [];
             $this->discount = 0;
             $this->discountType = 'amount';
@@ -126,6 +126,7 @@ class PosSystem extends Component
             $this->showDiscountInfo = false;
         }
     }
+
 
     // Filter by category
     public function filterByCategory($category)
@@ -289,8 +290,8 @@ class PosSystem extends Component
         $this->receiptData = [
             'number' => $receiptNumber,
             'date' => $now->format('d/m/Y H:i:s'),
-            'customer' => $tableNumber . ($customerName !== '-' ? " ($customerName)" : ''),
-            'cashier' => auth()->user() ? auth()->user()->name : 'Admin',
+            'customer' => $tableNumber . (($customerName !== '-' && !empty($customerName)) ? " ($customerName)" : ''),
+            'cashier' => auth()->check() ? auth()->user()->name : 'Admin',
             'items' => [],
             'subtotal' => 0,
             'discount' => 0,
@@ -298,8 +299,9 @@ class PosSystem extends Component
             'total' => 0,
             'paymentMethod' => '',
             'cash' => 0,
-            'change' => 0
+            'change' => 0,
         ];
+
 
         // Calculate items and totals
         $subtotal = collect($this->cart)->reduce(function ($sum, $item) {
