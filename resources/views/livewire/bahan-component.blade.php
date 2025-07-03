@@ -14,10 +14,9 @@
                 </div>
                 <div>
                     {{-- <button class="btn btn-primary" style="z-index:9999; position:relative"
-                        wire:click="$dispatch('show-add-bahan-modal')"><i class="fa-solid fa-plus "></i></button>
-                    --}}
+                        wire:click="$dispatch('show-add-produk-modal')"><i class="fa-solid fa-plus "></i></button> --}}
                     <button wire:click="tambahBahan" class="btn btn-primary">
-                        Tambah Bahan
+                        <i class="bi bi-plus-lg"></i>
                     </button>
                 </div>
             </div>
@@ -74,6 +73,9 @@
                                         <th>No</th>
                                         <th>Action</th>
                                         <th>Nama</th>
+                                        <th>Stok</th>
+                                        <th>Satuan</th>
+                                        <th>Jenis</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -93,6 +95,9 @@
                                             </div>
                                         </td>
                                         <td>{{ $datas->nama }}</td>
+                                        <td class="text-end">{{ number_format($datas->stok, 0, ',', '.') }}</td>
+                                        <td>{{ $datas->satuan }}</td>
+                                        <td>{{ $datas->jenis }}</td>
                                         {{-- <td>{{ $datas->created_at }}</td> --}}
                                         {{-- <td>{{ $datas->updated_at }}</td> --}}
                                     </tr>
@@ -153,6 +158,35 @@
                         </div>
                     </div>
 
+                    <div class="form-group row mb-3">
+                        <label for="satuan" class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Satuan
+                            Bahan<span class="text-danger">*</span></label>
+                        <div class="col-12 col-lg-9">
+                            <input type="text" id="satuan" class="form-control" wire:model="satuan"
+                                placeholder="Masukkan satuan">
+                            @error('satuan')
+                            <span class="text-danger" style="font-size: 11.5px;">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-3">
+                        <label for="jenis" class="col-12 col-lg-3 fw-bold text-lg-end">Jenis Produk<span
+                                class="text-danger">*</span></label>
+                        <div class="col-12 col-lg-9">
+                            <select id="jenis" class="form-control" wire:model="jenis">
+                                <option value="">Pilih Jenis Produk</option>
+                                <option value="Racikan">Racikan</option> <!-- Produk buatan sendiri, diracik -->
+                                <option value="Siap Saji">Siap Saji</option> <!-- Produk jadi, langsung jual -->
+                                <option value="Bahan Mentah">Bahan Mentah</option> <!-- Digunakan untuk meracik -->
+                                <option value="Bumbu">Bumbu</option> <!-- Penyedap masakan -->
+                                <option value="Lainnya">Lainnya</option> <!-- Produk siap pakai, tidak perlu diracik -->
+                                <option value="Titipan">Titipan</option>
+                            </select>
+                            @error('jenis') <span class="text-danger">{{ $message }}</span> @enderror
+                        </div>
+                    </div>
+
                     <!-- Tombol Aksi -->
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" wire:click="close">Batal</button>
@@ -187,6 +221,35 @@
                             @error('nama')
                             <span class="text-danger" style="font-size: 11.5px;">{{ $message }}</span>
                             @enderror
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-3">
+                        <label for="satuan" class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Satuan
+                            Bahan<span class="text-danger">*</span></label>
+                        <div class="col-12 col-lg-9">
+                            <input type="text" id="satuan" class="form-control" wire:model="satuan"
+                                placeholder="Masukkan satuan">
+                            @error('satuan')
+                            <span class="text-danger" style="font-size: 11.5px;">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-3">
+                        <label for="jenis" class="col-12 col-lg-3 fw-bold text-lg-end">Jenis Produk<span
+                                class="text-danger">*</span></label>
+                        <div class="col-12 col-lg-9">
+                            <select id="jenis" class="form-control" wire:model="jenis">
+                                <option value="">Pilih Jenis Produk</option>
+                                <option value="Racikan">Racikan</option> <!-- Produk buatan sendiri, diracik -->
+                                <option value="Siap Saji">Siap Saji</option> <!-- Produk jadi, langsung jual -->
+                                <option value="Bahan Mentah">Bahan Mentah</option> <!-- Digunakan untuk meracik -->
+                                <option value="Bumbu">Bumbu</option> <!-- Penyedap masakan -->
+                                <option value="Lainnya">Lainnya</option> <!-- Produk siap pakai, tidak perlu diracik -->
+                                <option value="Titipan">Titipan</option>
+                            </select>
+                            @error('jenis') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
                     </div>
 

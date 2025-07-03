@@ -184,8 +184,6 @@ class PembeliandtlComponent extends Component
         $this->dispatch('close-pembeliandtl-modal');
     }
 
-
-
     public function deleteConfirmationPembeliandtl($idpembeliandtl)
     {
         $this->idpembeliandtlToDelete = $idpembeliandtl;
@@ -224,6 +222,85 @@ class PembeliandtlComponent extends Component
         $this->bahanName = $bahan->nama;
     }
 
+    public function simpanPembeliandtl()
+    {
+        // Update status pembelian
+        $pembelian = Pembelian::where('idpembelian', $this->idPage)->first();
+        $pembelian->status = 'saved';
+        $pembelian->save();
+
+        // Ambil semua detail pembelian berdasarkan id
+        $details = Pembeliandtl::where('pembelian_idpembelian', $this->idPage)->get();
+
+        foreach ($details as $detail) {
+
+            // Tambahkan stok bahan (berdasarkan jumlah * isi_per_satuan)
+            if ($detail->bahan_idbahan) {
+                $bahan = Bahan::find($detail->bahan_idbahan);
+                if ($bahan) {
+                    $stokMasuk = $detail->jumlah * $detail->isi_per_satuan;
+                    $bahan->stok += $stokMasuk;
+                    $bahan->save();
+                }
+            }
+        }
+
+        $this->dispatch('stok-disimpan', [
+            'title' => 'Berhasil!',
+            'text' => 'Stok produk & bahan berhasil diperbarui.',
+            'icon' => 'success',
+        ]);
+
+    }
+
+
+    public function unsavedPembeliandtl()
+    {
+        // Update status pembelian
+        $pembelian = Pembelian::where('idpembelian', $this->idPage)->first();
+        $pembelian->status = 'unsaved';
+        $pembelian->save();
+
+        // Ambil semua detail pembelian berdasarkan id
+        $details = Pembeliandtl::where('pembelian_idpembelian', $this->idPage)->get();
+
+        foreach ($details as $detail) {
+
+            // Tambahkan stok bahan (berdasarkan jumlah * isi_per_satuan)
+            if ($detail->bahan_idbahan) {
+                $bahan = Bahan::find($detail->bahan_idbahan);
+                if ($bahan) {
+                    $stokMasuk = $detail->jumlah * $detail->isi_per_satuan;
+                    $bahan->stok -= $stokMasuk;
+                    $bahan->save();
+                }
+            }
+        }
+
+        $this->dispatch('stok-dibatalkan', [
+            'title' => 'Berhasil!',
+            'text' => 'Stok produk & bahan berhasil diperbarui.',
+            'icon' => 'success',
+        ]);
+    }
+
+    public function cetakLaporan($idPage)
+    {
+        // ambil semua detail pembelian untuk pembelian ini
+        $pembeliandtls = Pembeliandtl::with(['bahan', 'supplier'])
+            ->where('pembelian_idpembelian', $idPage)
+            ->get();
+
+        $grandTotal = $pembeliandtls->sum('total');
+
+
+        $pdf = PDF::loadView('layout.cetakPembelian', compact('pembeliandtls', 'grandTotal'))
+            ->setPaper('A4', 'portrait');
+
+        return $pdf->download('Laporan_Pembelian_' . date('d-m-Y') . '.pdf');
+    }
+
+
     public function dataPembeliandtl()
     {
         return Pembeliandtl::search($this->search)
@@ -234,11 +311,11 @@ class PembeliandtlComponent extends Component
 
     public function render()
     {
-        $pembelians = Pembelian::where('idpembelian', $this->idPage)->first();
+        $pembelian = Pembelian::where('idpembelian', $this->idPage)->first();
 
         return view('livewire.pembeliandtl-component', [
             'pembeliandtls' => $this->dataPembeliandtl(),
-            'pembelians' => $pembelians,
+            'pembelian' => $pembelian,
         ]);
     }
 }

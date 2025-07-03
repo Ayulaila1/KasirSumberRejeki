@@ -12,6 +12,8 @@ class Bahan extends Model
     protected $fillable = [
         'idbahan',
         'nama',
+        'stok',
+        'satuan',
         'created_at',
         'updated_at'
     ];
@@ -25,6 +27,8 @@ class Bahan extends Model
     {
         $query->where('idbahan', 'like', "%{$value}%")
             ->orWhere('nama', 'like', "%{$value}%")
+            ->orWhere('stok', 'like', "%{$value}%")
+            ->orWhere('satuan', 'like', "%{$value}%")
             ->orWhere('created_at', 'like', "%{$value}%")
             ->orWhere('updated_at', 'like', "%{$value}%")
         ;

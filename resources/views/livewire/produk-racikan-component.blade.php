@@ -77,9 +77,9 @@
                                     <tr>
                                         <th>No</th>
                                         <th>Action</th>
-                                        <th>Produk</th>
+                                        {{-- <th>Produk</th> --}}
                                         <th>Bahan</th>
-                                        <th>Takaran</th>
+                                        <th>Takaran/jumlah</th>
                                         <th>Satuan</th>
                                     </tr>
                                 </thead>
@@ -97,8 +97,8 @@
                                                     wire:click="deleteConfirmationProdukRacikan('{{ $datas->idproduk_racikan }}')">Hapus</button>
                                             </div>
                                         </td>
-                                        <td>{{ $datas->produk_idproduk }}</td>
-                                        <td>{{ $datas->bahan_idbahan }}</td>
+                                        {{-- <td>{{ $datas->produk_idproduk }}</td> --}}
+                                        <td>{{ $datas->bahan->nama ?? '-' }}</td>
                                         <td>{{ $datas->takaran }}</td>
                                         <td>{{ $datas->satuan }}</td>
                                         {{-- <td>{{ $datas->created_at }}</td> --}}
@@ -180,10 +180,11 @@
                         </div>
                     </div>
 
-                    <div class="form-group row mb-3">
-                        <label for="takaran"
-                            class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Takaran/Jumlah<span
-                                class="text-danger">*</span></label>
+                    <div class="form-group row mb-3 align-items-center">
+                        <label for="takaran" class="col-form-label col-12 col-lg-3 fw-bold text-lg-end">
+                            Takaran/
+                            Jumlah<span class="text-danger">*</span>
+                        </label>
                         <div class="col-12 col-lg-9">
                             <input type="text" id="takaran" class="form-control" wire:model="takaran"
                                 placeholder="Masukkan takaran">
@@ -263,7 +264,7 @@
 
                     <div class="form-group row mb-3">
                         <label for="takaran"
-                            class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Takaran/Jumklah<span
+                            class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Takaran/Jumlah<span
                                 class="text-danger">*</span></label>
                         <div class="col-12 col-lg-9">
                             <input type="text" id="takaran" class="form-control" wire:model="takaran"

@@ -19,7 +19,8 @@
                     <div class="d-flex justify-content-between align-items-center gap-2">
                         <a class="btn btn-secondary fw-bold" href="/pembelian">
                             <i class="fa-solid fa-reply"></i>Kembali</a>
-                        <button wire:click="tambahPembeliandtl" class="btn btn-primary">
+                        <button wire:click="tambahPembeliandtl" @if($pembelian->status==='saved' ) disabled @endif
+                            class="btn btn-primary">
                             <i class="bi bi-plus-lg"></i>
                         </button>
                     </div>
@@ -53,13 +54,23 @@
                     </div> --}}
 
                     <div class="d-flex justify-content-start align-items-center gap-1">
-                        <button class="btn bg-success text-white d-flex align-items-center" style="background: #77e779"
-                            wire:click="exportToExcel"> <i class="fa-solid fa-download me-2"></i>
-                            Excel</button>
+
+                        @if ($pembelian->status == 'saved')
+                        <button class="btn btn-warning text-white d-flex align-items-center justify-content-center"
+                            wire:click="unsavedPembeliandtl">
+                            <i class="fa-solid fa-rotate-left me-2"></i> Batal
+                        </button>
+                        @else
+                        <button class="btn btn-success d-flex align-items-center justify-content-center"
+                            wire:click="simpanPembeliandtl" @if ($pembelian->status === 'saved')
+                            @endif>
+                            <i class="fa-regular fa-floppy-disk me-2"></i> Simpan
+                        </button>
+                        @endif
+
                         <button class="btn bg-danger text-white d-flex align-items-center" wire:click="exportToPdf"> <i
                                 class="fa-solid fa-download me-2"></i>
                             PDF</button>
-
                     </div>
                 </div>
             </div>
@@ -90,11 +101,13 @@
                                         <td>
                                             <div class="d-flex gap-1">
                                                 <button class="btn btn-sm btn-warning text-dark"
-                                                    wire:click="editPembeliandtl('{{ $datas->idpembeliandtl }}')">Edit
+                                                    wire:click="editPembeliandtl('{{ $datas->idpembeliandtl }}')"
+                                                    @if($pembelian->status==='saved' ) disabled @endif>Edit
                                                     {{-- <i class="fa-regular fa-pen-to-square"></i> --}}
                                                 </button>
                                                 <button class="btn btn-sm btn-danger"
-                                                    wire:click="deleteConfirmationPembeliandtl('{{ $datas->idpembeliandtl }}')">Hapus</button>
+                                                    wire:click="deleteConfirmationPembeliandtl('{{ $datas->idpembeliandtl }}')"
+                                                    @if($pembelian->status==='saved' ) disabled @endif>Hapus</button>
 
                                             </div>
                                         </td>
@@ -103,7 +116,10 @@
                                         <td>{{ $datas->jumlah }}</td>
                                         <td>{{ $datas->isi_per_satuan}}</td>
                                         <td>Rp {{ number_format($datas->harga_beli, 0, ',', '.') }}</td>
-                                        <td>Rp {{ number_format($datas->jumlah * $datas->harga_beli, 0, ',', '.') }}
+                                        @php
+                                        $subtotal = $datas->jumlah * $datas->harga_beli;
+                                        @endphp
+                                        <td>Rp {{ number_format($subtotal, 0, ',', '.') }}
                                         </td>
                                         {{-- <td>{{ $datas->created_at }}</td> --}}
                                         {{-- <td>{{ $datas->updated_at }}</td> --}}
@@ -427,5 +443,25 @@
         }
         });
         });   
-                
+
+        window.addEventListener('stok-disimpan', event => {
+        Swal.fire({
+        title: event.detail.title,
+        text: event.detail.text,
+        icon: event.detail.icon,
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'Oke!'
+        });
+        });       
+
+        window.addEventListener('stok-dibatalkan', event => {
+        Swal.fire({
+        title: event.detail.title,
+        text: event.detail.text,
+        icon: event.detail.icon,
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'Oke!'
+        });
+        });
+
 </script>

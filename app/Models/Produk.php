@@ -16,7 +16,6 @@ class Produk extends Model
         'image',
         'jenisproduk',
         'satuan',
-        'stok',
         'supplier_idsupplier',
         'harga_jual',
         'harga_beli',
@@ -39,7 +38,6 @@ class Produk extends Model
             ->orWhere('image', 'like', "%{$value}%")
             ->orWhere('jenisproduk', 'like', "%{$value}%")
             ->orWhere('satuan', 'like', "%{$value}%")
-            ->orWhere('stok', 'like', "%{$value}%")
             ->orWhere('supplier_idsupplier', 'like', "%{$value}%")
             ->orWhere('harga_jual', 'like', "%{$value}%")
             ->orWhere('harga_beli', 'like', "%{$value}%")

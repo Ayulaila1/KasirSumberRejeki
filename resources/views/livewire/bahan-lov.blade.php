@@ -17,6 +17,8 @@
                                 <th>ID</th>
                                 <th>Nama</th>
                                 <th>Stok</th>
+                                <th>Satuan</th>
+                                <th>Jenis</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -26,6 +28,8 @@
                                 <td>{{ $bahan->idbahan }}</td>
                                 <td>{{ $bahan->nama }}</td>
                                 <td>{{ $bahan->stok }}</td>
+                                <td>{{ $bahan->satuan }}</td>
+                                <td>{{ $bahan->jenis }}</td>
                                 <td>
                                     <button wire:click="pilih({{ $bahan->idbahan }})"
                                         class="btn btn-sm btn-primary">Pilih</button>

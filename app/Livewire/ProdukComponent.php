@@ -7,10 +7,10 @@ use Carbon\Carbon;
 use App\Models\Produk;
 use Livewire\Component;
 use App\Models\Supplier;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Livewire\Attributes\On;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -23,7 +23,7 @@ class ProdukComponent extends Component
     use WithPagination, WithFileUploads;
     // use LivewireAlert;
 
-    public $idproduk, $nama, $image, $jenisproduk, $satuan = 'pcs', $stok = 0, $supplier_idsupplier, $harga_jual, $harga_beli, $tanggal_kedaluwarsa, $stok_minimum, $is_titipan, $created_at, $updated_at;
+    public $idproduk, $nama, $image, $jenisproduk, $satuan = 'pcs', $supplier_idsupplier, $harga_jual, $harga_beli, $tanggal_kedaluwarsa, $stok_minimum, $is_titipan = false, $created_at, $updated_at;
     public $supplierName;
     public $search = '';
     public $searchlov = '';
@@ -77,7 +77,6 @@ class ProdukComponent extends Component
             'image',
             'jenisproduk',
             'satuan',
-            'stok',
             'supplier_idsupplier',
             'harga_jual',
             'harga_beli',
@@ -98,7 +97,6 @@ class ProdukComponent extends Component
             'image',
             'jenisproduk',
             'satuan',
-            'stok',
             'supplier_idsupplier',
             'harga_jual',
             'harga_beli',
@@ -134,13 +132,13 @@ class ProdukComponent extends Component
 
         $produk->jenisproduk = $this->jenisproduk;
         $produk->satuan = $this->satuan;
-        $produk->stok = $this->stok;
         $produk->supplier_idsupplier = $this->supplier_idsupplier;
         $produk->harga_jual = $this->harga_jual;
         $produk->harga_beli = $this->harga_beli;
         $produk->tanggal_kedaluwarsa = $this->tanggal_kedaluwarsa;
         $produk->stok_minimum = $this->stok_minimum;
-        $produk->is_titipan = $this->is_titipan;
+        // $produk->is_titipan = $this->is_titipan;
+        $produk->is_titipan = strtolower($this->jenisproduk) === 'titipan';
         $produk->save();
 
         $this->close();
@@ -158,14 +156,15 @@ class ProdukComponent extends Component
         $this->image = $produk->image;
         $this->jenisproduk = $produk->jenisproduk;
         $this->satuan = $produk->satuan;
-        $this->stok = $produk->stok;
         $this->supplier_idsupplier = $produk->supplier_idsupplier;
         $this->supplierName = $produk->supplier->nama ?? '-';
         $this->harga_jual = $produk->harga_jual;
         $this->harga_beli = $produk->harga_beli;
         $this->tanggal_kedaluwarsa = $produk->tanggal_kedaluwarsa;
         $this->stok_minimum = $produk->stok_minimum;
-        $this->is_titipan = $produk->is_titipan;
+        // $this->is_titipan = $produk->is_titipan;
+        $this->is_titipan = strtolower($produk->jenisproduk) === 'titipan'; // ✅ hasilnya true
+
 
         $this->isEdit = true;
 
@@ -179,7 +178,6 @@ class ProdukComponent extends Component
             // Jika kamu butuh validasi lainnya tinggal uncomment atau tambah
             // 'jenisproduk' => 'required',
             // 'satuan' => 'required',
-            // 'stok' => 'required|numeric',
             // 'supplier_idsupplier' => 'required',
             // 'harga_jual' => 'required|numeric',
             // 'harga_beli' => 'required|numeric',
@@ -202,7 +200,6 @@ class ProdukComponent extends Component
 
         $produk->jenisproduk = $this->jenisproduk;
         $produk->satuan = $this->satuan;
-        $produk->stok = $this->stok;
         $produk->supplier_idsupplier = $this->supplier_idsupplier;
         $produk->harga_jual = $this->harga_jual;
         $produk->harga_beli = $this->harga_beli;
@@ -247,6 +244,23 @@ class ProdukComponent extends Component
 
         $this->dispatch('produk-disimpan', ['pesan' => 'Produk berhasil dihapus!']);
         $this->dispatch('close-produk-modal');
+    }
+
+    public function exportToPdf()
+    {
+        $headers = ['Nama', 'Jenis Produk', 'Satuan', 'Supplier', 'Harga Jual', 'Harga Beli', 'Tanggal Kedaluwarsa'];
+        $title = 'Export Data Produk';
+        $queryResult = $this->dataProduk();
+        $data = [];
+        foreach ($queryResult as $result) {
+            $data[] = [$result->nama, $result->jenisproduk, $result->satuan, $result->supplier->nama ?? '-', number_format($result->harga_jual, 0, ',', '.'), number_format($result->harga_beli, 0, ',', '.'), $result->tanggal_kedaluwarsa];
+        }
+        $pdf = Pdf::loadView('layouts.pdf_layout', compact('data', 'headers', 'title'));
+
+        $pdf->setPaper('A4', 'portrait');
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->stream();
+        }, 'Produk.pdf');
     }
 
     #[On('buka-modal-lov-supplier')]

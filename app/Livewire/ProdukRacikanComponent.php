@@ -106,7 +106,7 @@ class ProdukRacikanComponent extends Component
 
         $produkracikan = new ProdukRacikan();
         $produkracikan->idproduk_racikan = $this->idproduk_racikan;
-        $produkracikan->produk_idproduk = $this->produk_idproduk;
+        $produkracikan->produk_idproduk = $this->idPage;
         $produkracikan->bahan_idbahan = $this->bahan_idbahan;
         $produkracikan->takaran = $this->takaran;
         $produkracikan->satuan = $this->satuan;
@@ -194,15 +194,17 @@ class ProdukRacikanComponent extends Component
     public function dataProdukRacikan()
     {
         return ProdukRacikan::search($this->search)
+            ->with(['bahan'])
+            ->where('produk_idproduk', $this->idPage)
             ->simplePaginate($this->perPage);
     }
 
     public function render()
     {
-        $produks = ProdukRacikan::where('idproduk_racikan', $this->idPage)->first();
+        // $produks = ProdukRacikan::where('idproduk_racikan', $this->idPage)->first();
         return view('livewire.produk-racikan-component', [
             'produkracikans' => $this->dataProdukRacikan(),
-            'produks' => $produks,
+            // 'produks' => $produks,
         ]);
     }
 }

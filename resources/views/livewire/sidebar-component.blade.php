@@ -48,7 +48,8 @@
                 <span>Pembelian</span>
             </a>
 
-            <a href="#" class="menu-item">
+            <a href="{{ route('returtitipan.index') }}"
+                class="menu-item {{ request()->routeIs('returtitipan.index') ? 'active' : '' }}">
                 <i class="fas fa-exchange-alt"></i>
                 <span>Retur Titipan</span>
             </a>

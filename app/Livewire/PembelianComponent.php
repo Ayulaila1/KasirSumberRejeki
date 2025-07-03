@@ -114,6 +114,7 @@ class PembelianComponent extends Component
         $pembelian->user_iduser = Auth::user()->id;
         $pembelian->total_item = $this->total_item;
         $pembelian->total_hargabeli = $this->total_hargabeli;
+        $pembelian->status = 'unsaved';
         $pembelian->created_at = $this->created_at;
         $pembelian->updated_at = $this->updated_at;
         $pembelian->save();

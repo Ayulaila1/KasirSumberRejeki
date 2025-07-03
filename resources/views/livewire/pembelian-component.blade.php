@@ -48,9 +48,6 @@
                     </div> --}}
 
                     <div class="d-flex justify-content-start align-items-center gap-1">
-                        <button class="btn bg-success text-white d-flex align-items-center" style="background: #77e779"
-                            wire:click="exportToExcel"> <i class="fa-solid fa-download me-2"></i>
-                            Excel</button>
                         <button class="btn bg-danger text-white d-flex align-items-center" wire:click="exportToPdf"> <i
                                 class="fa-solid fa-download me-2"></i>
                             PDF</button>
@@ -71,14 +68,15 @@
                             <table class="table table-bordered" style="width:100%;white-space:nowrap">
                                 <thead>
                                     <tr>
-                                        <th>No</th>
-                                        <th>Action</th>
+                                        <th class="text-center">No</th>
+                                        <th class="text-center">Action</th>
                                         {{-- <th>Id Pembelian</th> --}}
-                                        <th>Tanggal</th>
-                                        <th>Supplier</th>
-                                        <th>User</th>
-                                        <th>Total Item</th>
-                                        <th>Total Harga Beli</th>
+                                        <th class="text-center">Status</th>
+                                        <th class="text-center">Tanggal</th>
+                                        <th class="text-center">Supplier</th>
+                                        <th class="text-center">User</th>
+                                        <th class="text-center">Total Item</th>
+                                        <th class="text-center">Total Harga Beli</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -101,6 +99,13 @@
                                                     <i class="fa-solid fa-list"></i> </a>
                                             </div>
                                         </td>
+                                        <td class="text-center">
+                                            @if ($datas->status === 'unsaved')
+                                            <span class="badge font-semibold bg-danger">Unsaved</span>
+                                            @else
+                                            <span class="badge font-bold bg-success">Saved</span>
+                                            @endif
+                                        </td>
                                         <td>{{ $datas->tanggal }}</td>
                                         <td>{{ $datas->supplier->nama ?? '-' }}</td>
                                         <td>{{ $datas->user->name ?? '-' }}</td>
@@ -108,12 +113,16 @@
                                         $total_item = App\Models\Pembeliandtl::where('pembelian_idpembelian',
                                         $datas->idpembelian)->sum('jumlah');
                                         @endphp
-                                        <td>{{ $total_item }}</td>
+                                        <td class="text-end">{{ $total_item }}</td>
                                         @php
                                         $total_hargabeli = App\Models\Pembeliandtl::where('pembelian_idpembelian',
-                                        $datas->idpembelian)->sum('subtotal');
+                                        $datas->idpembelian)
+                                        ->get()
+                                        ->sum(function ($item) {
+                                        return $item->jumlah * $item->harga_beli;
+                                        });
                                         @endphp
-                                        <td>{{ $total_hargabeli }}</td>
+                                        <td class="text-end">Rp {{ number_format($total_hargabeli, 0, ',', '.') }}</td>
                                         {{-- <td>{{ $datas->created_at }}</td> --}}
                                         {{-- <td>{{ $datas->updated_at }}</td> --}}
                                     </tr>

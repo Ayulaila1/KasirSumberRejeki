@@ -5,12 +5,14 @@ use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
 use App\Livewire\AdminDashboard;
 use App\Livewire\BahanComponent;
+use App\Livewire\Dashboard\Main;
 use App\Livewire\KasirComponent;
 use App\Livewire\ProdukComponent;
 use App\Livewire\SupplierComponent;
 use App\Livewire\PembelianComponent;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\PembeliandtlComponent;
+use App\Livewire\ReturTitipanComponent;
 use App\Livewire\ProdukRacikanComponent;
 use App\Http\Controllers\LoginController;
 
@@ -56,9 +58,14 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/pembelian', PembelianComponent::class)->name('pembelian.index');
     Route::get('/kasir', KasirComponent::class)->name('kasir.index');
     Route::get('/bahan', BahanComponent::class)->name('bahan.index');
+    Route::get('/returtitipan', ReturTitipanComponent::class)->name('returtitipan.index');
 
     Route::get('/produkracikan/{id}', ProdukRacikanComponent::class)->name('produkracikan.index');
     Route::get('/pembeliandtl/{id}', PembeliandtlComponent::class)->name('pembeliandtl.index');
+    Route::get('/retur-produk/{idproduk}', ReturTitipanComponent::class)->name('retur.produk');
+
+    Route::get('/cetakPembelian/{idPage}', [PembeliandtlComponent::class, 'cetakLaporan'])->name('cetakPembelian');
+
 
 
 

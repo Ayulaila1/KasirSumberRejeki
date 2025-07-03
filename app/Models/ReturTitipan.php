@@ -1,21 +1,21 @@
 <?php
 namespace App\Models;
-use App\Models\Bahan;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class ProdukRacikan extends Model
+class ReturTitipan extends Model
 {
     use HasFactory;
 
-    protected $table = 'produk_racikans';
-    protected $primaryKey = 'idproduk_racikan';
+    protected $table = 'retur_titipan';
+    protected $primaryKey = 'idretur_titipan';
     protected $fillable = [
-        'idproduk_racikan',
+        'idretur_titipan',
+        'tanggal',
+        'supplier_idsupplier',
         'produk_idproduk',
-        'bahan_idbahan',
-        'takaran',
-        'satuan',
+        'qty',
+        'keterangan',
         'created_at',
         'updated_at'
     ];
@@ -27,22 +27,23 @@ class ProdukRacikan extends Model
 
     public function scopeSearch($query, $value)
     {
-        $query->where('idproduk_racikan', 'like', "%{$value}%")
+        $query->where('idretur_titipan', 'like', "%{$value}%")
+            ->orWhere('tanggal', 'like', "%{$value}%")
+            ->orWhere('supplier_idsupplier', 'like', "%{$value}%")
             ->orWhere('produk_idproduk', 'like', "%{$value}%")
-            ->orWhere('bahan_idbahan', 'like', "%{$value}%")
-            ->orWhere('takaran', 'like', "%{$value}%")
-            ->orWhere('satuan', 'like', "%{$value}%")
+            ->orWhere('qty', 'like', "%{$value}%")
+            ->orWhere('keterangan', 'like', "%{$value}%")
         ;
     }
 
-    public function bahan()
-    {
-        return $this->belongsTo(Bahan::class, 'bahan_idbahan', 'idbahan');
-    }
+    // public function kategorisupplier()
+    // {
+    //     return $this->belongsTo(Kategorisupplier::class, 'kategorisupplier_idkategorisupplier', 'idkategorisupplier');
+    // }
 
     // public function supplier()
     // {
-    //     return $this->belongsTo(ProdukRacikan::class, 'supplier_idproduk_racikan', 'idproduk_racikan');
+    //     return $this->belongsTo(ProdukRacikan::class, 'supplier_idretur_titipan', 'idretur_titipan');
     // }
 
     // public function scopeFiltersupplier($query, $value)
@@ -55,7 +56,7 @@ class ProdukRacikan extends Model
     // public function scopeFilterProdukRacikan($query, $value)
     // {
     //     if (!empty($value)) {
-    //         $query->where('supplier_idproduk_racikan', $value);
+    //         $query->where('supplier_idretur_titipan', $value);
     //     }
     // }
     /*

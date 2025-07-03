@@ -15,9 +15,7 @@
                 <div>
                     {{-- <button class="btn btn-primary" style="z-index:9999; position:relative"
                         wire:click="$dispatch('show-add-produk-modal')"><i class="fa-solid fa-plus "></i></button> --}}
-                    <button wire:click="tambahProduk" class="btn btn-primary">
-                        <i class="bi bi-plus-lg"></i>
-                    </button>
+
                 </div>
             </div>
         </div>
@@ -47,12 +45,13 @@
                     </div> --}}
 
                     <div class="d-flex justify-content-start align-items-center gap-1">
-                        <button class="btn bg-success text-white d-flex align-items-center" style="background: #77e779"
-                            wire:click="exportToExcel"> <i class="fa-solid fa-download me-2"></i>
-                            Excel</button>
                         <button class="btn bg-danger text-white d-flex align-items-center" wire:click="exportToPdf"> <i
                                 class="fa-solid fa-download me-2"></i>
                             PDF</button>
+                        <button wire:click="tambahProduk" class="btn btn-primary">
+                            <i class="bi bi-plus-lg"></i>
+                        </button>
+
 
                     </div>
                 </div>
@@ -76,12 +75,12 @@
                                         <th>Gambar</th>
                                         <th>Jenis Produk</th>
                                         <th>Satuan</th>
-                                        <th>Stok</th>
+                                        {{-- <th>Stok</th> --}}
                                         <th>Supplier</th>
                                         <th>Harga Jual</th>
                                         <th>Harga Beli</th>
                                         <th>Tgl Kedaluwarsa</th>
-                                        <th>Stok Minimum</th>
+                                        {{-- <th>Stok Minimum</th> --}}
                                         <th>Barang Titipan</th>
                                     </tr>
                                 </thead>
@@ -109,17 +108,25 @@
                                                 style="max-width: 70px;"></td>
                                         <td>{{ $datas->jenisproduk }}</td>
                                         <td>{{ $datas->satuan }}</td>
-                                        <td>{{ $datas->stok }}</td>
+                                        {{-- <td>{{ $datas->stok }}</td> --}}
                                         <td>{{ $datas->supplier->nama ?? '-' }}</td>
                                         <td>Rp {{ number_format($datas->harga_jual, 0, ',', '.') }}</td>
                                         <td>Rp {{ number_format($datas->harga_beli, 0, ',', '.') }}</td>
                                         <td>{{ $datas->tanggal_kedaluwarsa }}</td>
-                                        <td>{{ $datas->stok_minimum }}</td>
-                                        <td>
+                                        {{-- <td>{{ $datas->stok_minimum }}</td> --}}
+                                        <td class="text-center">
                                             @if($datas->is_titipan)
-                                            <span class="badge bg-warning text-dark">Titipan</span>
+                                            <a href="{{ route('retur.produk', ['idproduk' => $datas->idproduk]) }}"
+                                                class="btn btn-warning text-dark fw-semibold d-inline-flex align-items-center gap-1 px-2 py-1 rounded-pill shadow-sm"
+                                                style="background-color: #ffc107; border: none; font-size: 0.85rem;">
+                                                <i class="fa-solid fa-rotate-left small"></i>
+                                                <span style="line-height: 1;">Retur Titipan</span>
+                                            </a>
                                             @else
-                                            <span class="badge bg-success">Bukan Titipan</span>
+                                            <span class="badge bg-success px-2 py-1 rounded-pill shadow-sm"
+                                                style="font-size: 0.8rem;">
+                                                Bukan Titipan
+                                            </span>
                                             @endif
                                         </td>
                                     </tr>
@@ -159,8 +166,7 @@
     @if($isOpen)
     <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);" aria-modal="true"
         role="dialog">
-        <div class="modal-dialog modal-lg">
-            <!-- Tambahkan modal-xl di sini -->
+        <div class="modal-dialog">
             <div class="modal-content p-4">
                 <div class="modal-header">
                     <h5 class="modal-title">Tambah Produk</h5>
@@ -200,11 +206,13 @@
                             <select id="jenisproduk" class="form-control" wire:model="jenisproduk">
                                 <option value="">Pilih Jenis Produk</option>
                                 <option value="Racikan">Racikan</option>
-                                <option value="Sachet">Sachet</option>
+                                <option value="Siap Saji">Siap Saji</option>
+                                <option value="Titipan">Titipan</option>
                             </select>
                             @error('jenisproduk') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
                     </div>
+
                     <div class="form-group row mb-3" readonly>
                         <label for="satuan"
                             class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Satuan</label>
@@ -260,7 +268,7 @@
 
                     <div class="form-group row mb-3">
                         <label for="harga_beli" class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Harga
-                            Jual<span class="text-danger">*</span></label>
+                            Beli<span class="text-danger">*</span></label>
                         <div class="col-12 col-lg-9">
                             <input type="text" id="harga_beli" class="form-control" wire:model="harga_beli"
                                 placeholder="Masukkan harga_beli">
@@ -283,7 +291,9 @@
                         </div>
                     </div>
 
-                    <div class="form-group row mb-3">
+                    <input type="hidden" wire:model="is_titipan">
+
+                    {{-- <div class="form-group row mb-3">
                         <label for="is_titipan" class="col-12 col-lg-3 fw-bold text-lg-end">Barang Titipan</label>
                         <div class="col-12 col-lg-9">
                             <select id="is_titipan" class="form-control" wire:model="is_titipan">
@@ -292,7 +302,7 @@
                             </select>
                             @error('is_titipan') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
-                    </div>
+                    </div> --}}
 
                     <!-- Tombol Aksi -->
                     <div class="modal-footer">
@@ -349,7 +359,8 @@
                             <select id="jenisproduk" class="form-control" wire:model="jenisproduk">
                                 <option value="">Pilih Jenis Produk</option>
                                 <option value="Racikan">Racikan</option>
-                                <option value="Sachet">Sachet</option>
+                                <option value="Siap Saji">Siap Saji</option>
+                                <option value="Titipan">Titipan</option>
                             </select>
                             @error('jenisproduk') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
@@ -409,7 +420,7 @@
 
                     <div class="form-group row mb-3">
                         <label for="harga_beli" class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Harga
-                            Jual<span class="text-danger">*</span></label>
+                            Beli<span class="text-danger">*</span></label>
                         <div class="col-12 col-lg-9">
                             <input type="text" id="harga_beli" class="form-control" wire:model="harga_beli"
                                 placeholder="Masukkan harga_beli">
@@ -432,7 +443,9 @@
                         </div>
                     </div>
 
-                    <div class="form-group row mb-3">
+                    <input type="hidden" wire:model="is_titipan">
+
+                    {{-- <div class="form-group row mb-3">
                         <label for="is_titipan" class="col-12 col-lg-3 fw-bold text-lg-end">Barang Titipan</label>
                         <div class="col-12 col-lg-9">
                             <select id="is_titipan" class="form-control" wire:model="is_titipan">
@@ -441,7 +454,7 @@
                             </select>
                             @error('is_titipan') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
-                    </div>
+                    </div> --}}
 
                     <!-- Tombol Aksi -->
                     <div class="modal-footer">
