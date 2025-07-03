@@ -1,3 +1,4 @@
+{{--
 <!DOCTYPE html>
 <html lang="id">
 
@@ -617,9 +618,9 @@
             }
         }
     </style>
-</head>
+</head> --}}
 
-<body>
+<div>
     <!-- Sidebar Overlay -->
     <div class="sidebar-overlay"></div>
 
@@ -1075,6 +1076,6 @@
             }
         });
     </script>
-</body>
+</div>
 
 </html>
