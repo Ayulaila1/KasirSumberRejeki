@@ -119,6 +119,9 @@ class PembelianComponent extends Component
         $pembelian->updated_at = $this->updated_at;
         $pembelian->save();
 
+        return redirect('/pembeliandtl/' . $pembelian->idpembelian);
+
+
         $this->close();
         $this->resetPage('pageLOV');
         $this->dispatch('pembelian-disimpan', ['pesan' => 'Pembelian berhasil disimpan!']);

@@ -84,9 +84,10 @@
                                     <tr class="bg-light">
                                         <td>#</td>
                                         <td>
-                                            <button class="btn btn-success btn-sm" wire:click="simpanReturBaru">
-                                                <i class="bi bi-check-circle"></i> Retur
-                                            </button>
+                                            <form wire:submit.prevent="simpanReturBaru">
+                                                {{-- input2 --}}
+                                                <button type="submit" class="btn btn-success">Simpan</button>
+                                            </form>
                                         </td>
                                         <td>
                                             <input type="date" wire:model="tanggalBaru" class="form-control">
@@ -96,10 +97,9 @@
                                             <div class="input-group">
                                                 <input type="text" readonly wire:model="produkNameBaru"
                                                     class="form-control">
-                                                <button type="button" class="btn btn-outline-secondary"
-                                                    wire:click="$emit('buka-modal-lov-produk')">
-                                                    Pilih
-                                                </button>
+                                                <!-- Benar -->
+                                                {{-- <button wire:click="@this.emit('produkDipilih', 1)">Pilih</button>
+                                                --}}
                                             </div>
                                         </td>
                                         <td>

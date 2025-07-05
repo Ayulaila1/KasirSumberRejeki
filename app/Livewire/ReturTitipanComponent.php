@@ -8,6 +8,7 @@ use Livewire\Component;
 use Livewire\Attributes\On;
 use App\Models\ReturTitipan;
 use Livewire\WithPagination;
+use App\Models\ProdukRacikan;
 use Livewire\WithFileUploads;
 
 class ReturTitipanComponent extends Component
@@ -16,7 +17,10 @@ class ReturTitipanComponent extends Component
 
     public $idretur_titipan, $tanggal, $supplier_idsupplier, $produk_idproduk, $qty, $keterangan, $created_at, $updated_at;
     public $produkName;
+    // public $produk_idBaru, $tanggalBaru, $qtyBaru, $keteranganBaru, $produkNameBaru;
     public $tanggalBaru, $produk_idBaru, $produkNameBaru, $qtyBaru, $keteranganBaru;
+
+    // public $tanggalBaru, $produk_idBaru, $produkNameBaru, $qtyBaru, $keteranganBaru;
     public $search = '';
     public $searchlov = '';
     public $tglstart = '';
@@ -211,30 +215,64 @@ class ReturTitipanComponent extends Component
 
     public function simpanReturBaru()
     {
+        // dd('test');
         $this->validate([
             'tanggalBaru' => 'required|date',
             'produk_idBaru' => 'required|exists:produks,idproduk',
             'qtyBaru' => 'required|numeric|min:1',
         ]);
 
-        ReturTitipan::create([
-            'tanggal' => $this->tanggalBaru,
-            'produk_idproduk' => $this->produk_idBaru,
-            'supplier_idsupplier' => Produk::find($this->produk_idBaru)?->supplier_idsupplier,
-            'qty' => $this->qtyBaru,
-            'keterangan' => $this->keteranganBaru,
-        ]);
+        $produk = Produk::with('produkDetails.bahan')->find($this->produk_idBaru);
+        // dd($produk);
+        if (!$produk) {
+            session()->flash('error', 'Produk tidak ditemukan.');
+            return;
+        }
+        if ($produk->produkDetails->isEmpty()) {
+            session()->flash('error', "Gagal menyimpan retur. Produk titipan tidak memiliki stok bahan yang tercatat.");
+            return;
+        } else {
+            // dd('ini ada racikan');
+            foreach ($produk->produkDetails as $detail) {
+                $bahan = $detail->bahan;
 
-        // kurangi stok bahan
-        $bahan = Bahan::where('idbahan', $this->produk_idBaru)->first();
-        if ($bahan) {
-            $bahan->stok -= $this->qtyBaru;
-            $bahan->save();
+                if (!$bahan) {
+                    session()->flash('error', 'Ada bahan dalam racikan yang belum terdaftar.');
+                    return;
+                }
+
+                $totalPengurangan = $detail->takaran * $this->qtyBaru;
+
+                if ($bahan->stok < $totalPengurangan) {
+                    session()->flash('error', "Stok bahan '{$bahan->nama}' tidak cukup untuk retur.");
+                    return;
+                }
+            }
+
+            // Semua bahan cukup → simpan retur
+            ReturTitipan::create([
+                'tanggal' => $this->tanggalBaru,
+                'produk_idproduk' => $this->produk_idBaru,
+                'supplier_idsupplier' => $produk->supplier_idsupplier,
+                'qty' => $this->qtyBaru,
+                'keterangan' => $this->keteranganBaru,
+            ]);
+
+            // Kurangi stok semua bahan racikan
+            foreach ($produk->produkDetails as $detail) {
+                $bahan = $detail->bahan;
+                $bahan->stok -= $detail->takaran * $this->qtyBaru;
+                $bahan->save();
+            }
         }
 
+        // Reset input form
         $this->reset(['tanggalBaru', 'produk_idBaru', 'produkNameBaru', 'qtyBaru', 'keteranganBaru']);
+
         session()->flash('success', 'Retur berhasil disimpan!');
     }
+
+
 
 
     public function render()

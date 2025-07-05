@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 use App\Models\Supplier;
+use App\Models\ProdukRacikan;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -53,6 +54,12 @@ class Produk extends Model
     {
         return $this->belongsTo(Supplier::class, 'supplier_idsupplier', 'idsupplier');
     }
+
+    public function produkDetails()
+    {
+        return $this->hasMany(ProdukRacikan::class, 'produk_idproduk', 'idproduk');
+    }
+
 
     // public function kategoriproduk()
     // {
