@@ -1,5 +1,5 @@
 <div>
-    <div class="sidebar {{ $showSidebar ? 'show' : '' }}" id="sidebar">
+    <div class="sidebar {{ $showSidebar && !request()->routeIs('kasir.index') ? 'show' : '' }}" id="sidebar">
         <div class="sidebar-header">
             <i class="fas fa-mug-hot"></i>
             <h3>Cafe Suki</h3>
@@ -80,7 +80,8 @@
             </a>
         </div>
     </div>
-    <div class="main-content {{ $showSidebar ? 'sidebar-open' : '' }}" id="mainContent">
+    <div class="main-content {{ $showSidebar && !request()->routeIs('kasir.index') ? 'sidebar-open' : '' }}"
+        id="mainContent">
         <!-- Top Navigation -->
         <div class="top-nav d-flex align-items-center justify-content-end">
             <button class="toggle-sidebar" wire:click="toggleSidebar">
@@ -107,7 +108,5 @@
                 </div>
             </div>
         </div>
-
-
     </div>
 </div>

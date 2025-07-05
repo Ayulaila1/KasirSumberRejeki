@@ -355,6 +355,7 @@ class PenjualanComponent extends Component
         $this->clearCart();
     }
 
+
     public function render()
     {
         $filteredProducts = collect($this->products);

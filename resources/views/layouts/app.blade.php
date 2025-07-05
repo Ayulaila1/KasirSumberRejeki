@@ -25,6 +25,7 @@
     <!-- Boxicons CSS -->
     <link href='https://cdn.boxicons.com/fonts/basic/boxicons.min.css' rel='stylesheet'>
     <link href='https://cdn.boxicons.com/fonts/brands/boxicons-brands.min.css' rel='stylesheet'>
+    {{-- STYLE KASIR --}}
     <style>
         :root {
             --primary: #7a4b47;
@@ -386,6 +387,8 @@
             background-color: white;
             border-top: 1px solid #ddd;
             animation: fadeInUp 0.5s ease;
+            /* Tambahan untuk memastikan tombol tetap di bawah */
+            margin-top: auto;
         }
 
         .summary-row {
@@ -728,8 +731,29 @@
             box-shadow: 0 5px 10px rgba(122, 75, 71, 0.2);
         }
 
+        /* Perubahan utama untuk tombol Bayar */
+        .cart-section {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .cart-body {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 20px;
+        }
+
+        .cart-summary {
+            position: sticky;
+            bottom: 0;
+            background-color: white;
+            z-index: 10;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+        }
+
         .action-buttons {
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
         }
 
         .btn-warning {
@@ -994,11 +1018,14 @@
         @media (max-width: 992px) {
             .pos-container {
                 grid-template-columns: 1fr;
+                height: auto;
+                min-height: 100vh;
             }
 
             .cart-section {
                 border-left: none;
                 border-top: 1px solid #ddd;
+                min-height: auto;
             }
 
             .header {
@@ -1028,8 +1055,20 @@
             .product-grid {
                 grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
             }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .btn {
+                padding: 10px;
+                font-size: 13px;
+            }
         }
     </style>
+
+
+    {{-- STYLE LAINNYA --}}
     <style>
         .content-area-desktop-only {
             margin-left: 0;
