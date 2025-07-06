@@ -16,9 +16,6 @@
                     {{-- <button class="btn btn-primary" style="z-index:9999; position:relative"
                         wire:click="$dispatch('show-add-supplier-modal')"><i class="fa-solid fa-plus "></i></button>
                     --}}
-                    <button wire:click="tambahSupplier" class="btn btn-primary">
-                        Tambah Supplier
-                    </button>
                 </div>
             </div>
         </div>
@@ -48,12 +45,12 @@
                     </div> --}}
 
                     <div class="d-flex justify-content-start align-items-center gap-1">
-                        <button class="btn bg-success text-white d-flex align-items-center" style="background: #77e779"
-                            wire:click="exportToExcel"> <i class="fa-solid fa-download me-2"></i>
-                            Excel</button>
                         <button class="btn bg-danger text-white d-flex align-items-center" wire:click="exportToPdf"> <i
-                                class="fa-solid fa-download me-2"></i>
+                                class="fa-regular fa-file-pdf"></i>
                             PDF</button>
+                        <button wire:click="tambahSupplier" class="btn btn-primary">
+                            <i class="bi bi-plus-lg"></i>
+                        </button>
 
                     </div>
                 </div>
@@ -71,11 +68,11 @@
                             <table class="table table-bordered" style="width:100%;white-space:nowrap">
                                 <thead>
                                     <tr>
-                                        <th>No</th>
-                                        <th>Action</th>
-                                        <th>Nama</th>
-                                        <th>Kontak</th>
-                                        <th>Alamat</th>
+                                        <th class="text-center" style="width: 3%">No</th>
+                                        <th style="width: 100px;text-align: center">Action</th>
+                                        <th class="text-center">Nama</th>
+                                        <th class="text-center">Kontak</th>
+                                        <th class="text-center">Alamat</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -84,12 +81,14 @@
                                         class="{{ $datas->stok <= $datas->stok_minimum ? 'bg-danger text-white' : '' }}">
                                         <td>{{ $suppliers->firstItem() + $key }}</td>
                                         <td>
-                                            <button class="btn btn-sm btn-warning text-dark"
-                                                wire:click="editSupplier('{{ $datas->idsupplier }}')">Edit
-                                                {{-- <i class="fa-regular fa-pen-to-square"></i> --}}
-                                            </button>
-                                            <button class="btn btn-sm btn-danger"
-                                                wire:click="deleteConfirmationSupplier('{{ $datas->idsupplier }}')">Hapus</button>
+                                            <div class="d-flex gap-1">
+                                                <button class="btn btn-sm btn-warning text-dark"
+                                                    wire:click="editSupplier('{{ $datas->idsupplier }}')">Edit
+                                                    {{-- <i class="fa-regular fa-pen-to-square"></i> --}}
+                                                </button>
+                                                <button class="btn btn-sm btn-danger"
+                                                    wire:click="deleteConfirmationSupplier('{{ $datas->idsupplier }}')">Hapus</button>
+                                            </div>
                                         </td>
                                         <td>{{ $datas->nama }}</td>
                                         <td>{{ $datas->kontak }}</td>

@@ -7,6 +7,7 @@ use App\Models\Supplier;
 use Livewire\Attributes\On;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -181,7 +182,22 @@ class SupplierComponent extends Component
         $this->dispatch('close-modal-lov');
     }
 
+    public function exportToPdf()
+    {
+        $headers = ['Nama', 'Kontak', 'Alamat'];
+        $title = 'Export Data Supplier';
+        $queryResult = $this->dataSupplier();
+        $data = [];
+        foreach ($queryResult as $result) {
+            $data[] = [$result->nama, $result->kontak, $result->alamat];
+        }
+        $pdf = Pdf::loadView('layouts.pdf_layout', compact('data', 'headers', 'title'));
 
+        $pdf->setPaper('A4', 'portrait');
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->stream();
+        }, 'Supplier.pdf');
+    }
 
     public function dataSupplier()
     {

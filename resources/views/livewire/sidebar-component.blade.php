@@ -54,9 +54,16 @@
                 <span>Retur Titipan</span>
             </a>
 
-            <a href="#" class="menu-item">
+            <a href="{{ route('laporan.penjualan') }}"
+                class="menu-item {{ request()->routeIs('laporan.penjualan') ? 'active' : '' }}">
                 <i class="fas fa-file-invoice-dollar"></i>
-                <span>Laporan</span>
+                <span>Laporan Penjualan</span>
+            </a>
+
+            <a href="{{ route('laporan.pendapatan') }}"
+                class="menu-item {{ request()->routeIs('laporan.pendapatan') ? 'active' : '' }}">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <span>Laporan Pendapatan</span>
             </a>
 
             <a href="{{ route('kasir.index') }}"
@@ -65,10 +72,6 @@
                 <span>Kasir</span>
             </a>
 
-            <a href="#" class="menu-item has-submenu">
-                <i class="fas fa-users-cog"></i>
-                <span>Pengguna</span>
-            </a>
             <div class="submenu">
                 <a href="#" class="menu-item">Daftar Pengguna</a>
                 <a href="#" class="menu-item">Tambah Pengguna</a>

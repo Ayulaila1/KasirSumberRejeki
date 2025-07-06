@@ -19,7 +19,7 @@
                                     <th>Nama</th>
                                     <th>Gambar</th>
                                     <th>Jenis Produk</th>
-                                    <th>Satuan</th>
+                                    <th>Kategori</th>
                                     <th>Supplier</th>
                                     <th>Harga Jual</th>
                                     <th>Harga Beli</th>
@@ -35,7 +35,7 @@
                                     <td>{{ $produk->nama }}</td>
                                     <td>{{ $produk->img }}</td>
                                     <td>{{ $produk->jenisproduk }}</td>
-                                    <td>{{ $produk->satuan }}</td>
+                                    <td>{{ $produk->kategori }}</td>
                                     <td>{{ $produk->supplier->nama ?? '-' }}</td>
                                     <td>{{ $produk->harga_beli }}</td>
                                     <td>{{ $produk->harga_jual }}</td>

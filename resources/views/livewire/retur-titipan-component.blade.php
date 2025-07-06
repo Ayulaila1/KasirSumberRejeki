@@ -55,7 +55,7 @@
 
                     <div class="d-flex justify-content-start align-items-center gap-1">
                         <button class="btn bg-danger text-white d-flex align-items-center" wire:click="exportToPdf"> <i
-                                class="fa-solid fa-download me-2"></i>
+                                class="fa-regular fa-file-pdf"></i>
                             PDF</button>
 
                     </div>
@@ -70,13 +70,13 @@
                             <table class="table table-bordered" style="width:100%;white-space:nowrap">
                                 <thead>
                                     <tr>
-                                        <th>No</th>
-                                        <th>Action</th>
-                                        <th>Tanggal</th>
-                                        <th>Supplier</th>
-                                        <th>Produk</th>
-                                        <th>Jumlah</th>
-                                        <th>Keterangan</th>
+                                        <th class="text-center" style="width: 3%">No</th>
+                                        <th style="width: 100px;text-align: center">Action</th>
+                                        <th class="text-center">Tanggal</th>
+                                        <th class="text-center">Supplier</th>
+                                        <th class="text-center">Produk</th>
+                                        <th class="text-center">Jumlah</th>
+                                        <th class="text-center">Keterangan</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -86,7 +86,7 @@
                                         <td>
                                             <form wire:submit.prevent="simpanReturBaru">
                                                 {{-- input2 --}}
-                                                <button type="submit" class="btn btn-success">Simpan</button>
+                                                <button type="submit" class="btn btn-success">Retur</button>
                                             </form>
                                         </td>
                                         <td>
@@ -114,8 +114,6 @@
                                         <td>{{ $returtitipans->firstItem() + $key }}</td>
                                         <td>
                                             <div class="d-flex gap-1">
-                                                <button class="btn btn-sm btn-warning text-dark"
-                                                    wire:click="editReturTitipan('{{ $datas->idretur_titipan }}')">Edit</button>
                                                 <button class="btn btn-sm btn-danger"
                                                     wire:click="deleteConfirmationReturTitipan('{{ $datas->idretur_titipan }}')">Hapus</button>
                                             </div>

@@ -2,11 +2,12 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
 use App\Models\Bahan;
+use Livewire\Component;
 use Livewire\Attributes\On;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -180,7 +181,22 @@ class BahanComponent extends Component
         $this->dispatch('close-bahan-modal');
     }
 
+    public function exportToPdf()
+    {
+        $headers = ['Nama', 'Stok', 'Satuan', 'Jenis'];
+        $title = 'Export Data Bahan';
+        $queryResult = $this->dataBahan();
+        $data = [];
+        foreach ($queryResult as $result) {
+            $data[] = [$result->nama, $result->stok, $result->satuan, $result->jenis];
+        }
+        $pdf = Pdf::loadView('layouts.pdf_layout', compact('data', 'headers', 'title'));
 
+        $pdf->setPaper('A4', 'portrait');
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->stream();
+        }, 'Bahan.pdf');
+    }
 
     public function dataBahan()
     {

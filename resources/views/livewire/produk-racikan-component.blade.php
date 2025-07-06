@@ -54,11 +54,8 @@
                     </div> --}}
 
                     <div class="d-flex justify-content-start align-items-center gap-1">
-                        <button class="btn bg-success text-white d-flex align-items-center" style="background: #77e779"
-                            wire:click="exportToExcel"> <i class="fa-solid fa-download me-2"></i>
-                            Excel</button>
                         <button class="btn bg-danger text-white d-flex align-items-center" wire:click="exportToPdf"> <i
-                                class="fa-solid fa-download me-2"></i>
+                                class="fa-regular fa-file-pdf"></i>
                             PDF</button>
 
                     </div>
@@ -75,12 +72,12 @@
                             <table class="table table-bordered" style="width:100%;white-space:nowrap">
                                 <thead>
                                     <tr>
-                                        <th>No</th>
-                                        <th>Action</th>
+                                        <th class="text-center" style="width: 3%">No</th>
+                                        <th style="width: 100px;text-align: center">Action</th>
                                         {{-- <th>Produk</th> --}}
-                                        <th>Bahan</th>
-                                        <th>Takaran/jumlah</th>
-                                        <th>Satuan</th>
+                                        <th class="text-center">Bahan</th>
+                                        <th class="text-center">Takaran/Jumlah</th>
+                                        <th class="text-center">Satuan</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -99,7 +96,7 @@
                                         </td>
                                         {{-- <td>{{ $datas->produk_idproduk }}</td> --}}
                                         <td>{{ $datas->bahan->nama ?? '-' }}</td>
-                                        <td>{{ $datas->takaran }}</td>
+                                        <td class="text-end class=" text-center"">{{ $datas->takaran }}</td>
                                         <td>{{ $datas->satuan }}</td>
                                         {{-- <td>{{ $datas->created_at }}</td> --}}
                                         {{-- <td>{{ $datas->updated_at }}</td> --}}

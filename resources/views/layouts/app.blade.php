@@ -1461,10 +1461,10 @@
             border-collapse: collapse;
         }
 
-        thead {
+        /* thead {
             background-color: var(--primary);
-            color: white;
-        }
+            color: rgb(255, 255, 255);
+        } */
 
         th {
             padding: 12px 15px;
