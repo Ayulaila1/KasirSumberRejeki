@@ -59,23 +59,19 @@
                 <span>Laporan</span>
             </a>
 
-            <a href="{{ route('kasir.index') }}"
+            <a href="{{ route('penjualan.index') }}"
                 class="menu-item {{ request()->routeIs('kasir.index') ? 'active' : '' }}">
                 <i class="fas fa-file-invoice-dollar"></i>
                 <span>Kasir</span>
             </a>
 
-            <a href="#" class="menu-item has-submenu">
-                <i class="fas fa-users-cog"></i>
+            <a href="{{ route('pengguna.index') }}" class="menu-item">
+                <i class="fas fa-users-cog{{ request()->routeIs('pengguna.index') ? 'active' : '' }}"></i>
                 <span>Pengguna</span>
             </a>
-            <div class="submenu">
-                <a href="#" class="menu-item">Daftar Pengguna</a>
-                <a href="#" class="menu-item">Tambah Pengguna</a>
-            </div>
 
-            <a href="#" class="menu-item">
-                <i class="fas fa-cog"></i>
+            <a href="{{ route('pengaturan.index') }}" class="menu-item">
+                <i class="fas fa-cog {{ request()->routeIs('pengaturan.index') ? 'active' : '' }}"></i>
                 <span>Pengaturan</span>
             </a>
         </div>
@@ -95,11 +91,12 @@
                     <i class="fas fa-chevron-down"></i>
 
                     <div class="dropdown-menu {{ $showDropdown ? 'show' : '' }}" id="dropdownMenu">
-                        <a href="#" class="dropdown-item">
-                            <i class="fas fa-user"></i> Profil
+                        <a href="{{ route('profil.index') }}" class="dropdown-item">
+                            <i class="fas fa-user {{ request()->routeIs('profil.index') ? 'active' : '' }}"></i> Profil
                         </a>
-                        <a href="#" class="dropdown-item">
-                            <i class="fas fa-cog"></i> Pengaturan
+                        <a href="{{ route('pengaturan.index') }}" class="dropdown-item">
+                            <i class="fas fa-cog {{ request()->routeIs('pengaturan.index') ? 'active' : '' }}"></i>
+                            Pengaturan
                         </a>
                         <a href="#" class="dropdown-item" wire:click="logout">
                             <i class="fas fa-sign-out-alt"></i> Keluar

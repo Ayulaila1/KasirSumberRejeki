@@ -10,6 +10,7 @@ use App\Livewire\KasirComponent;
 use App\Livewire\ProdukComponent;
 use App\Livewire\SupplierComponent;
 use App\Livewire\PembelianComponent;
+use App\Livewire\PenjualanComponent;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\PembeliandtlComponent;
 use App\Livewire\ReturTitipanComponent;
@@ -35,11 +36,8 @@ Route::post('/roarr', [LoginController::class, 'authenticate']);
 Route::middleware('auth')->group(function () {
     // Main Dashboard
     Route::get('/dashboard', AdminDashboard::class)->name('admin.dashboard');
-
     // Other Dashboard Pages
     // Route::get('/produk', ProdukComponent::class)->name('produk.index');
-
-
     Route::get('/penjualan', function () {
         return view('penjualan');
     })->name('penjualan');
@@ -56,6 +54,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/produk', ProdukComponent::class)->name('produk.index');
     Route::get('/supplier', SupplierComponent::class)->name('supplier.index');
     Route::get('/pembelian', PembelianComponent::class)->name('pembelian.index');
+    Route::get('/penjualan', PenjualanComponent::class)->name('penjualan.index');
     Route::get('/kasir', KasirComponent::class)->name('kasir.index');
     Route::get('/bahan', BahanComponent::class)->name('bahan.index');
     Route::get('/returtitipan', ReturTitipanComponent::class)->name('returtitipan.index');
@@ -65,6 +64,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/retur-produk/{idproduk}', ReturTitipanComponent::class)->name('retur.produk');
 
     Route::get('/cetakPembelian/{idPage}', [PembeliandtlComponent::class, 'cetakLaporan'])->name('cetakPembelian');
+
 
 
 
