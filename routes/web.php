@@ -56,7 +56,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/produk', ProdukComponent::class)->name('produk.index');
     Route::get('/supplier', SupplierComponent::class)->name('supplier.index');
     Route::get('/pembelian', PembelianComponent::class)->name('pembelian.index');
-    // Route::get('/penjualan', PenjualanComponent::class)->name('penjualan.index');
+    Route::get('/penjualan', PenjualanComponent::class)->name('penjualan.index');
     Route::get('/kasir', KasirComponent::class)->name('kasir.index');
     Route::get('/bahan', BahanComponent::class)->name('bahan.index');
     Route::get('/returtitipan', ReturTitipanComponent::class)->name('returtitipan.index');
