@@ -10,6 +10,7 @@ use App\Models\Pembelian;
 use Livewire\Attributes\On;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -18,7 +19,7 @@ class PembelianComponent extends Component
 {
     use WithPagination, WithFileUploads;
 
-    public $idpembelian, $tanggal, $supplier_idsupplier, $user_iduser, $total_item, $total_hargabeli, $created_at, $updated_at;
+    public $idpembelian, $tanggal, $supplier_idsupplier, $user_iduser, $created_at, $updated_at;
     public $supplierName;
     public $search = '';
     public $searchlov = '';
@@ -70,8 +71,6 @@ class PembelianComponent extends Component
             'tanggal',
             'supplier_idsupplier',
             'user_iduser',
-            'total_item',
-            'total_hargabeli',
             'created_at',
             'updated_at'
         ]);
@@ -87,8 +86,6 @@ class PembelianComponent extends Component
             'tanggal',
             'supplier_idsupplier',
             'user_iduser',
-            'total_item',
-            'total_hargabeli',
             'created_at',
             'updated_at',
             'isOpen',
@@ -112,8 +109,6 @@ class PembelianComponent extends Component
         $pembelian->tanggal = $this->tanggal;
         $pembelian->supplier_idsupplier = $this->supplier_idsupplier;
         $pembelian->user_iduser = Auth::user()->id;
-        $pembelian->total_item = $this->total_item;
-        $pembelian->total_hargabeli = $this->total_hargabeli;
         $pembelian->status = 'unsaved';
         $pembelian->created_at = $this->created_at;
         $pembelian->updated_at = $this->updated_at;
@@ -137,8 +132,6 @@ class PembelianComponent extends Component
         $this->supplier_idsupplier = $pembelian->supplier_idsupplier;
         $this->supplierName = $pembelian->supplier->nama ?? '-';
         $this->user_iduser = $pembelian->user_iduser;
-        $this->total_hargabeli = $pembelian->total_hargabeli;
-        $this->total_item = $pembelian->total_item;
         $this->created_at = $pembelian->created_at;
         $this->updated_at = $pembelian->updated_at;
 
@@ -153,8 +146,6 @@ class PembelianComponent extends Component
             'tanggal' => 'required',
             'supplier_idsupplier' => 'required',
             'user_iduser' => 'required',
-            // 'total_item' => 'required',
-            // 'total_hargabeli' => 'required',
             //'created_at' => 'required',
             //'updated_at' => 'required',
         ]);
@@ -163,8 +154,6 @@ class PembelianComponent extends Component
         $pembelian->tanggal = $this->tanggal;
         $pembelian->supplier_idsupplier = $this->supplier_idsupplier;
         $pembelian->user_iduser = $this->user_iduser;
-        $pembelian->total_item = $this->total_item;
-        $pembelian->total_hargabeli = $this->total_hargabeli;
         $pembelian->created_at = $this->created_at;
         $pembelian->updated_at = $this->updated_at;
         $pembelian->save();
@@ -212,6 +201,23 @@ class PembelianComponent extends Component
         $supplier = Supplier::find($id);
         $this->supplier_idsupplier = $supplier->idsupplier;
         $this->supplierName = $supplier->nama;
+    }
+
+    public function exportToPdf()
+    {
+        $headers = ['Tanggal', 'Supplier', 'User', 'Total Item', 'Total Harga Beli'];
+        $title = 'Export Data Pembelian';
+        $queryResult = $this->dataPembelian();
+        $data = [];
+        foreach ($queryResult as $result) {
+            $data[] = [$result->tanggal, $result->supplier->nama ?? '-', $result->user->name ?? '-', $result->total_item, $result->total_hargabeli];
+        }
+        $pdf = Pdf::loadView('layouts.pdf_layout', compact('data', 'headers', 'title'));
+
+        $pdf->setPaper('A4', 'portrait');
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->stream();
+        }, 'Pembelian.pdf');
     }
 
     public function dataPembelian()

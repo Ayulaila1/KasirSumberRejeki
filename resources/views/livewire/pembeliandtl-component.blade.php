@@ -67,9 +67,8 @@
                             <i class="fa-regular fa-floppy-disk me-2"></i> Simpan
                         </button>
                         @endif
-
                         <button class="btn bg-danger text-white d-flex align-items-center" wire:click="exportToPdf"> <i
-                                class="fa-solid fa-download me-2"></i>
+                                class="fa-regular fa-file-pdf"></i>
                             PDF</button>
                     </div>
                 </div>
@@ -85,13 +84,13 @@
                             <table class="table table-bordered" style="width:100%;white-space:nowrap">
                                 <thead>
                                     <tr>
-                                        <th>No</th>
-                                        <th>Action</th>
-                                        <th>Bahan</th>
-                                        <th>Jumlah</th>
-                                        <th>Isi Per Satuan/ml</th>
-                                        <th>Harga Beli</th>
-                                        <th>Subtotal</th>
+                                        <th class="text-center" style="width: 3%">No</th>
+                                        <th style="width: 100px;text-align: center">Action</th>
+                                        <th class="text-center">Bahan</th>
+                                        <th class="text-center">Jumlah</th>
+                                        <th class="text-center">Isi Per Satuan/ml</th>
+                                        <th class="text-center">Harga Beli</th>
+                                        <th class="text-center">Subtotal</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -113,13 +112,14 @@
                                         </td>
                                         {{-- <td>{{ $datas->pembelian->pembelian ?? '-' }}</td> --}}
                                         <td>{{ $datas->bahan->nama ?? '-' }}</td>
-                                        <td>{{ $datas->jumlah }}</td>
-                                        <td>{{ $datas->isi_per_satuan}}</td>
-                                        <td>Rp {{ number_format($datas->harga_beli, 0, ',', '.') }}</td>
+                                        <td class="text-end">{{ $datas->jumlah }}</td>
+                                        <td class="text-end">{{ $datas->isi_per_satuan}}</td>
+                                        <td class="text-end">Rp {{ number_format($datas->harga_beli, 0, ',', '.') }}
+                                        </td>
                                         @php
                                         $subtotal = $datas->jumlah * $datas->harga_beli;
                                         @endphp
-                                        <td>Rp {{ number_format($subtotal, 0, ',', '.') }}
+                                        <td class="text-end">Rp {{ number_format($subtotal, 0, ',', '.') }}
                                         </td>
                                         {{-- <td>{{ $datas->created_at }}</td> --}}
                                         {{-- <td>{{ $datas->updated_at }}</td> --}}

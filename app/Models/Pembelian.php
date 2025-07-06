@@ -15,8 +15,6 @@ class Pembelian extends Model
         'tanggal',
         'supplier_idsupplier',
         'user_iduser',
-        'total_item',
-        'total_hargabeli',
         'created_at',
         'updated_at'
     ];
@@ -33,8 +31,6 @@ class Pembelian extends Model
             ->orWhere('tanggal', 'like', "%{$value}%")
             ->orWhere('supplier_idsupplier', 'like', "%{$value}%")
             ->orWhere('user_iduser', 'like', "%{$value}%")
-            ->orWhere('total_item', 'like', "%{$value}%")
-            ->orWhere('total_hargabeli', 'like', "%{$value}%")
             ->orWhere('created_at', 'like', "%{$value}%")
             ->orWhere('updated_at', 'like', "%{$value}%")
         ;

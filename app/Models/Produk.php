@@ -16,7 +16,7 @@ class Produk extends Model
         'nama',
         'image',
         'jenisproduk',
-        'satuan',
+        'kategori',
         'supplier_idsupplier',
         'harga_jual',
         'harga_beli',
@@ -38,7 +38,7 @@ class Produk extends Model
             ->orWhere('nama', 'like', "%{$value}%")
             ->orWhere('image', 'like', "%{$value}%")
             ->orWhere('jenisproduk', 'like', "%{$value}%")
-            ->orWhere('satuan', 'like', "%{$value}%")
+            ->orWhere('kategori', 'like', "%{$value}%")
             ->orWhere('supplier_idsupplier', 'like', "%{$value}%")
             ->orWhere('harga_jual', 'like', "%{$value}%")
             ->orWhere('harga_beli', 'like', "%{$value}%")
@@ -59,6 +59,19 @@ class Produk extends Model
     {
         return $this->hasMany(ProdukRacikan::class, 'produk_idproduk', 'idproduk');
     }
+    public function scopeFilterJenisProduk($query, $value)
+    {
+        if (!empty($value)) {
+            $query->where('jenisproduk', $value);
+        }
+    }
+
+    public function scopeFilterKategori($query, $value)
+    {
+        if (!empty($value)) {
+            $query->where('kategori', $value);
+        }
+    }
 
 
     // public function kategoriproduk()
@@ -66,12 +79,6 @@ class Produk extends Model
     //     return $this->belongsTo(KategoriProduk::class, 'kategoriproduk_idkategoriproduk', 'idkategoriproduk');
     // }
 
-    // public function scopeFilterProduk($query, $value)
-    // {
-    //     if (!empty($value)) {
-    //         $query->where('kategoriproduk_idkategoriproduk', $value);
-    //     }
-    // }
 
     // public function scopeFilterSupplier($query, $value)
     // {

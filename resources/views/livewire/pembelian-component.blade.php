@@ -49,9 +49,8 @@
 
                     <div class="d-flex justify-content-start align-items-center gap-1">
                         <button class="btn bg-danger text-white d-flex align-items-center" wire:click="exportToPdf"> <i
-                                class="fa-solid fa-download me-2"></i>
+                                class="fa-regular fa-file-pdf"></i>
                             PDF</button>
-
                     </div>
                 </div>
             </div>
@@ -68,8 +67,8 @@
                             <table class="table table-bordered" style="width:100%;white-space:nowrap">
                                 <thead>
                                     <tr>
-                                        <th class="text-center">No</th>
-                                        <th class="text-center">Action</th>
+                                        <th class="text-center" style="width: 3%">No</th>
+                                        <th style="width: 100px;text-align: center">Action</th>
                                         {{-- <th>Id Pembelian</th> --}}
                                         <th class="text-center">Status</th>
                                         <th class="text-center">Tanggal</th>
@@ -213,31 +212,6 @@
                         </div>
                     </div> --}}
 
-                    <div class="form-group row mb-3">
-                        <label for="total_item" class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Total
-                            Item</label>
-                        <div class="col-12 col-lg-9">
-                            <input type="text" id="total_item" class="form-control" wire:model="total_item"
-                                placeholder="Masukkan total_item">
-                            @error('total_item')
-                            <span class="text-danger" style="font-size: 11.5px;">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <div class="form-group row mb-3">
-                        <label for="total_hargabeli"
-                            class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Total
-                            Harga Beli</label>
-                        <div class="col-12 col-lg-9">
-                            <input type="text" id="total_hargabeli" class="form-control" wire:model="total_hargabeli"
-                                placeholder="Masukkan total_hargabeli">
-                            @error('total_hargabeli')
-                            <span class="text-danger" style="font-size: 11.5px;">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
-
                     <!-- Tombol Aksi -->
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" wire:click="close">Batal</button>
@@ -304,30 +278,6 @@
                             @enderror
                         </div>
                     </div> --}}
-
-                    <div class="form-group row mb-3">
-                        <label for="total_item" class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Total
-                            Item</label>
-                        <div class="col-12 col-lg-9">
-                            <input type="text" id="total_item" class="form-control" wire:model="total_item"
-                                placeholder="Masukkan total_item">
-                            @error('total_item')
-                            <span class="text-danger" style="font-size: 11.5px;">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="form-group row mb-3">
-                        <label for="total_hargabeli"
-                            class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Total
-                            Harga Beli</label>
-                        <div class="col-12 col-lg-9">
-                            <input type="text" id="total_hargabeli" class="form-control" wire:model="total_hargabeli"
-                                placeholder="Masukkan total_hargabeli">
-                            @error('total_hargabeli')
-                            <span class="text-danger" style="font-size: 11.5px;">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
 
                     <!-- Tombol Aksi -->
                     <div class="modal-footer">

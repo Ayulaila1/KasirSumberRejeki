@@ -9,6 +9,7 @@ use Livewire\Attributes\On;
 use Livewire\WithPagination;
 use App\Models\ProdukRacikan;
 use Livewire\WithFileUploads;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -189,6 +190,23 @@ class ProdukRacikanComponent extends Component
         $bahan = Bahan::find($id);
         $this->bahan_idbahan = $bahan->idbahan;
         $this->bahanName = $bahan->nama;
+    }
+
+    public function exportToPdf()
+    {
+        $headers = ['Bahan', 'Takaran', 'Satuan'];
+        $title = 'Export Data Produk Racikan';
+        $queryResult = $this->dataProdukRacikan();
+        $data = [];
+        foreach ($queryResult as $result) {
+            $data[] = [$result->bahan->nama, $result->takaran, $result->satuan];
+        }
+        $pdf = Pdf::loadView('layouts.pdf_layout', compact('data', 'headers', 'title'));
+
+        $pdf->setPaper('A4', 'portrait');
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->stream();
+        }, 'ProdukRacikan.pdf');
     }
 
     public function dataProdukRacikan()

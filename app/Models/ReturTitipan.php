@@ -1,5 +1,7 @@
 <?php
 namespace App\Models;
+use App\Models\Produk;
+use App\Models\Supplier;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -36,15 +38,15 @@ class ReturTitipan extends Model
         ;
     }
 
-    // public function kategorisupplier()
-    // {
-    //     return $this->belongsTo(Kategorisupplier::class, 'kategorisupplier_idkategorisupplier', 'idkategorisupplier');
-    // }
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class, 'supplier_idsupplier', 'idsupplier');
+    }
 
-    // public function supplier()
-    // {
-    //     return $this->belongsTo(ProdukRacikan::class, 'supplier_idretur_titipan', 'idretur_titipan');
-    // }
+    public function produk()
+    {
+        return $this->belongsTo(Produk::class, 'produk_idproduk', 'idproduk');
+    }
 
     // public function scopeFiltersupplier($query, $value)
     // {

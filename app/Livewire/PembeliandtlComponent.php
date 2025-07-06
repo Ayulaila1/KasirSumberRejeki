@@ -284,22 +284,22 @@ class PembeliandtlComponent extends Component
         ]);
     }
 
-    public function cetakLaporan($idPage)
+    public function exportToPdf()
     {
-        // ambil semua detail pembelian untuk pembelian ini
-        $pembeliandtls = Pembeliandtl::with(['bahan', 'supplier'])
-            ->where('pembelian_idpembelian', $idPage)
-            ->get();
+        $headers = ['Bahan', 'Jumlah', 'Isi per Satuan', 'Harga Beli', 'Subtotal'];
+        $title = 'Export Data Pembeliandtl';
+        $queryResult = $this->dataPembeliandtl();
+        $data = [];
+        foreach ($queryResult as $result) {
+            $data[] = [$result->bahan->nama ?? '-', $result->jumlah, $result->isi_per_satuan, $result->harga_beli, $result->subtotal];
+        }
+        $pdf = Pdf::loadView('layouts.pdf_layout', compact('data', 'headers', 'title'));
 
-        $grandTotal = $pembeliandtls->sum('total');
-
-
-        $pdf = PDF::loadView('layout.cetakPembelian', compact('pembeliandtls', 'grandTotal'))
-            ->setPaper('A4', 'portrait');
-
-        return $pdf->download('Laporan_Pembelian_' . date('d-m-Y') . '.pdf');
+        $pdf->setPaper('A4', 'portrait');
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->stream();
+        }, 'Pembeliandtl.pdf');
     }
-
 
     public function dataPembeliandtl()
     {

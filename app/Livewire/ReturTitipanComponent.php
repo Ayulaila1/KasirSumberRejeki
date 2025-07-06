@@ -10,6 +10,7 @@ use App\Models\ReturTitipan;
 use Livewire\WithPagination;
 use App\Models\ProdukRacikan;
 use Livewire\WithFileUploads;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReturTitipanComponent extends Component
 {
@@ -179,19 +180,54 @@ class ReturTitipanComponent extends Component
     #[On('hapusReturTitipan')]
     public function deleteReturTitipan()
     {
-        $returtitipan = ReturTitipan::where('idretur_titipan', $this->idretur_titipanToDelete)->first();
+        $returtitipan = ReturTitipan::with('produk.produkDetails.bahan')->find($this->idretur_titipanToDelete);
 
         if (!$returtitipan) {
-            $this->dispatch('retur-titipan-error', ['pesan' => 'Produk Racikan tidak ditemukan!']);
+            $this->dispatch('swal', [
+                'title' => 'Gagal!',
+                'text' => 'Data retur tidak ditemukan!',
+                'icon' => 'error'
+            ]);
             return;
+        }
+
+        $produk = $returtitipan->produk;
+
+        // Jika Produk Titipan (tanpa detail racikan)
+        if ($produk && $produk->produkDetails->isEmpty()) {
+            $this->dispatch('swal', [
+                'title' => 'Gagal!',
+                'text' => 'Produk titipan tidak memiliki stok bahan yang tercatat.',
+                'icon' => 'error'
+            ]);
+            return;
+        }
+
+        // Jika Produk Racikan (punya detail racikan)
+        if ($produk) {
+            foreach ($produk->produkDetails as $detail) {
+                if ($detail->bahan) {
+                    $bahan = $detail->bahan;
+                    $bahan->stok += ($detail->takaran * $returtitipan->qty);
+                    $bahan->save();
+                }
+            }
         }
 
         $returtitipan->delete();
         $this->reset('idretur_titipanToDelete');
 
-        $this->dispatch('retur-titipan-disimpan', ['pesan' => 'Produk Racikan berhasil dihapus!']);
+        // ✅ Berhasil hapus dan kembalikan stok → SweetAlert sukses
+        $this->dispatch('swal', [
+            'title' => 'Berhasil!',
+            'text' => 'Retur berhasil dihapus dan stok dikembalikan.',
+            'icon' => 'success'
+        ]);
+
         $this->dispatch('close-retur-titipan-modal');
     }
+
+
 
     #[On('buka-modal-lov-produk')]
     public function bukaModal()
@@ -209,7 +245,7 @@ class ReturTitipanComponent extends Component
 
     public function dataReturTitipan()
     {
-        return ReturTitipan::search($this->search)
+        return ReturTitipan::with(['supplier', 'produk'])->search($this->search)
             ->simplePaginate($this->perPage);
     }
 
@@ -272,8 +308,22 @@ class ReturTitipanComponent extends Component
         session()->flash('success', 'Retur berhasil disimpan!');
     }
 
+    public function exportToPdf()
+    {
+        $headers = ['Tanggal', 'Produk', 'Supplier', 'Jumlah', 'Keterangan'];
+        $title = 'Export Data ReturTitipan';
+        $queryResult = $this->dataReturTitipan();
+        $data = [];
+        foreach ($queryResult as $result) {
+            $data[] = [$result->tanggal, $result->produk->nama ?? '-', $result->supplier->nama ?? '-', $result->qty, $result->keterangan];
+        }
+        $pdf = Pdf::loadView('layouts.pdf_layout', compact('data', 'headers', 'title'));
 
-
+        $pdf->setPaper('A4', 'portrait');
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->stream();
+        }, 'ReturTitipan.pdf');
+    }
 
     public function render()
     {

@@ -23,7 +23,7 @@ class ProdukComponent extends Component
     use WithPagination, WithFileUploads;
     // use LivewireAlert;
 
-    public $idproduk, $nama, $image, $jenisproduk, $satuan = 'pcs', $supplier_idsupplier, $harga_jual, $harga_beli, $tanggal_kedaluwarsa, $stok_minimum, $is_titipan = false, $created_at, $updated_at;
+    public $idproduk, $nama, $image, $jenisproduk, $kategori, $supplier_idsupplier, $harga_jual, $harga_beli, $tanggal_kedaluwarsa, $stok_minimum, $is_titipan = false, $created_at, $updated_at;
     public $supplierName;
     public $search = '';
     public $searchlov = '';
@@ -34,6 +34,19 @@ class ProdukComponent extends Component
     public $isOpen = false;
     public $isEdit = false;
     public $idprodukToDelete;
+    public $selectedJenisProduk;
+    public $selectedKategori;
+
+    public function updatingSelectedJenisProduk()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingSelectedKategori()
+    {
+        $this->resetPage();
+    }
+
 
     public function mount()
     {
@@ -76,7 +89,7 @@ class ProdukComponent extends Component
             'nama',
             'image',
             'jenisproduk',
-            'satuan',
+            'kategori',
             'supplier_idsupplier',
             'harga_jual',
             'harga_beli',
@@ -96,7 +109,7 @@ class ProdukComponent extends Component
             'nama',
             'image',
             'jenisproduk',
-            'satuan',
+            'kategori',
             'supplier_idsupplier',
             'harga_jual',
             'harga_beli',
@@ -131,7 +144,7 @@ class ProdukComponent extends Component
         }
 
         $produk->jenisproduk = $this->jenisproduk;
-        $produk->satuan = $this->satuan;
+        $produk->kategori = $this->kategori;
         $produk->supplier_idsupplier = $this->supplier_idsupplier;
         $produk->harga_jual = $this->harga_jual;
         $produk->harga_beli = $this->harga_beli;
@@ -140,6 +153,8 @@ class ProdukComponent extends Component
         // $produk->is_titipan = $this->is_titipan;
         $produk->is_titipan = strtolower($this->jenisproduk) === 'titipan';
         $produk->save();
+
+        return redirect('/produkracikan/' . $produk->idproduk);
 
         $this->close();
         $this->resetPage('pageLOV');
@@ -155,7 +170,7 @@ class ProdukComponent extends Component
         $this->nama = $produk->nama;
         $this->image = $produk->image;
         $this->jenisproduk = $produk->jenisproduk;
-        $this->satuan = $produk->satuan;
+        $this->kategori = $produk->kategori;
         $this->supplier_idsupplier = $produk->supplier_idsupplier;
         $this->supplierName = $produk->supplier->nama ?? '-';
         $this->harga_jual = $produk->harga_jual;
@@ -177,7 +192,7 @@ class ProdukComponent extends Component
             'nama' => 'required',
             // Jika kamu butuh validasi lainnya tinggal uncomment atau tambah
             // 'jenisproduk' => 'required',
-            // 'satuan' => 'required',
+            // 'kategori' => 'required',
             // 'supplier_idsupplier' => 'required',
             // 'harga_jual' => 'required|numeric',
             // 'harga_beli' => 'required|numeric',
@@ -199,7 +214,7 @@ class ProdukComponent extends Component
         }
 
         $produk->jenisproduk = $this->jenisproduk;
-        $produk->satuan = $this->satuan;
+        $produk->kategori = $this->kategori;
         $produk->supplier_idsupplier = $this->supplier_idsupplier;
         $produk->harga_jual = $this->harga_jual;
         $produk->harga_beli = $this->harga_beli;
@@ -248,12 +263,12 @@ class ProdukComponent extends Component
 
     public function exportToPdf()
     {
-        $headers = ['Nama', 'Jenis Produk', 'Satuan', 'Supplier', 'Harga Jual', 'Harga Beli', 'Tanggal Kedaluwarsa'];
+        $headers = ['Nama', 'Jenis Produk', 'Kategori', 'Supplier', 'Harga Jual', 'Harga Beli', 'Tanggal Kedaluwarsa'];
         $title = 'Export Data Produk';
         $queryResult = $this->dataProduk();
         $data = [];
         foreach ($queryResult as $result) {
-            $data[] = [$result->nama, $result->jenisproduk, $result->satuan, $result->supplier->nama ?? '-', number_format($result->harga_jual, 0, ',', '.'), number_format($result->harga_beli, 0, ',', '.'), $result->tanggal_kedaluwarsa];
+            $data[] = [$result->nama, $result->jenisproduk, $result->kategori, $result->supplier->nama ?? '-', number_format($result->harga_jual, 0, ',', '.'), number_format($result->harga_beli, 0, ',', '.'), $result->tanggal_kedaluwarsa];
         }
         $pdf = Pdf::loadView('layouts.pdf_layout', compact('data', 'headers', 'title'));
 
@@ -281,15 +296,21 @@ class ProdukComponent extends Component
     public function dataProduk()
     {
         return Produk::search($this->search)
+            ->filterJenisProduk($this->selectedJenisProduk)
+            ->filterKategori($this->selectedKategori)
             ->with(['supplier']) // Eager load supplier relationship
             ->simplePaginate($this->perPage);
     }
 
     public function render()
     {
+        $filterJenisProduk = Produk::select('jenisproduk')->distinct()->get();
+        $filterKategori = Produk::select('kategori')->distinct()->get();
 
         return view('livewire.produk-component', [
             'produks' => $this->dataProduk(),
+            'filterJenisProduk' => $filterJenisProduk,
+            'filterKategori' => $filterKategori
         ]);
     }
 }

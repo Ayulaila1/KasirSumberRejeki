@@ -37,16 +37,26 @@
                 <div class="d-lg-flex align-items-center gap-2">
                     {{-- <input type="date" class="form-control" wire:model.live.debounce.300ms="tglstart">
                     <input type="date" class="form-control" wire:model.live.debounce.300ms="tglend"> --}}
-                    {{-- <div>
-                        <select class="form-control" wire:model.live.debounce.300ms="nama_filter ">
-                            <option value="" selected>-- Semua Filter --</option>
-                            Masukan Option Filter disini
+                    <div>
+                        <select class="form-control" wire:model.live.debounce.300ms="selectedJenisProduk">
+                            <option value="" selected>Jenis Produk</option>
+                            @foreach ($filterJenisProduk as $item)
+                            <option value="{{ $item->jenisproduk }}">{{ $item->jenisproduk }}</option>
+                            @endforeach
                         </select>
-                    </div> --}}
+                    </div>
+                    <div>
+                        <select class="form-control" wire:model.live.debounce.300ms="selectedKategori">
+                            <option value="" selected>Kategori</option>
+                            @foreach ($filterKategori as $item)
+                            <option value="{{ $item->kategori }}">{{ $item->kategori }}</option>
+                            @endforeach
+                        </select>
+                    </div>
 
                     <div class="d-flex justify-content-start align-items-center gap-1">
                         <button class="btn bg-danger text-white d-flex align-items-center" wire:click="exportToPdf"> <i
-                                class="fa-solid fa-download me-2"></i>
+                                class="fa-regular fa-file-pdf"></i>
                             PDF</button>
                         <button wire:click="tambahProduk" class="btn btn-primary">
                             <i class="bi bi-plus-lg"></i>
@@ -69,19 +79,19 @@
                             <table class="table table-bordered" style="width:100%;white-space:nowrap">
                                 <thead>
                                     <tr>
-                                        <th>No</th>
-                                        <th>Action</th>
-                                        <th>Nama</th>
-                                        <th>Gambar</th>
-                                        <th>Jenis Produk</th>
-                                        <th>Satuan</th>
+                                        <th class="text-center" style="width: 3%">No</th>
+                                        <th style="width: 100px;text-align: center">Action</th>
+                                        <th class="text-center">Nama</th>
+                                        <th class="text-center">Gambar</th>
+                                        <th class="text-center">Jenis Produk</th>
+                                        <th class="text-center">Kategori</th>
                                         {{-- <th>Stok</th> --}}
-                                        <th>Supplier</th>
-                                        <th>Harga Jual</th>
-                                        <th>Harga Beli</th>
-                                        <th>Tgl Kedaluwarsa</th>
+                                        <th class="text-center">Supplier</th>
+                                        <th class="text-center">Harga Jual</th>
+                                        <th class="text-center">Harga Beli</th>
+                                        <th class="text-center">Tgl Kedaluwarsa</th>
                                         {{-- <th>Stok Minimum</th> --}}
-                                        <th>Barang Titipan</th>
+                                        <th class="text-center">Barang Titipan</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -107,11 +117,13 @@
                                         <td><img src="{{ asset('storage/image-website/' . $datas->image) }}"
                                                 style="max-width: 70px;"></td>
                                         <td>{{ $datas->jenisproduk }}</td>
-                                        <td>{{ $datas->satuan }}</td>
+                                        <td>{{ $datas->kategori }}</td>
                                         {{-- <td>{{ $datas->stok }}</td> --}}
                                         <td>{{ $datas->supplier->nama ?? '-' }}</td>
-                                        <td>Rp {{ number_format($datas->harga_jual, 0, ',', '.') }}</td>
-                                        <td>Rp {{ number_format($datas->harga_beli, 0, ',', '.') }}</td>
+                                        <td class="text-end">Rp {{ number_format($datas->harga_jual, 0, ',', '.') }}
+                                        </td>
+                                        <td class="text-end">Rp {{ number_format($datas->harga_beli, 0, ',', '.') }}
+                                        </td>
                                         <td>{{ $datas->tanggal_kedaluwarsa }}</td>
                                         {{-- <td>{{ $datas->stok_minimum }}</td> --}}
                                         <td class="text-center">
@@ -213,28 +225,23 @@
                         </div>
                     </div>
 
-                    <div class="form-group row mb-3" readonly>
-                        <label for="satuan"
-                            class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Satuan</label>
+                    <div class="form-group row mb-3">
+                        <label for="kategori"
+                            class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Kategori</label>
                         <div class="col-12 col-lg-9">
-                            <input type="text" id="satuan" class="form-control" wire:model="satuan"
-                                placeholder="Masukkan satuan">
-                            @error('satuan')
+                            <select id="kategori" class="form-control" wire:model="kategori">
+                                <option value="">Pilih Kategori</option>
+                                <option value="Makanan">Makanan</option>
+                                <option value="Minuman">Minuman</option>
+                                <option value="Snack">Snack</option>
+                            </select>
+                            @error('kategori')
                             <span class="text-danger" style="font-size: 11.5px;">{{ $message }}</span>
                             @enderror
                         </div>
                     </div>
 
-                    <div class="form-group row mb-3">
-                        <label for="stok" class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Stok</label>
-                        <div class="col-12 col-lg-9">
-                            <input type="text" id="stok" class="form-control" wire:model="stok"
-                                placeholder="Masukkan stok">
-                            @error('stok')
-                            <span class="text-danger" style="font-size: 11.5px;">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
+
 
                     <div class="form-group row mb-3">
                         <label for="supplier_idsupplier"
@@ -365,24 +372,18 @@
                             @error('jenisproduk') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
                     </div>
-                    <div class="form-group row mb-3" readonly>
-                        <label for="satuan"
-                            class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Satuan</label>
-                        <div class="col-12 col-lg-9">
-                            <input type="text" id="satuan" class="form-control" wire:model="satuan"
-                                placeholder="Masukkan satuan">
-                            @error('satuan')
-                            <span class="text-danger" style="font-size: 11.5px;">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
 
                     <div class="form-group row mb-3">
-                        <label for="stok" class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Stok</label>
+                        <label for="kategori"
+                            class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Kategori</label>
                         <div class="col-12 col-lg-9">
-                            <input type="text" id="stok" class="form-control" wire:model="stok"
-                                placeholder="Masukkan stok">
-                            @error('stok')
+                            <select id="kategori" class="form-control" wire:model="kategori">
+                                <option value="">Pilih Kategori</option>
+                                <option value="Makanan">Makanan</option>
+                                <option value="Minuman">Minuman</option>
+                                <option value="Snack">Snack</option>
+                            </select>
+                            @error('kategori')
                             <span class="text-danger" style="font-size: 11.5px;">{{ $message }}</span>
                             @enderror
                         </div>
