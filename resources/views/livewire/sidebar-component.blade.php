@@ -1,5 +1,5 @@
 <div>
-    <div class="sidebar {{ $showSidebar ? 'show' : '' }}" id="sidebar">
+    <div class="sidebar {{ $showSidebar && !request()->routeIs('kasir.index') ? 'show' : '' }}" id="sidebar">
         <div class="sidebar-header">
             <i class="fas fa-mug-hot"></i>
             <h3>Cafe Suki</h3>
@@ -72,18 +72,19 @@
                 <span>Kasir</span>
             </a>
 
-            <div class="submenu">
-                <a href="#" class="menu-item">Daftar Pengguna</a>
-                <a href="#" class="menu-item">Tambah Pengguna</a>
-            </div>
+            <a href="{{ route('pengguna.index') }}" class="menu-item">
+                <i class="fas fa-users-cog{{ request()->routeIs('pengguna.index') ? 'active' : '' }}"></i>
+                <span>Pengguna</span>
+            </a>
 
-            <a href="#" class="menu-item">
-                <i class="fas fa-cog"></i>
+            <a href="{{ route('pengaturan.index') }}" class="menu-item">
+                <i class="fas fa-cog {{ request()->routeIs('pengaturan.index') ? 'active' : '' }}"></i>
                 <span>Pengaturan</span>
             </a>
         </div>
     </div>
-    <div class="main-content {{ $showSidebar ? 'sidebar-open' : '' }}" id="mainContent">
+    <div class="main-content {{ $showSidebar && !request()->routeIs('kasir.index') ? 'sidebar-open' : '' }}"
+        id="mainContent">
         <!-- Top Navigation -->
         <div class="top-nav d-flex align-items-center justify-content-end">
             <button class="toggle-sidebar" wire:click="toggleSidebar">
@@ -97,11 +98,12 @@
                     <i class="fas fa-chevron-down"></i>
 
                     <div class="dropdown-menu {{ $showDropdown ? 'show' : '' }}" id="dropdownMenu">
-                        <a href="#" class="dropdown-item">
-                            <i class="fas fa-user"></i> Profil
+                        <a href="{{ route('profil.index') }}" class="dropdown-item">
+                            <i class="fas fa-user {{ request()->routeIs('profil.index') ? 'active' : '' }}"></i> Profil
                         </a>
-                        <a href="#" class="dropdown-item">
-                            <i class="fas fa-cog"></i> Pengaturan
+                        <a href="{{ route('pengaturan.index') }}" class="dropdown-item">
+                            <i class="fas fa-cog {{ request()->routeIs('pengaturan.index') ? 'active' : '' }}"></i>
+                            Pengaturan
                         </a>
                         <a href="#" class="dropdown-item" wire:click="logout">
                             <i class="fas fa-sign-out-alt"></i> Keluar
@@ -110,7 +112,5 @@
                 </div>
             </div>
         </div>
-
-
     </div>
 </div>

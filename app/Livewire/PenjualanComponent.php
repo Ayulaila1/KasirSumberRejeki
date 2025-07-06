@@ -44,7 +44,7 @@ class PenjualanComponent extends Component
                 'price' => $product->harga_jual ?? 0,
                 'category' => $product->jenisproduk ?? 'Minuman',
                 'image' => $product->image ? asset('storage/' . $product->image) : 'https://via.placeholder.com/150',
-                'stok' => $product->stok
+                'stok' => $product->stok ?? 0
             ];
         })->toArray();
     }
@@ -55,6 +55,12 @@ class PenjualanComponent extends Component
 
         if (!$product)
             return;
+
+        // Check stock availability
+        if (($product['stok'] ?? 0) <= 0) {
+            $this->dispatch('notify', ['type' => 'error', 'message' => 'Stok produk habis']);
+            return;
+        }
 
         $existingItem = collect($this->cart)->firstWhere('id', $productId);
 
@@ -230,11 +236,6 @@ class PenjualanComponent extends Component
             return;
         }
 
-        if (!$this->tableNumber) {
-            $this->dispatch('notify', ['type' => 'error', 'message' => 'Silakan masukkan nomor meja']);
-            return;
-        }
-
         if ($this->selectedPaymentMethod === 'cash') {
             $cashAmount = (float) $this->cashAmount;
             $total = $this->getTotalAmount();
@@ -365,7 +366,7 @@ class PenjualanComponent extends Component
             });
         }
 
-        return view('livewire.penjualan-component', [
+        return view('livewire.kasir-component', [
             'filteredProducts' => $filteredProducts,
             'subtotal' => collect($this->cart)->sum(function ($item) {
                 return $item['price'] * $item['quantity'];
