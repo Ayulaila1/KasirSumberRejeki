@@ -59,7 +59,7 @@
                 <span>Laporan</span>
             </a>
 
-            <a href="{{ route('penjualan.index') }}"
+            <a href="{{ route('kasir.index') }}"
                 class="menu-item {{ request()->routeIs('kasir.index') ? 'active' : '' }}">
                 <i class="fas fa-file-invoice-dollar"></i>
                 <span>Kasir</span>

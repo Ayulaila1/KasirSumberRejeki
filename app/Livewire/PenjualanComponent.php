@@ -366,7 +366,7 @@ class PenjualanComponent extends Component
             });
         }
 
-        return view('livewire.penjualan-component', [
+        return view('livewire.kasir-component', [
             'filteredProducts' => $filteredProducts,
             'subtotal' => collect($this->cart)->sum(function ($item) {
                 return $item['price'] * $item['quantity'];
