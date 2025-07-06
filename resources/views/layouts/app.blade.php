@@ -1067,7 +1067,6 @@
         }
     </style>
 
-
     {{-- STYLE LAINNYA --}}
     <style>
         .content-area-desktop-only {
@@ -1821,7 +1820,6 @@
             }
         }
     </style>
-
 
     {{-- STYLE Pengguna --}}
     <style>
@@ -2983,6 +2981,33 @@
             }
         }
     </style>
+
+
+    {{-- STYLE Tambahan Payment --}}
+    <style>
+        .payment-details {
+            animation: fadeIn 0.5s ease;
+        }
+
+        .payment-details h5 {
+            margin-bottom: 10px;
+            font-size: 15px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .payment-details h5 i {
+            color: var(--secondary);
+        }
+
+        /* Masking untuk input kartu */
+        input[data-mask] {
+            letter-spacing: 1px;
+        }
+    </style>
+
 
     @livewireStyles
 </head>
