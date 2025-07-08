@@ -72,10 +72,10 @@
                 <span>Kasir</span>
             </a>
 
-            <a href="{{ route('pengguna.index') }}" class="menu-item">
+            {{-- <a href="{{ route('pengguna.index') }}" class="menu-item">
                 <i class="fas fa-users-cog{{ request()->routeIs('pengguna.index') ? 'active' : '' }}"></i>
                 <span>Pengguna</span>
-            </a>
+            </a> --}}
 
             <a href="{{ route('pengaturan.index') }}" class="menu-item">
                 <i class="fas fa-cog {{ request()->routeIs('pengaturan.index') ? 'active' : '' }}"></i>

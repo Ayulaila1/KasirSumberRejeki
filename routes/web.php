@@ -16,8 +16,10 @@ use App\Livewire\PembeliandtlComponent;
 use App\Livewire\ReturTitipanComponent;
 use App\Livewire\ProdukRacikanComponent;
 use App\Http\Controllers\LoginController;
+use App\Http\Livewire\ProfilComponent;
 use App\Livewire\LaporanPenjualanComponent;
 use App\Livewire\LaporanPendapatanComponent;
+use App\Livewire\PengaturanComponent;
 
 Route::get('/', function () {
     return redirect('/login_1');
@@ -62,6 +64,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/returtitipan', ReturTitipanComponent::class)->name('returtitipan.index');
     Route::get('/laporan-penjualan', LaporanPenjualanComponent::class)->name('laporan.penjualan');
     Route::get('/laporan-pendapatan', LaporanPendapatanComponent::class)->name('laporan.pendapatan');
+    Route::get('/pengaturan', [PengaturanComponent::class, 'index'])->name('pengaturan.index');
+    Route::get('/profil', [ProfilComponent::class, 'index'])->name('profil.index');
+
 
     Route::get('/produkracikan/{id}', ProdukRacikanComponent::class)->name('produkracikan.index');
     Route::get('/pembeliandtl/{id}', PembeliandtlComponent::class)->name('pembeliandtl.index');
