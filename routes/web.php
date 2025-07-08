@@ -8,9 +8,12 @@ use App\Livewire\BahanComponent;
 use App\Livewire\Dashboard\Main;
 use App\Livewire\KasirComponent;
 use App\Livewire\ProdukComponent;
+use App\Livewire\PenggunaComponent;
 use App\Livewire\SupplierComponent;
 use App\Livewire\PembelianComponent;
 use App\Livewire\PenjualanComponent;
+use App\Livewire\PengaturanComponent;
+// use App\Http\Livewire\ProfilComponent;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\PembeliandtlComponent;
 use App\Livewire\ReturTitipanComponent;
@@ -58,21 +61,19 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/produk', ProdukComponent::class)->name('produk.index');
     Route::get('/supplier', SupplierComponent::class)->name('supplier.index');
     Route::get('/pembelian', PembelianComponent::class)->name('pembelian.index');
-    // Route::get('/penjualan', PenjualanComponent::class)->name('penjualan.index');
+    Route::get('/penjualan', PenjualanComponent::class)->name('penjualan.index');
     Route::get('/kasir', KasirComponent::class)->name('kasir.index');
     Route::get('/bahan', BahanComponent::class)->name('bahan.index');
     Route::get('/returtitipan', ReturTitipanComponent::class)->name('returtitipan.index');
     Route::get('/laporan-penjualan', LaporanPenjualanComponent::class)->name('laporan.penjualan');
     Route::get('/laporan-pendapatan', LaporanPendapatanComponent::class)->name('laporan.pendapatan');
-    Route::get('/pengaturan', [PengaturanComponent::class, 'index'])->name('pengaturan.index');
-    Route::get('/profil', [ProfilComponent::class, 'index'])->name('profil.index');
-
-
     Route::get('/produkracikan/{id}', ProdukRacikanComponent::class)->name('produkracikan.index');
     Route::get('/pembeliandtl/{id}', PembeliandtlComponent::class)->name('pembeliandtl.index');
     Route::get('/retur-produk/{idproduk}', ReturTitipanComponent::class)->name('retur.produk');
-
     Route::get('/cetakPembelian/{idPage}', [PembeliandtlComponent::class, 'cetakLaporan'])->name('cetakPembelian');
+    Route::get('/pengguna', PenggunaComponent::class)->name('pengguna.index');
+    Route::get('/pengaturan', PengaturanComponent::class)->name('pengaturan.index');
+    // Route::get('/profil', ProfilComponent::class)->name('profil.index');
 
 
 

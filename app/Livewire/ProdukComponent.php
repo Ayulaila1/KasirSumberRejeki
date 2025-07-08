@@ -25,6 +25,7 @@ class ProdukComponent extends Component
 
     public $idproduk, $nama, $image, $jenisproduk, $kategori, $supplier_idsupplier, $harga_jual, $harga_beli, $tanggal_kedaluwarsa, $stok_minimum, $is_titipan = false, $created_at, $updated_at;
     public $supplierName;
+    public $jenisproduks;
     public $search = '';
     public $searchlov = '';
     public $tglstart = '';
@@ -50,6 +51,7 @@ class ProdukComponent extends Component
 
     public function mount()
     {
+        $this->jenisproduks = Produk::select('jenisproduk')->distinct()->pluck('jenisproduk');
         $this->tglstart = now()->firstOfMonth()->format('Y-m-d');
         $this->tglend = now()->format('Y-m-d');
         // $this->listSupplier = Supplier::all();

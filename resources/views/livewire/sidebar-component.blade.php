@@ -11,7 +11,7 @@
 
         <div class="sidebar-menu">
             <a href="{{ route('admin.dashboard') }}"
-                class="menu-item {{ $currentPage === 'dashboard' ? 'active' : '' }}">
+                class="menu-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                 <i class="fas fa-tachometer-alt"></i>
                 <span>Dashboard</span>
             </a>
@@ -68,19 +68,25 @@
 
             <a href="{{ route('kasir.index') }}"
                 class="menu-item {{ request()->routeIs('kasir.index') ? 'active' : '' }}">
-                <i class="fas fa-file-invoice-dollar"></i>
+                <i class="fas fa-cash-register"></i>
                 <span>Kasir</span>
             </a>
 
-            {{-- <a href="{{ route('pengguna.index') }}" class="menu-item">
+            <<<<<<<<< Temporary merge branch 1 <a href="{{ route('pengguna.index') }}" class="menu-item">
                 <i class="fas fa-users-cog{{ request()->routeIs('pengguna.index') ? 'active' : '' }}"></i>
                 <span>Pengguna</span>
-            </a> --}}
+                </a>
+                =========
+                <div class="submenu">
+                    <a href="#" class="menu-item">Daftar Pengguna</a>
+                    <a href="#" class="menu-item">Tambah Pengguna</a>
+                </div>
+                >>>>>>>>> Temporary merge branch 2
 
-            <a href="{{ route('pengaturan.index') }}" class="menu-item">
-                <i class="fas fa-cog {{ request()->routeIs('pengaturan.index') ? 'active' : '' }}"></i>
-                <span>Pengaturan</span>
-            </a>
+                <a href="{{ route('pengaturan.index') }}" class="menu-item">
+                    <i class="fas fa-cog {{ request()->routeIs('pengaturan.index') ? 'active' : '' }}"></i>
+                    <span>Pengaturan</span>
+                </a>
         </div>
     </div>
     <div class="main-content {{ $showSidebar && !request()->routeIs('kasir.index') ? 'sidebar-open' : '' }}"
@@ -98,12 +104,11 @@
                     <i class="fas fa-chevron-down"></i>
 
                     <div class="dropdown-menu {{ $showDropdown ? 'show' : '' }}" id="dropdownMenu">
-                        <a href="{{ route('profil.index') }}" class="dropdown-item">
-                            <i class="fas fa-user {{ request()->routeIs('profil.index') ? 'active' : '' }}"></i> Profil
+                        <a href="#" class="dropdown-item {{ request()->routeIs('profil.index') ? 'active' : '' }}">
+                            <i class="fas fa-user"></i> Profil
                         </a>
                         <a href="{{ route('pengaturan.index') }}" class="dropdown-item">
-                            <i class="fas fa-cog {{ request()->routeIs('pengaturan.index') ? 'active' : '' }}"></i>
-                            Pengaturan
+                            <i class="fas fa-cog"></i> Pengaturan
                         </a>
                         <a href="#" class="dropdown-item" wire:click="logout">
                             <i class="fas fa-sign-out-alt"></i> Keluar

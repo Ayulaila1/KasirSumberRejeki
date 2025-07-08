@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use Livewire\Component;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
@@ -45,7 +46,9 @@ class ProfilComponent extends Component
     {
         $this->validate();
 
-        $user = Auth::user();
+        $model = config('auth.providers.users.model');
+        $user = $model::find(Auth::id());
+
         $user->name = $this->name;
         $user->email = $this->email;
 
@@ -58,6 +61,7 @@ class ProfilComponent extends Component
         $this->editMode = false;
         session()->flash('message', 'Profile updated successfully!');
     }
+
 
     public function render()
     {
