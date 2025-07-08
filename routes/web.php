@@ -22,7 +22,6 @@ use App\Http\Controllers\LoginController;
 use App\Http\Livewire\ProfilComponent;
 use App\Livewire\LaporanPenjualanComponent;
 use App\Livewire\LaporanPendapatanComponent;
-use App\Livewire\PengaturanComponent;
 
 Route::get('/', function () {
     return redirect('/login_1');
