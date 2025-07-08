@@ -1,174 +1,43 @@
 <div>
     <div class="pos-container">
-        <!-- Product Section -->
         <div class="product-section">
             <div class="header">
                 <h2><i class="fas fa-mug-hot"></i> Menu Cafe Suki</h2>
                 <div class="search-box">
                     <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Cari menu..." id="search-input">
+                    <input type="text" wire:model.live="search" placeholder="Cari menu..." id="search-input">
                 </div>
             </div>
 
             <div class="category-tabs">
-                <div class="category-tab active" onclick="filterByCategory('Semua')">Semua</div>
-                <div class="category-tab" onclick="filterByCategory('Minuman')"><i class="fas fa-coffee"></i> Minuman
+                @foreach($categories as $category)
+                <div class="category-tab {{ $selectedCategory === $category ? 'active' : '' }}"
+                    wire:click="filterByCategory('{{ $category }}')">
+                    {{ $category }}
                 </div>
-                <div class="category-tab" onclick="filterByCategory('Makanan')"><i class="fas fa-utensils"></i> Makanan
-                </div>
-                <div class="category-tab" onclick="filterByCategory('Snack')"><i class="fas fa-cookie"></i> Snack</div>
-                <div class="category-tab" onclick="filterByCategory('Promo')"><i class="fas fa-tag"></i> Promo</div>
+                @endforeach
             </div>
 
             <div class="product-grid" id="product-grid">
-                <!-- Minuman -->
-                <div class="product-card" data-id="1" data-category="Minuman">
+                @forelse($products as $product)
+                <div class="product-card" wire:click="addToCart('{{ $product->idproduk }}')">
                     <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2FwcHVjY2lub3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60"
-                            alt="Cappuccino">
+                        <img src="{{ $product->image ? asset('storage/image-website/'.$product->image) : 'https://via.placeholder.com/150' }}"
+                            alt="{{ $product->nama }}">
                     </div>
                     <div class="product-info">
-                        <div class="product-name">Cappuccino</div>
-                        <div class="product-price">Rp 25.000</div>
+                        <div class="product-name">{{ $product->nama }}</div>
+                        <div class="product-price">Rp {{ number_format($product->harga_jual, 0, ',', '.') }}</div>
                     </div>
                 </div>
-
-                <div class="product-card" data-id="2" data-category="Minuman">
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1568649929103-28ffbefaca1e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8dGVoJTIwdGFyaWt8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60"
-                            alt="Teh Tarik">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">Teh Tarik</div>
-                        <div class="product-price">Rp 15.000</div>
-                    </div>
+                @empty
+                <div class="w-100 text-center p-5">
+                    <p>Menu tidak ditemukan.</p>
                 </div>
-
-                <div class="product-card" data-id="3" data-category="Minuman">
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2FwcHVjY2lub3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60"
-                            alt="Kopi Susu">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">Kopi Susu</div>
-                        <div class="product-price">Rp 20.000</div>
-                    </div>
-                </div>
-
-                <div class="product-card" data-id="4" data-category="Minuman">
-                    <div class="product-badge">New!</div>
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1551029506-0807df4e2031?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8bWFuZ29qfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60"
-                            alt="Jus Mangga">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">Jus Mangga</div>
-                        <div class="product-price">Rp 18.000</div>
-                    </div>
-                </div>
-
-                <!-- Makanan -->
-                <div class="product-card" data-id="5" data-category="Makanan">
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1630917765361-5e3f8a8a3b0d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fG5hc2klMjBnb3Jlbmd8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60"
-                            alt="Nasi Goreng">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">Nasi Goreng Spesial</div>
-                        <div class="product-price">Rp 30.000</div>
-                    </div>
-                </div>
-
-                <div class="product-card" data-id="6" data-category="Makanan">
-                    <div class="product-badge">Hot!</div>
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bWllJTIwZ29yZW5nfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60"
-                            alt="Mie Goreng">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">Mie Goreng Jawa</div>
-                        <div class="product-price">Rp 28.000</div>
-                    </div>
-                </div>
-
-                <div class="product-card" data-id="7" data-category="Makanan">
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cm90aSUyMGJha2FyfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60"
-                            alt="Roti Bakar">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">Roti Bakar Coklat Keju</div>
-                        <div class="product-price">Rp 22.000</div>
-                    </div>
-                </div>
-
-                <!-- Snack -->
-                <div class="product-card" data-id="8" data-category="Snack">
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8a2VudGFuZyUyMGdvcmVuZ3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60"
-                            alt="Kentang Goreng">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">Kentang Goreng</div>
-                        <div class="product-price">Rp 25.000</div>
-                    </div>
-                </div>
-
-                <div class="product-card" data-id="9" data-category="Snack">
-                    <div class="product-badge">Promo</div>
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1558312651-5b0c0c4a5b0a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cGFuY2FrZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60"
-                            alt="Pancake">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">Pancake Maple</div>
-                        <div class="product-price">Rp 28.000</div>
-                    </div>
-                </div>
-
-                <div class="product-card" data-id="10" data-category="Snack">
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8ZG9udXR8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60"
-                            alt="Donat">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">Donat Glaze</div>
-                        <div class="product-price">Rp 18.000</div>
-                    </div>
-                </div>
-
-                <!-- Promo Items -->
-                <div class="product-card" data-id="11" data-category="Promo">
-                    <div class="product-badge">-20%</div>
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1510626176961-4b57d4fbad03?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8Y2FrZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60"
-                            alt="Red Velvet">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">Red Velvet Cake</div>
-                        <div class="product-price"><span
-                                style="text-decoration: line-through; color: #999; font-size: 13px;">Rp 45.000</span> Rp
-                            36.000</div>
-                    </div>
-                </div>
-
-                <div class="product-card" data-id="12" data-category="Promo">
-                    <div class="product-badge">Combo</div>
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YnVyZ2VyfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60"
-                            alt="Burger">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">Burger + Kentang</div>
-                        <div class="product-price"><span
-                                style="text-decoration: line-through; color: #999; font-size: 13px;">Rp 55.000</span> Rp
-                            45.000</div>
-                    </div>
-                </div>
+                @endforelse
             </div>
         </div>
 
-        <!-- Cart Section -->
         <div class="cart-section">
             <div class="cart-header">
                 <h2><i class="fas fa-shopping-cart"></i> Pesanan</h2>
@@ -177,263 +46,236 @@
             <div class="cart-body">
                 <div class="customer-info">
                     <h4><i class="fas fa-user"></i> Informasi Pelanggan</h4>
-                    <input type="text" class="customer-input" placeholder="Nomor Meja" id="table-number">
-                    <input type="text" class="customer-input" placeholder="Nama Pelanggan (Opsional)"
-                        id="customer-name">
+                    <input type="text" wire:model="tableNumber" class="customer-input" placeholder="Nomor Meja">
+                    <input type="text" wire:model="customerName" class="customer-input"
+                        placeholder="Nama Pelanggan (Opsional)">
                 </div>
 
                 <div class="discount-section">
                     <h4><i class="fas fa-tag"></i> Diskon</h4>
                     <div class="discount-input">
-                        <input type="text" id="discount-code" placeholder="Kode diskon">
-                        <button onclick="applyDiscount()">Terapkan</button>
+                        <input type="text" wire:model="discountCode" placeholder="Kode diskon"
+                            wire:keydown.enter="applyDiscount">
+                        <button wire:click="applyDiscount()">Terapkan</button>
                     </div>
-                    <div id="discount-info"
-                        style="display: none; margin-top: 10px; color: var(--success); font-size: 13px;"></div>
+                    @if (session()->has('discount_info'))
+                    <div
+                        style="margin-top: 10px; color: {{ session('discount_status') === 'success' ? 'var(--success)' : 'var(--danger)' }}; font-size: 13px;">
+                        {{ session('discount_info') }}
+                    </div>
+                    @endif
                 </div>
 
                 <div class="payment-methods-section">
                     <h4><i class="fas fa-credit-card"></i> Metode Pembayaran</h4>
                     <div class="payment-methods">
-                        <div class="payment-method" onclick="selectPaymentMethod('cash')">
+                        <div class="payment-method {{ $paymentMethod === 'cash' ? 'active' : '' }}"
+                            wire:click="selectPaymentMethod('cash')">
                             <i class="fas fa-money-bill-wave"></i>
                             <div>Tunai</div>
                         </div>
-                        <div class="payment-method" onclick="selectPaymentMethod('debit')">
+                        <div class="payment-method {{ $paymentMethod === 'debit' ? 'active' : '' }}"
+                            wire:click="selectPaymentMethod('debit')">
                             <i class="fas fa-credit-card"></i>
                             <div>Kartu Debit</div>
                         </div>
-                        <div class="payment-method" onclick="selectPaymentMethod('credit')">
+                        <div class="payment-method {{ $paymentMethod === 'credit' ? 'active' : '' }}"
+                            wire:click="selectPaymentMethod('credit')">
                             <i class="far fa-credit-card"></i>
                             <div>Kartu Kredit</div>
                         </div>
-                        <div class="payment-method" onclick="selectPaymentMethod('qris')">
+                        <div class="payment-method {{ $paymentMethod === 'qris' ? 'active' : '' }}"
+                            wire:click="selectPaymentMethod('qris')">
                             <i class="fas fa-qrcode"></i>
                             <div>QRIS</div>
                         </div>
-                        <div class="payment-method" onclick="selectPaymentMethod('ewallet')">
+                        <div class="payment-method {{ $paymentMethod === 'ewallet' ? 'active' : '' }}"
+                            wire:click="selectPaymentMethod('ewallet')">
                             <i class="fas fa-wallet"></i>
                             <div>E-Wallet</div>
                         </div>
-                        <div class="payment-method" onclick="selectPaymentMethod('transfer')">
+                        <div class="payment-method {{ $paymentMethod === 'transfer' ? 'active' : '' }}"
+                            wire:click="selectPaymentMethod('transfer')">
                             <i class="fas fa-exchange-alt"></i>
                             <div>Transfer</div>
                         </div>
                     </div>
 
-                    <!-- Form Pembayaran Tunai -->
-                    <div id="cash-payment" class="change-section">
+                    @if($paymentMethod === 'cash')
+                    <div class="change-section">
                         <h5><i class="fas fa-calculator"></i> Pembayaran Tunai</h5>
                         <div class="cash-input">
-                            <input type="number" id="cash-amount" placeholder="Jumlah uang">
-                            <button onclick="calculateChange()">Hitung</button>
+                            <input type="number" wire:model.lazy="cashAmount" placeholder="Jumlah uang">
+                            <button wire:click="calculateChange()">Hitung</button>
                         </div>
-                        <div id="change-result" style="margin-top: 10px; font-size: 14px;"></div>
-                    </div>
-
-                    <!-- Form Kartu Debit/Kredit -->
-                    <div id="card-payment" class="payment-details"
-                        style="display: none; background-color: white; padding: 15px; border-radius: 10px; margin-top: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.05);">
-                        <h5><i class="fas fa-credit-card"></i> Data Kartu</h5>
-                        <input type="text" id="card-number" placeholder="Nomor Kartu" class="customer-input"
-                            style="margin-bottom: 10px;">
-                        <input type="text" id="card-holder" placeholder="Nama Pemegang Kartu" class="customer-input"
-                            style="margin-bottom: 10px;">
-                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                            <input type="text" id="card-expiry" placeholder="MM/YY" class="customer-input"
-                                style="flex: 1;">
-                            <input type="text" id="card-cvv" placeholder="CVV" class="customer-input"
-                                style="width: 80px;">
+                        @if(!is_null($change) && $change >= 0)
+                        <div style="margin-top: 10px; font-size: 14px;">
+                            <strong>Kembalian:</strong> Rp {{ number_format($change, 0, ',', '.') }}
                         </div>
+                        @elseif(!is_null($change) && $change < 0) <div
+                            style="margin-top: 10px; font-size: 14px; color: var(--danger);">
+                            <strong>Uang Kurang:</strong> Rp {{ number_format(abs($change), 0, ',', '.') }}
                     </div>
-
-                    <!-- Form QRIS -->
-                    <div id="qris-payment" class="payment-details"
-                        style="display: none; background-color: white; padding: 15px; border-radius: 10px; margin-top: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.05); text-align: center;">
-                        <h5><i class="fas fa-qrcode"></i> Scan QRIS</h5>
-                        <img src="https://via.placeholder.com/200x200?text=QRIS+Code" alt="QR Code"
-                            style="max-width: 200px; margin: 10px auto; display: block;">
-                        <p style="font-size: 12px; color: #666;">Scan QR code di atas untuk melakukan pembayaran</p>
-                    </div>
-
-                    <!-- Form E-Wallet -->
-                    <div id="ewallet-payment" class="payment-details"
-                        style="display: none; background-color: white; padding: 15px; border-radius: 10px; margin-top: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.05);">
-                        <h5><i class="fas fa-wallet"></i> Data E-Wallet</h5>
-                        <select id="ewallet-type" class="customer-input" style="margin-bottom: 10px;">
-                            <option value="">Pilih E-Wallet</option>
-                            <option value="Gopay">Gopay</option>
-                            <option value="OVO">OVO</option>
-                            <option value="Dana">Dana</option>
-                            <option value="LinkAja">LinkAja</option>
-                            <option value="ShopeePay">ShopeePay</option>
-                        </select>
-                        <input type="text" id="ewallet-number" placeholder="Nomor Telepon" class="customer-input">
-                    </div>
-
-                    <!-- Form Transfer Bank -->
-                    <div id="transfer-payment" class="payment-details"
-                        style="display: none; background-color: white; padding: 15px; border-radius: 10px; margin-top: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.05);">
-                        <h5><i class="fas fa-exchange-alt"></i> Data Transfer</h5>
-                        <select id="bank-name" class="customer-input" style="margin-bottom: 10px;">
-                            <option value="">Pilih Bank</option>
-                            <option value="BCA">BCA</option>
-                            <option value="Mandiri">Mandiri</option>
-                            <option value="BNI">BNI</option>
-                            <option value="BRI">BRI</option>
-                            <option value="CIMB Niaga">CIMB Niaga</option>
-                        </select>
-                        <input type="text" id="account-number" placeholder="Nomor Rekening" class="customer-input">
-                        <div
-                            style="margin-top: 10px; padding: 10px; background-color: #f8f9fa; border-radius: 5px; font-size: 12px;">
-                            <p><strong>Rekening Cafe Suki:</strong></p>
-                            <p>Bank: BCA</p>
-                            <p>No. Rek: 1234567890</p>
-                            <p>Atas Nama: PT Cafe Suki</p>
-                        </div>
+                    @endif
+                </div>
+                @elseif($paymentMethod === 'debit' || $paymentMethod === 'credit')
+                <div class="payment-details">
+                    <h5><i class="fas fa-credit-card"></i> Data Kartu</h5>
+                    <input type="text" wire:model="card_number" placeholder="Nomor Kartu" class="customer-input">
+                    <input type="text" wire:model="card_holder" placeholder="Nama Pemegang Kartu"
+                        class="customer-input">
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" wire:model="card_expiry" placeholder="MM/YY" class="customer-input"
+                            style="flex: 1;">
+                        <input type="text" wire:model="card_cvv" placeholder="CVV" class="customer-input"
+                            style="width: 80px;">
                     </div>
                 </div>
-
-                <div class="notes-section">
-                    <h4><i class="fas fa-sticky-note"></i> Catatan</h4>
-                    <textarea id="order-notes"
-                        placeholder="Catatan untuk pesanan (contoh: pedas, tidak pakai bawang, dll)"></textarea>
+                @elseif($paymentMethod === 'qris')
+                <div class="payment-details" style="text-align: center;">
+                    <h5><i class="fas fa-qrcode"></i> Scan QRIS</h5>
+                    <img src="https://via.placeholder.com/200x200?text=QRIS+Code" alt="QR Code"
+                        style="max-width: 150px; margin: 10px auto; display: block;">
+                    <p style="font-size: 12px; color: #666;">Scan untuk melakukan pembayaran</p>
                 </div>
-
-                <!-- Cart Items -->
-                <div id="cart-items">
-                    <div class="empty-cart">
-                        <i class="fas fa-shopping-cart"></i>
-                        <p>Belum ada pesanan</p>
-                        <p style="font-size: 14px; margin-top: 5px;">Klik item menu untuk menambahkan ke keranjang</p>
+                @elseif($paymentMethod === 'ewallet')
+                <div class="payment-details">
+                    <h5><i class="fas fa-wallet"></i> Data E-Wallet</h5>
+                    <select wire:model="ewallet_type" class="customer-input">
+                        <option value="">Pilih E-Wallet</option>
+                        <option value="Gopay">Gopay</option>
+                        <option value="OVO">OVO</option>
+                        <option value="Dana">Dana</option>
+                    </select>
+                    <input type="text" wire:model="ewallet_number" placeholder="Nomor Telepon" class="customer-input">
+                </div>
+                @elseif($paymentMethod === 'transfer')
+                <div class="payment-details">
+                    <h5><i class="fas fa-exchange-alt"></i> Data Transfer</h5>
+                    <select wire:model="bank_name" class="customer-input">
+                        <option value="">Pilih Bank</option>
+                        <option value="BCA">BCA</option>
+                        <option value="Mandiri">Mandiri</option>
+                    </select>
+                    <input type="text" wire:model="account_number" placeholder="Nomor Rekening Pengirim"
+                        class="customer-input">
+                    <div
+                        style="margin-top: 10px; padding: 10px; background-color: #f8f9fa; border-radius: 5px; font-size: 12px;">
+                        <p><strong>Rekening Cafe Suki:</strong> BCA - 1234567890 (PT Cafe Suki)</p>
                     </div>
                 </div>
+                @endif
             </div>
 
-            <div class="cart-summary">
-                <div class="summary-row">
-                    <span>Subtotal:</span>
-                    <span id="subtotal">Rp 0</span>
-                </div>
-                <div class="summary-row">
-                    <span>Diskon:</span>
-                    <span id="discount-amount">Rp 0</span>
-                </div>
-                <div class="summary-row">
-                    <span>Pajak (10%):</span>
-                    <span id="tax">Rp 0</span>
-                </div>
-                <div class="summary-row total-row">
-                    <span>Total:</span>
-                    <span id="total">Rp 0</span>
-                </div>
+            <div class="notes-section">
+                <h4><i class="fas fa-sticky-note"></i> Catatan</h4>
+                <textarea wire:model="orderNotes" placeholder="Catatan untuk pesanan..."></textarea>
+            </div>
 
-                <div class="action-buttons">
-                    <button class="btn btn-secondary" onclick="clearCart()">
-                        <i class="fas fa-trash"></i> Kosongkan
-                    </button>
-                    <button class="btn btn-warning" onclick="holdOrder()">
-                        <i class="fas fa-pause"></i> Hold
-                    </button>
-                    <button class="btn btn-success" onclick="processPayment()">
-                        <i class="fas fa-print"></i> Bayar
-                    </button>
+            <div class="cart-items">
+                @forelse($cart as $id => $item)
+                <div class="cart-item">
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">{{ $item['name'] }}</div>
+                        <div class="cart-item-price">Rp {{ number_format($item['price'], 0, ',', '.') }}</div>
+                    </div>
+                    <div class="cart-item-controls">
+                        <button wire:click="updateQuantity('{{ $id }}', -1)">-</button>
+                        <span>{{ $item['quantity'] }}</span>
+                        <button wire:click="updateQuantity('{{ $id }}', 1)">+</button>
+                        <button wire:click="removeFromCart('{{ $id }}')"><i class="fas fa-times"></i></button>
+                    </div>
                 </div>
+                @empty
+                <div class="empty-cart">
+                    <i class="fas fa-shopping-cart"></i>
+                    <p>Belum ada pesanan</p>
+                </div>
+                @endforelse
+            </div>
+        </div>
+
+        <div class="cart-summary">
+            <div class="summary-row">
+                <span>Subtotal:</span>
+                <span>Rp {{ number_format($this->getSubtotal(), 0, ',', '.') }}</span>
+            </div>
+            <div class="summary-row">
+                <span>Diskon:</span>
+                <span>Rp {{ number_format($this->getDiscountAmount(), 0, ',', '.') }}</span>
+            </div>
+            <div class="summary-row">
+                <span>Pajak (11%):</span>
+                <span>Rp {{ number_format($this->getTaxAmount(), 0, ',', '.') }}</span>
+            </div>
+            <div class="summary-row total-row">
+                <span>Total:</span>
+                <span>Rp {{ number_format($this->getTotalAmount(), 0, ',', '.') }}</span>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-secondary" wire:click="clearCart()"><i class="fas fa-trash"></i>
+                    Kosongkan</button>
+                <button class="btn btn-warning" wire:click="holdOrder()"><i class="fas fa-pause"></i> Hold</button>
+                <button class="btn btn-success" wire:click="processPayment()"><i class="fas fa-print"></i>
+                    Bayar</button>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Notification badge for held orders -->
-    <div class="notification-badge" id="heldOrdersBadge" style="display: none;" onclick="showHeldOrders()">
-        <i class="fas fa-pause"></i>
-        <span id="heldOrdersCount"
-            style="position: absolute; font-size: 12px; bottom: -5px; right: -5px; background: var(--danger); width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center;"></span>
+@if(count($heldOrders) > 0)
+<div class="notification-badge" wire:click="toggleHeldOrdersModal" style="display: flex; cursor: pointer;">
+    <i class="fas fa-pause"></i>
+    <span style="position: absolute; ...">{{ count($heldOrders) }}</span>
+</div>
+@endif
+
+@if($showHeldOrdersModal)
+<div class="receipt-modal" style="display: flex;">
+    <div class="receipt-content" style="max-width: 500px;">
+        <div class="close-receipt" wire:click="toggleHeldOrdersModal">&times;</div>
+        <div class="receipt-header">
+            <h3><i class="fas fa-pause"></i> Pesanan Tertahan</h3>
+        </div>
+        <div style="max-height: 60vh; overflow-y: auto;">
+            @foreach($heldOrders as $key => $order)
+            <div class="held-order" wire:click="loadHeldOrder('{{ $key }}')"
+                style="padding: 15px; border-bottom: 1px solid #eee; cursor: pointer;">
+                <strong>Meja: {{ $order['tableNumber'] }} ({{ $order['customerName'] }})</strong> - {{
+                count($order['items']) }} item
+            </div>
+            @endforeach
+        </div>
     </div>
+</div>
+@endif
 
-    <!-- Held Orders Modal -->
-    <div class="receipt-modal" id="heldOrdersModal">
-        <div class="receipt-content" style="max-width: 500px;">
-            <div class="close-receipt" onclick="closeHeldOrders()">&times;</div>
-            <div class="receipt-header">
-                <h3><i class="fas fa-pause"></i> Pesanan Tertahan</h3>
-                <p>Daftar pesanan yang sedang dihold</p>
+@if($showReceipt)
+<div class="receipt-modal" style="display: flex;">
+    <div class="receipt-content">
+        <div class="close-receipt" wire:click="closeReceipt">&times;</div>
+        <div class="receipt-header">
+            <h3>Struk Pembayaran</h3>
+            <p>Cafe Suki</p>
+        </div>
+        <div class="receipt-items">
+            @foreach($receiptData['items'] as $item)
+            <div class="receipt-item">
+                <div>{{ $item['name'] }} x{{ $item['quantity'] }}</div>
+                <div>Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}</div>
             </div>
-
-            <div id="held-orders-list" style="max-height: 60vh; overflow-y: auto;">
-                <!-- Held orders will be displayed here -->
-            </div>
-
-            <div class="receipt-footer">
-                <p>Klik pesanan untuk memuatnya kembali ke keranjang</p>
+            @endforeach
+        </div>
+        <div class="receipt-total">
+            <div class="receipt-total-row">
+                <span>Total:</span>
+                <span>Rp {{ number_format($receiptData['total'], 0, ',', '.') }}</span>
             </div>
         </div>
     </div>
-
-    <!-- Receipt Modal -->
-    <div class="receipt-modal" id="receiptModal">
-        <div class="receipt-content">
-            <div class="close-receipt" onclick="closeReceipt()">&times;</div>
-            <div class="receipt-header">
-                <img src="https://via.placeholder.com/200x60?text=Cafe+Suki&font=poppins" alt="Cafe Suki">
-                <h3>Struk Pembayaran</h3>
-                <p>Jl. Contoh No. 123, Kota</p>
-                <p>Telp: 08123456789</p>
-            </div>
-
-            <div class="receipt-details">
-                <div><strong>No. Transaksi:</strong> TRX-<span id="receipt-number"></span></div>
-                <div><strong>Tanggal:</strong> <span id="receipt-date"></span></div>
-                <div><strong>Pelanggan:</strong> <span id="receipt-customer"></span></div>
-                <div><strong>Kasir:</strong> <span id="receipt-cashier">Admin</span></div>
-            </div>
-
-            <div class="receipt-items">
-                <div style="border-bottom: 1px dashed #333; padding-bottom: 5px; margin-bottom: 5px;">
-                    <div style="display: flex; justify-content: space-between;">
-                        <div><strong>Item</strong></div>
-                        <div><strong>Total</strong></div>
-                    </div>
-                </div>
-                <div id="receipt-items-list"></div>
-            </div>
-
-            <div class="receipt-total">
-                <div style="display: flex; justify-content: space-between;">
-                    <div>Subtotal:</div>
-                    <div id="receipt-subtotal"></div>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                    <div>Diskon:</div>
-                    <div id="receipt-discount"></div>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                    <div>Pajak (10%):</div>
-                    <div id="receipt-tax"></div>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-weight: bold;">
-                    <div>Total:</div>
-                    <div id="receipt-total"></div>
-                </div>
-                <div style="display: flex; justify-content: space-between; margin-top: 10px;">
-                    <div>Pembayaran:</div>
-                    <div id="receipt-payment-method"></div>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                    <div>Tunai:</div>
-                    <div id="receipt-cash"></div>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-weight: bold;">
-                    <div>Kembalian:</div>
-                    <div id="receipt-change"></div>
-                </div>
-            </div>
-
-            <div class="receipt-footer">
-                <p>Terima kasih telah berkunjung ke Cafe Suki</p>
-                <p>Barang yang sudah dibeli tidak dapat dikembalikan</p>
-            </div>
-        </div>
-    </div>
+</div>
+@endif
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -1086,7 +928,9 @@
         });
 
         // Search functionality
-        document.getElementById('search-input').addEventListener('input', searchProducts);
+        document.getElementById('search-input').addEventListener('input', function() {
+            @this.set('search', this.value);
+        });
 
         // Set default payment method to cash
         selectPaymentMethod('cash');

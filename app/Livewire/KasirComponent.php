@@ -37,11 +37,11 @@ class KasirComponent extends Component
                 $query->where('nama', 'like', '%' . $this->search . '%');
             })
             ->when($this->selectedCategory !== 'Semua', function ($query) {
-                $query->where('jenisproduk', $this->selectedCategory);
+                $query->where('kategori', $this->selectedCategory);
             })
             ->get();
 
-        $categories = ['Semua', 'racikan', 'sachet', 'Titipan'];
+        $categories = ['Semua'] + Produk::select('kategori')->distinct()->pluck('kategori')->toArray();
 
         $this->updateCartTotals();
 
@@ -74,7 +74,7 @@ class KasirComponent extends Component
                 'name' => $product->nama,
                 'price' => $product->harga_jual ?? 0,
                 'quantity' => 1,
-                'image' => $product->image,
+                'image' => $product->image ? asset('storage/image-website/' . $product->image) : 'https://via.placeholder.com/150',
             ];
         }
 

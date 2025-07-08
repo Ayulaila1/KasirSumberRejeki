@@ -1314,7 +1314,17 @@
         /* Content Area */
         .content-area {
             padding: 20px;
+            margin-left: 0;
+            transition: all 0.3s;
         }
+
+        @media (min-width: 992px) {
+            .content-area {
+                margin-left: 250px;
+                /* Sesuaikan dengan lebar sidebar */
+            }
+        }
+
 
         .page-header {
             display: flex;
@@ -1427,6 +1437,10 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
+            width: 100%;
+            /* Pastikan mengambil lebar penuh */
+            padding: 0;
+            /* Hilangkan padding default jika ada */
         }
 
         .card-icon {
@@ -1780,7 +1794,9 @@
             }
 
             .main-content {
-                margin-right: 250px;
+                margin-right: 0;
+                width: calc(100% - 250px);
+                /* Sesuaikan dengan lebar sidebar */
             }
 
             .toggle-sidebar {
@@ -1818,6 +1834,16 @@
             .form-select {
                 width: 100%;
             }
+        }
+
+        /* Pastikan konten utama tidak terhalang sidebar */
+        .page-header,
+        .card,
+        .form-container,
+        .table-container,
+        .chart-container {
+            width: 100%;
+            margin-right: 0;
         }
     </style>
 
@@ -1934,11 +1960,12 @@
 
         /* Main Content */
         .main-content {
-            margin-left: 250px;
+            width: 100%;
             transition: all 0.3s;
+            margin-right: 0;
         }
 
-        /* Top Navigation */
+        /* Top Navigation X Sidebar */
         .top-nav {
             background-color: white;
             padding: 15px 20px;
@@ -2595,8 +2622,9 @@
 
         /* Main Content */
         .main-content {
-            margin-left: 250px;
+            width: 100%;
             transition: all 0.3s;
+            margin-right: 0;
         }
 
         /* Top Navigation */
@@ -3006,6 +3034,72 @@
         input[data-mask] {
             letter-spacing: 1px;
         }
+    </style>
+
+    {{-- STYLE Tambahan Kasir --}}
+    <style>
+        .pos-container {
+            display: flex;
+            height: 100vh;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .product-section {
+            flex: 3;
+            padding: 20px;
+            background: #f8f9fa;
+            overflow-y: auto;
+        }
+
+        .cart-section {
+            flex: 1;
+            background: white;
+            border-left: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .category-tabs {
+            display: flex;
+            margin: 15px 0;
+            gap: 10px;
+            overflow-x: auto;
+        }
+
+        .category-tab {
+            padding: 8px 15px;
+            background: #e9ecef;
+            border-radius: 20px;
+            cursor: pointer;
+            white-space: nowrap;
+            font-size: 14px;
+        }
+
+        .category-tab.active {
+            background: #7a4b47;
+            color: white;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* ... [CSS lainnya tetap sama] ... */
     </style>
 
 
