@@ -6,7 +6,6 @@ use App\Livewire\Auth\Register;
 use App\Livewire\AdminDashboard;
 use App\Livewire\BahanComponent;
 use App\Livewire\Dashboard\Main;
-<<<<<<< Updated upstream
 use App\Livewire\KasirComponent;
 use App\Livewire\ProdukComponent;
 use App\Livewire\PenggunaComponent;
@@ -14,20 +13,18 @@ use App\Livewire\SupplierComponent;
 use App\Livewire\PembelianComponent;
 use App\Livewire\PenjualanComponent;
 use App\Livewire\PengaturanComponent;
-// use App\Http\Livewire\ProfilComponent;
-=======
-use App\Livewire\ProdukComponent;
-use App\Http\Controllers\Loginpage;
->>>>>>> Stashed changes
 use Illuminate\Support\Facades\Route;
 use App\Livewire\PembeliandtlComponent;
 use App\Livewire\ReturTitipanComponent;
 use App\Livewire\ProdukRacikanComponent;
 use App\Http\Controllers\LoginController;
-<<<<<<< Updated upstream
-use App\Http\Livewire\ProfilComponent;
-use App\Livewire\LaporanPenjualanComponent;
-use App\Livewire\LaporanPendapatanComponent;
+// use App\Http\Livewire\ProfilComponent;
+// use App\Livewire\LaporanPenjualanComponent;
+// use App\Livewire\LaporanPendapatanComponent;
+// use App\Http\Controllers\LoginController;
+// use App\Http\Livewire\ProfilComponent;
+// use App\Livewire\LaporanPenjualanComponent;
+// use App\Livewire\LaporanPendapatanComponent;
 
 Route::get('/', function () {
     return redirect('/login_1');
@@ -79,55 +76,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/pengguna', PenggunaComponent::class)->name('pengguna.index');
     Route::get('/pengaturan', PengaturanComponent::class)->name('pengaturan.index');
     // Route::get('/profil', ProfilComponent::class)->name('profil.index');
-=======
-use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
-// use App\Livewire\Dashboard\Dashboardlayout;
-
-Route::get('/', function () {
-    return redirect('/login_1');
 });
+// dll
 
-Route::get('/login_1', [LoginController::class, 'index'])->name('login');
-
-
-Route::get('/registermiaw', Register::class)->name('registermiaw');
-
-// Route::get('/', HomeFrontend::class)->name('home.frontend');
-// Route::get('/about', AboutFrontend::class)->name('about.frontend');
-// Route::get('/features', FeaturesFrontend::class)->name('features.frontend');
-// Route::get('/team', TeamFrontend::class)->name('team.frontend')rontend');
-// Route::get('/contact', ContactFrontend::class)->name('contact.frontend');
-
-
-;
-// Route::get('/pricing', PricingFrontend::class)->name('pricing.f
-Route::post('/roarr', [LoginController::class, 'authenticate']);
-
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-
-
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    // Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
-    // Route::get('/dashboard', Main::class)->name('dashboard.index');
-    Route::get('/dashboard', Main::class)->name('dashboard');
-    Route::get('/produk', ProdukComponent::class)->name('produk.index');
-
-    // dll
-});
-
-// Route::middleware(['auth', 'role:admin,kasir'])->group(function () {
-//     Route::get('/penjualan', PenjualanComponent::class)->name('penjualan.index');
-// });
-
-
->>>>>>> Stashed changes
-
-
-
-
-
-    // dll
-});
 
 // Optional: Frontend Routes (commented out as per your original)
 // Route::get('/', HomeFrontend::class)->name('home.frontend');
