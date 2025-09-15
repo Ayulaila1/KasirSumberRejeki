@@ -89,7 +89,7 @@
         </div> --}}
 
         <!-- Content Area -->
-        <div class="content-area">
+        <div>
             <!-- Dashboard Page -->
             @if($currentPage === 'dashboard')
             <div id="dashboardPage">

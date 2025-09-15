@@ -56,8 +56,8 @@
             <div class="cart-body">
                 <div class="customer-info">
                     <h4><i class="fas fa-user"></i> Informasi Pelanggan</h4>
-                    <input type="text" wire:model="tableNumber" class="customer-input" placeholder="Nomor Meja">
-                    <input type="text" wire:model="customerName" class="customer-input"
+                    <input type="text" wire:model.live="tableNumber" class="customer-input" placeholder="Nomor Meja">
+                    <input type="text" wire:model.live="customerName" class="customer-input"
                         placeholder="Nama Pelanggan (Opsional)">
                 </div>
 
@@ -69,7 +69,7 @@
 
                 <div class="notes-section">
                     <h4><i class="fas fa-sticky-note"></i> Catatan</h4>
-                    <textarea wire:model="orderNotes" placeholder="Catatan untuk pesanan..."></textarea>
+                    <textarea wire:model.live="orderNotes" placeholder="Catatan untuk pesanan..."></textarea>
                 </div>
 
                 <div class="cart-items">
@@ -143,6 +143,11 @@
             <div class="receipt-header">
                 <h3>Struk Pembayaran</h3>
                 <p>Cafe Suki</p>
+            </div>
+            <div>
+                <div>No. Meja : {{ $tableNumber ?? '-' }}</div>
+                <div>Nama Pelanggan : {{ $customerName ?? '-' }}</div>
+                <div>Catatan : {{ $orderNotes ?? '-' }}</div>
             </div>
             <div class="receipt-items">
                 @foreach($receiptData['items'] as $item)

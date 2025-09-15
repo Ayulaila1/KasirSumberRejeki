@@ -1,4 +1,4 @@
-<div class="content-area">
+<div>
     <!-- Daftar Pengguna -->
     <div id="user-list">
         <div class="page-header">

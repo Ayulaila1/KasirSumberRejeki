@@ -26,7 +26,7 @@ class PenggunaComponent extends Component
 
     public function render()
     {
-        $users = User::latest()->paginate(10);
+        $users = User::orderBy('id', 'asc')->paginate(10);
         return view('livewire.pengguna-component', compact('users'));
     }
 
