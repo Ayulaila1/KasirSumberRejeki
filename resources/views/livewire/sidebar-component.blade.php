@@ -72,21 +72,20 @@
                 <span>Kasir</span>
             </a>
 
-            <<<<<<<<< Temporary merge branch 1 <a href="{{ route('pengguna.index') }}" class="menu-item">
+            <a href="{{ route('pengguna.index') }}" class="menu-item">
                 <i class="fas fa-users-cog{{ request()->routeIs('pengguna.index') ? 'active' : '' }}"></i>
                 <span>Pengguna</span>
-                </a>
-                =========
-                <div class="submenu">
-                    <a href="#" class="menu-item">Daftar Pengguna</a>
-                    <a href="#" class="menu-item">Tambah Pengguna</a>
-                </div>
-                >>>>>>>>> Temporary merge branch 2
+            </a>
 
-                <a href="{{ route('pengaturan.index') }}" class="menu-item">
-                    <i class="fas fa-cog {{ request()->routeIs('pengaturan.index') ? 'active' : '' }}"></i>
-                    <span>Pengaturan</span>
-                </a>
+            <div class="submenu">
+                <a href="#" class="menu-item">Daftar Pengguna</a>
+                <a href="#" class="menu-item">Tambah Pengguna</a>
+            </div>
+
+            <a href="{{ route('pengaturan.index') }}" class="menu-item">
+                <i class="fas fa-cog {{ request()->routeIs('pengaturan.index') ? 'active' : '' }}"></i>
+                <span>Pengaturan</span>
+            </a>
         </div>
     </div>
     <div class="main-content {{ $showSidebar && !request()->routeIs('kasir.index') ? 'sidebar-open' : '' }}"

@@ -2,12 +2,13 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
 use App\Models\Produk;
+use Livewire\Component;
 use App\Models\Penjualan;
-use App\Models\PenjualanDtl;
 use Illuminate\Support\Str;
+use App\Models\PenjualanDtl;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class KasirComponent extends Component
 {
@@ -19,14 +20,14 @@ class KasirComponent extends Component
     public $paymentMethod = 'cash';
     public $cashAmount = 0;
     public $change = 0;
-    public $discountCode = '';
-    public $discount = 0;
-    public $discountType = 'amount'; // 'amount' atau 'percentage'
+    // public $discountCode = '';
+    // public $discount = 0;
+    // public $discountType = 'amount'; // 'amount' atau 'percentage'
     public $notes = '';
     public $showReceipt = false;
     public $receiptData = [];
-    public $heldOrders = [];
-    public $showHeldOrdersModal = false;
+    // public $heldOrders = [];
+    // public $showHeldOrdersModal = false;
 
     protected $listeners = ['produkDipilih' => 'addToCart'];
 
@@ -48,7 +49,7 @@ class KasirComponent extends Component
         return view('livewire.kasir-component', [
             'products' => $products,
             'categories' => $categories,
-        ]);
+        ])->layout('layouts.kasirlayout');
     }
 
     public function addToCart($productId)
@@ -74,33 +75,27 @@ class KasirComponent extends Component
                 'name' => $product->nama,
                 'price' => $product->harga_jual ?? 0,
                 'quantity' => 1,
-                'image' => $product->image ? asset('storage/image-website/' . $product->image) : 'https://via.placeholder.com/150',
             ];
         }
 
         $this->dispatch('cartUpdated');
     }
 
-    public function removeFromCart($productId)
-    {
-        $this->cart = collect($this->cart)->reject(function ($item) use ($productId) {
-            return $item['id'] == $productId;
-        })->values()->toArray();
 
-        $this->dispatch('cartUpdated');
+    public function updateQty($productId, $delta = 1)
+    {
+        if (isset($this->cart[$productId])) {
+            $this->cart[$productId]['quantity'] += $delta;
+
+            if ($this->cart[$productId]['quantity'] < 1) {
+                unset($this->cart[$productId]);
+            }
+        }
     }
 
-    public function updateQuantity($productId, $change)
+    public function removeItem($productId)
     {
-        $this->cart = collect($this->cart)->map(function ($item) use ($productId, $change) {
-            if ($item['id'] == $productId) {
-                $newQuantity = $item['quantity'] + $change;
-                $item['quantity'] = max(1, $newQuantity);
-            }
-            return $item;
-        })->toArray();
-
-        $this->dispatch('cartUpdated');
+        unset($this->cart[$productId]);
     }
 
     public function setQuantity($productId, $quantity)
@@ -117,52 +112,19 @@ class KasirComponent extends Component
         $this->dispatch('cartUpdated');
     }
 
-    public function clearCart()
-    {
-        if (empty($this->cart)) {
-            return;
-        }
-
-        $this->cart = [];
-        $this->discount = 0;
-        $this->discountCode = '';
-        $this->dispatch('cartUpdated');
-    }
-
     public function filterByCategory($category)
     {
         $this->selectedCategory = $category;
     }
 
-    public function selectPaymentMethod($method)
-    {
-        $this->paymentMethod = $method;
-    }
-
-    public function applyDiscount()
-    {
-        // Contoh logika diskon sederhana
-        if ($this->discountCode === 'DISKON10') {
-            $this->discount = 10;
-            $this->discountType = 'percentage';
-            $this->dispatch('showAlert', 'Diskon 10% berhasil diterapkan', 'success');
-        } elseif ($this->discountCode === 'DISKON5K') {
-            $this->discount = 5000;
-            $this->discountType = 'amount';
-            $this->dispatch('showAlert', 'Diskon Rp 5.000 berhasil diterapkan', 'success');
-        } elseif ($this->discountCode) {
-            $this->dispatch('showAlert', 'Kode diskon tidak valid', 'danger');
-            $this->discount = 0;
-        } else {
-            $this->discount = 0;
-        }
-
-        $this->updateCartTotals();
-    }
+    // public function selectPaymentMethod($method)
+    // {
+    //     $this->paymentMethod = $method;
+    // }
 
     public function calculateChange()
     {
-        $total = $this->getTotalAmount();
+        $total = $this->getTotal();
         $cash = floatval($this->cashAmount);
 
         if ($cash >= $total) {
@@ -173,81 +135,35 @@ class KasirComponent extends Component
         }
     }
 
-    public function holdOrder()
-    {
-        if (empty($this->cart)) {
-            $this->dispatch('showAlert', 'Tidak ada pesanan untuk dihold', 'danger');
-            return;
-        }
-
-        if (empty($this->tableNumber)) {
-            $this->dispatch('showAlert', 'Silakan masukkan nomor meja', 'danger');
-            return;
-        }
-
-        $this->heldOrders[] = [
-            'id' => uniqid(),
-            'table' => $this->tableNumber,
-            'customer' => $this->customerName,
-            'items' => $this->cart,
-            'time' => now()->format('H:i:s'),
-            'subtotal' => $this->getSubtotal(),
-        ];
-
-        $this->clearCart();
-        $this->dispatch('showAlert', 'Pesanan berhasil dihold', 'success');
-    }
-
-    public function loadHeldOrder($index)
-    {
-        if (isset($this->heldOrders[$index])) {
-            $order = $this->heldOrders[$index];
-
-            $this->tableNumber = $order['table'];
-            $this->customerName = $order['customer'];
-            $this->cart = $order['items'];
-
-            // Remove from held orders
-            unset($this->heldOrders[$index]);
-            $this->heldOrders = array_values($this->heldOrders);
-
-            $this->showHeldOrdersModal = false;
-            $this->dispatch('cartUpdated');
-            $this->dispatch('showAlert', 'Pesanan berhasil dimuat ke keranjang', 'success');
-        }
-    }
-
     public function processPayment()
     {
-        if (empty($this->cart)) {
-            $this->dispatch('showAlert', 'Keranjang kosong, tidak ada yang dibayar', 'danger');
-            return;
-        }
+        // dd("test");
+        // if (empty($this->cart)) {
+        //     $this->dispatch('showAlert', 'Keranjang kosong, tidak ada yang dibayar', 'danger');
+        //     return;
+        // }
 
-        if (empty($this->paymentMethod)) {
-            $this->dispatch('showAlert', 'Silakan pilih metode pembayaran', 'danger');
-            return;
-        }
+        // if (empty($this->tableNumber)) {
+        //     $this->dispatch('showAlert', 'Silakan masukkan nomor meja', 'danger');
+        //     return;
+        // }
 
-        if (empty($this->tableNumber)) {
-            $this->dispatch('showAlert', 'Silakan masukkan nomor meja', 'danger');
-            return;
-        }
+        // if ($this->cashAmount < $this->getTotal()) {
+        //     $this->dispatch('showAlert', 'Jumlah uang tunai kurang', 'danger');
+        //     return;
+        // }
 
-        if ($this->paymentMethod === 'cash' && $this->cashAmount < $this->getTotalAmount()) {
-            $this->dispatch('showAlert', 'Jumlah uang tunai kurang', 'danger');
-            return;
-        }
+        try {
+            DB::beginTransaction();
 
-        DB::transaction(function () {
             // Buat penjualan
             $penjualan = Penjualan::create([
                 'kode_penjualan' => 'TRX-' . now()->format('Ymd') . '-' . Str::random(4),
                 'tanggal' => now()->format('Y-m-d'),
-                'total' => $this->getTotalAmount(),
-                'bayar' => $this->paymentMethod === 'cash' ? $this->cashAmount : $this->getTotalAmount(),
-                'kembalian' => $this->paymentMethod === 'cash' ? $this->change : 0,
-                'user_id' => auth()->id(),
+                'total' => $this->getTotal(),
+                'bayar' => $this->cashAmount,
+                'kembalian' => $this->cashAmount - $this->getTotal(),
+                'user_id' => Auth::user()->id,
             ]);
 
             // Buat detail penjualan
@@ -260,31 +176,53 @@ class KasirComponent extends Component
                     'subtotal' => $item['price'] * $item['quantity'],
                 ]);
 
-                // Update stok produk jika perlu
-                // ...
+                // Tambahkan logika pengurangan stok jika perlu
+
+                $produk = Produk::where('idproduk', $item['id'])->first();
+
+
+                // Jika racikan, ambil bahan-bahannya
+                $bahanList = DB::table('produk_racikans')
+                    ->where('produk_idproduk', $produk->idproduk)
+                    ->get();
+
+                foreach ($bahanList as $bahan) {
+                    // Hitung stok yang harus dikurangkan = jumlah * takaran
+                    $jumlahBahan = $item['quantity'] * $bahan->takaran;
+
+                    DB::table('bahans')
+                        ->where('idbahan', $bahan->bahan_idbahan)
+                        ->decrement('stok', $jumlahBahan);
+                }
+
             }
 
-            // Set receipt data
+            DB::commit(); // Simpan transaksi
+
+            // Siapkan data struk
             $this->receiptData = [
                 'number' => $penjualan->kode_penjualan,
                 'date' => now()->format('d/m/Y H:i:s'),
                 'customer' => $this->customerName ?: '-',
                 'table' => $this->tableNumber,
                 'items' => $this->cart,
-                'subtotal' => $this->getSubtotal(),
-                'discount' => $this->getDiscountAmount(),
-                'tax' => $this->getTaxAmount(),
-                'total' => $this->getTotalAmount(),
-                'paymentMethod' => $this->getPaymentMethodName(),
-                'cash' => $this->paymentMethod === 'cash' ? $this->cashAmount : 0,
-                'change' => $this->paymentMethod === 'cash' ? $this->change : 0,
+                'subtotal' => $this->getTotal(),
+                'total' => $this->getTotal(),
+                'paymentMethod' => 'Tunai',
+                'cash' => $this->cashAmount,
+                'change' => $this->cashAmount - $this->getTotal(),
             ];
 
             $this->showReceipt();
-        });
+            $this->clearCart();
 
-        $this->clearCart();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            logger()->error('Gagal memproses pembayaran: ' . $e->getMessage());
+            $this->dispatch('showAlert', 'Terjadi kesalahan saat memproses pembayaran.', 'danger');
+        }
     }
+
 
     public function showReceipt()
     {
@@ -296,44 +234,21 @@ class KasirComponent extends Component
         $this->showReceipt = false;
     }
 
-    public function toggleHeldOrdersModal()
-    {
-        $this->showHeldOrdersModal = !$this->showHeldOrdersModal;
-    }
-
     protected function updateCartTotals()
     {
         $this->dispatch('updateCartTotals', [
-            'subtotal' => $this->getSubtotal(),
-            'discount' => $this->getDiscountAmount(),
-            'tax' => $this->getTaxAmount(),
-            'total' => $this->getTotalAmount(),
+            'subtotal' => $this->getTotal(),
+            // 'discount' => $this->getDiscountAmount(),
+            // 'tax' => $this->getTaxAmount(),
+            'total' => $this->getTotal(),
         ]);
     }
 
-    protected function getSubtotal()
+    public function getTotal()
     {
         return collect($this->cart)->sum(function ($item) {
             return $item['price'] * $item['quantity'];
         });
-    }
-
-    protected function getDiscountAmount()
-    {
-        if ($this->discountType === 'percentage') {
-            return $this->getSubtotal() * ($this->discount / 100);
-        }
-        return $this->discount;
-    }
-
-    protected function getTaxAmount()
-    {
-        return ($this->getSubtotal() - $this->getDiscountAmount()) * 0.1; // Pajak 10%
-    }
-
-    protected function getTotalAmount()
-    {
-        return ($this->getSubtotal() - $this->getDiscountAmount()) + $this->getTaxAmount();
     }
 
     protected function getPaymentMethodName()
@@ -349,4 +264,102 @@ class KasirComponent extends Component
 
         return $methods[$this->paymentMethod] ?? 'Unknown';
     }
+
+    // public function removeFromCart($productId)
+    // {
+    //     $this->cart = collect($this->cart)->reject(function ($item) use ($productId) {
+    //         return $item['id'] == $productId;
+    //     })->values()->toArray();
+
+    //     $this->dispatch('cartUpdated');
+    // }
+
+    // public function clearCart()
+    // {
+    //     if (empty($this->cart)) {
+    //         return; //
+    //     }
+
+    //     $this->cart = [];
+    //     $this->discount = 0;
+    //     $this->discountCode = '';
+    //     // $this->dispatch('cartUpdated');
+    // }
+
+    // public function applyDiscount()
+    // {
+    //     // Contoh logika diskon sederhana
+    //     if ($this->discountCode === 'DISKON10') {
+    //         $this->discount = 10;
+    //         $this->discountType = 'percentage';
+    //         $this->dispatch('showAlert', 'Diskon 10% berhasil diterapkan', 'success');
+    //     } elseif ($this->discountCode === 'DISKON5K') {
+    //         $this->discount = 5000;
+    //         $this->discountType = 'amount';
+    //         $this->dispatch('showAlert', 'Diskon Rp 5.000 berhasil diterapkan', 'success');
+    //     } elseif ($this->discountCode) {
+    //         $this->dispatch('showAlert', 'Kode diskon tidak valid', 'danger');
+    //         $this->discount = 0;
+    //     } else {
+    //         $this->discount = 0;
+    //     }
+
+    //     $this->updateCartTotals();
+    // }
+
+    // public function holdOrder()
+    // {
+    //     if (empty($this->cart)) {
+    //         $this->dispatch('showAlert', 'Tidak ada pesanan untuk dihold', 'danger');
+    //         return;
+    //     }
+
+    //     if (empty($this->tableNumber)) {
+    //         $this->dispatch('showAlert', 'Silakan masukkan nomor meja', 'danger');
+    //         return;
+    //     }
+
+    //     $this->heldOrders[] = [
+    //         'id' => uniqid(),
+    //         'table' => $this->tableNumber,
+    //         'customer' => $this->customerName,
+    //         'items' => $this->cart,
+    //         'time' => now()->format('H:i:s'),
+    //         'subtotal' => $this->getTotal(),
+    //     ];
+
+    //     $this->clearCart();
+    //     $this->dispatch('showAlert', 'Pesanan berhasil dihold', 'success');
+    // }
+
+    // public function loadHeldOrder($index)
+    // {
+    //     if (isset($this->heldOrders[$index])) {
+    //         $order = $this->heldOrders[$index];
+
+    //         $this->tableNumber = $order['table'];
+    //         $this->customerName = $order['customer'];
+    //         $this->cart = $order['items'];
+
+    //         // Remove from held orders
+    //         unset($this->heldOrders[$index]);
+    //         $this->heldOrders = array_values($this->heldOrders);
+
+    //         $this->showHeldOrdersModal = false;
+    //         $this->dispatch('cartUpdated');
+    //         $this->dispatch('showAlert', 'Pesanan berhasil dimuat ke keranjang', 'success');
+    //     }
+    // }
+
+    // public function toggleHeldOrdersModal()
+    // {
+    //     $this->showHeldOrdersModal = !$this->showHeldOrdersModal;
+    // }
+
+    // public function getTotal()
+    // {
+    //     return $this->getTotal();
+
+    // }
 }
+

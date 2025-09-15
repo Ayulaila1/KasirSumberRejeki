@@ -18,6 +18,8 @@ use App\Livewire\PembeliandtlComponent;
 use App\Livewire\ReturTitipanComponent;
 use App\Livewire\ProdukRacikanComponent;
 use App\Http\Controllers\LoginController;
+use App\Livewire\LaporanPenjualanComponent;
+use App\Livewire\LaporanPendapatanComponent;
 // use App\Http\Livewire\ProfilComponent;
 // use App\Livewire\LaporanPenjualanComponent;
 // use App\Livewire\LaporanPendapatanComponent;
