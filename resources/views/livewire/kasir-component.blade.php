@@ -127,8 +127,8 @@
 
                     <!-- Tombol Bayar -->
                     <div class="action-buttons mt-3">
-                        <button class="btn btn-success w-100" wire:click="processPayment()">
-                            <i class="fas fa-print"></i> Bayar
+                        <button class="btn btn-success w-100" wire:click="openConfirmModal()">
+                            <i class="fas fa-money-bill"></i> Bayar
                         </button>
                     </div>
                 </div>
@@ -166,6 +166,53 @@
         </div>
     </div>
     @endif
+
+    @if($showConfirmModal)
+    <div class="modal d-flex justify-content-center align-items-center"
+        style="display:flex; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+        <div class="modal-content bg-white p-4 rounded shadow" style="min-width:300px; max-width:400px;">
+            <h4 class="mb-3">Konfirmasi Pembayaran</h4>
+            <p>Total: <strong>Rp {{ number_format($this->getTotal(), 0, ',', '.') }}</strong></p>
+            <div class="d-flex justify-content-end gap-2">
+                <button class="btn btn-secondary" wire:click="$set('showConfirmModal', false)">Batal</button>
+                <button class="btn btn-primary" wire:click="confirmPayment()">Konfirmasi</button>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    @if($showReceipt)
+    <div class="receipt-modal" style="display: flex;">
+        <div class="receipt-content">
+            <div class="close-receipt" wire:click="closeReceipt">&times;</div>
+            <div class="receipt-header">
+                <h3>Struk Pembayaran</h3>
+                <p>Cafe Suki</p>
+            </div>
+            <div>
+                <div>No. Meja : {{ $tableNumber ?? '-' }}</div>
+                <div>Nama Pelanggan : {{ $customerName ?? '-' }}</div>
+                <div>Catatan : {{ $notes ?? '-' }}</div>
+            </div>
+            <div class="receipt-items">
+                @foreach($receiptData['items'] as $item)
+                <div class="receipt-item">
+                    <div>{{ $item['name'] }} x {{ $item['quantity'] }}</div>
+                    <div>Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}</div>
+                </div>
+                @endforeach
+            </div>
+            <div class="receipt-total">
+                <div class="receipt-total-row">
+                    <span>Total:</span>
+                    <span>Rp {{ number_format($receiptData['total'], 0, ',', '.') }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
