@@ -136,7 +136,7 @@
         </div>
     </div>
 
-    @if($showReceipt)
+    {{-- @if($showReceipt)
     <div class="receipt-modal" style="display: flex;">
         <div class="receipt-content">
             <div class="close-receipt" wire:click="closeReceipt">&times;</div>
@@ -148,6 +148,39 @@
                 <div>No. Meja : {{ $tableNumber ?? '-' }}</div>
                 <div>Nama Pelanggan : {{ $customerName ?? '-' }}</div>
                 <div>Catatan : {{ $orderNotes ?? '-' }}</div>
+            </div>
+            <div class="receipt-items">
+                @foreach($receiptData['items'] as $item)
+                <div class="receipt-item">
+                    <div>{{ $item['name'] }} x {{ $item['quantity'] }}</div>
+                    <div>Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}</div>
+                </div>
+                @endforeach
+            </div>
+            <div class="receipt-total">
+                <div class="receipt-total-row">
+                    <span>Total:</span>
+                    <span>Rp {{ number_format($receiptData['total'], 0, ',', '.') }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif --}}
+
+    {{-- Modal --}}
+
+    @if($showReceipt)
+    <div class="receipt-modal" style="display: flex;">
+        <div class="receipt-content">
+            <div class="close-receipt" wire:click="closeReceipt">&times;</div>
+            <div class="receipt-header">
+                <h3>Struk Pembayaran</h3>
+                <p>Cafe Suki</p>
+            </div>
+            <div>
+                <div>No. Meja : {{ $tableNumber ?? '-' }}</div>
+                <div>Nama Pelanggan : {{ $customerName ?? '-' }}</div>
+                <div>Catatan : {{ $notes ?? '-' }}</div>
             </div>
             <div class="receipt-items">
                 @foreach($receiptData['items'] as $item)
@@ -181,36 +214,7 @@
     </div>
     @endif
 
-    @if($showReceipt)
-    <div class="receipt-modal" style="display: flex;">
-        <div class="receipt-content">
-            <div class="close-receipt" wire:click="closeReceipt">&times;</div>
-            <div class="receipt-header">
-                <h3>Struk Pembayaran</h3>
-                <p>Cafe Suki</p>
-            </div>
-            <div>
-                <div>No. Meja : {{ $tableNumber ?? '-' }}</div>
-                <div>Nama Pelanggan : {{ $customerName ?? '-' }}</div>
-                <div>Catatan : {{ $notes ?? '-' }}</div>
-            </div>
-            <div class="receipt-items">
-                @foreach($receiptData['items'] as $item)
-                <div class="receipt-item">
-                    <div>{{ $item['name'] }} x {{ $item['quantity'] }}</div>
-                    <div>Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}</div>
-                </div>
-                @endforeach
-            </div>
-            <div class="receipt-total">
-                <div class="receipt-total-row">
-                    <span>Total:</span>
-                    <span>Rp {{ number_format($receiptData['total'], 0, ',', '.') }}</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    @endif
+
 
 
 </div>

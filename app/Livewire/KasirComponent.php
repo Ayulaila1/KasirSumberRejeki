@@ -35,53 +35,60 @@ class KasirComponent extends Component
     protected function printReceipt($receiptData)
     {
         try {
-            // Ganti "POS-58" dengan nama printer thermal di Windows
-            // kalau di Linux pakai: new FilePrintConnector("/dev/usb/lp0")
-            $connector = new WindowsPrintConnector("POS-58");
+            // === KONEKSI PRINTER ===
+            $connector = new WindowsPrintConnector("POS-58"); // ganti nama printer sesuai yg ada di Devices & Printers
             $printer = new Printer($connector);
 
-            // Header toko
+            // === HEADER TOKO ===
             $printer->setJustification(Printer::JUSTIFY_CENTER);
             $printer->setEmphasis(true);
             $printer->text("Cafe Suki\n");
             $printer->setEmphasis(false);
             $printer->text("Jl. Contoh Alamat No. 123\n");
             $printer->text("Telp: 0812-3456-7890\n");
-            $printer->feed();
+            $printer->text("==============================\n");
 
-            // Info transaksi
+            // === INFO TRANSAKSI ===
             $printer->setJustification(Printer::JUSTIFY_LEFT);
-            $printer->text("No. Transaksi : " . $receiptData['number'] . "\n");
-            $printer->text("Tanggal       : " . $receiptData['date'] . "\n");
-            $printer->text("Meja          : " . $receiptData['table'] . "\n");
-            $printer->text("Pelanggan     : " . $receiptData['customer'] . "\n");
-            $printer->text("--------------------------------\n");
+            $printer->text("No. Trx : " . $receiptData['number'] . "\n");
+            $printer->text("Tanggal : " . $receiptData['date'] . "\n");
+            $printer->text("Meja    : " . $receiptData['table'] . "\n");
+            $printer->text("Pelanggan: " . $receiptData['customer'] . "\n");
+            $printer->text("------------------------------\n");
 
-            // Daftar item
+            // === ITEM LIST ===
             foreach ($receiptData['items'] as $item) {
+                // Nama produk
+                $printer->setJustification(Printer::JUSTIFY_LEFT);
+                $printer->text($item['name'] . "\n");
+
+                // Qty x Harga
                 $line = sprintf(
-                    "%-15s x%-3s Rp%s",
-                    $item['name'],
+                    "  %2s x %-8s Rp %s",
                     $item['quantity'],
+                    number_format($item['price'], 0, ',', '.'),
                     number_format($item['price'] * $item['quantity'], 0, ',', '.')
                 );
                 $printer->text($line . "\n");
             }
 
-            $printer->text("--------------------------------\n");
+            $printer->text("------------------------------\n");
 
-            // Total
+            // === TOTAL & PEMBAYARAN ===
             $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text("Total     : Rp " . number_format($receiptData['total'], 0, ',', '.') . "\n");
-            $printer->text("Bayar     : Rp " . number_format($receiptData['cash'], 0, ',', '.') . "\n");
-            $printer->text("Kembali   : Rp " . number_format($receiptData['change'], 0, ',', '.') . "\n");
-            $printer->feed(2);
+            $printer->setEmphasis(true);
+            $printer->text("TOTAL : Rp " . number_format($receiptData['total'], 0, ',', '.') . "\n");
+            $printer->setEmphasis(false);
 
-            // Footer
+            $printer->text("Bayar : Rp " . number_format($receiptData['cash'], 0, ',', '.') . "\n");
+            $printer->text("Kembali: Rp " . number_format($receiptData['change'], 0, ',', '.') . "\n");
+            $printer->text("==============================\n");
+
+            // === FOOTER ===
             $printer->setJustification(Printer::JUSTIFY_CENTER);
-            $printer->text("Terima kasih!\n");
-            $printer->text("Semoga puas dengan layanan kami\n");
-            $printer->feed(2);
+            $printer->text("Terima Kasih\n");
+            $printer->text("Semoga Puas dengan Layanan Kami\n");
+            $printer->feed(3); // spasi kosong biar rapi
 
             $printer->cut();
             $printer->close();
@@ -90,6 +97,7 @@ class KasirComponent extends Component
             logger()->error("Gagal cetak struk: " . $e->getMessage());
         }
     }
+
 
 
     public function render()
