@@ -78,13 +78,18 @@
                                             }}</td>
                                         <td class="px-4 py-3 font-medium text-gray-800">{{ $item->kode_penjualan }}</td>
                                         <td class="px-4 py-3 text-gray-700">{{ $item->nama_produk }}</td>
-                                        <td class="px-4 py-3 text-center">{{ $item->qty }}</td>
-                                        <td class="px-4 py-3 text-right">@rupiah($item->harga_jual)</td>
-                                        <td class="px-4 py-3 text-right">@rupiah($item->subtotal)</td>
-                                        <td class="px-4 py-3 text-right font-bold text-indigo-600">@rupiah($item->total)
+                                        <td class="px-4 py-3 text-end">{{ $item->qty }}</td>
+                                        <td class="px-4 py-3 text-end">Rp {{ number_format($item->harga_jual, 0, ',',
+                                            '.') }}</td>
+                                        <td class="px-4 py-3 text-end">Rp {{ number_format($item->subtotal, 0, ',', '.')
+                                            }}</td>
+                                        <td class="px-4 py-3 text-end font-bold text-indigo-600">Rp {{
+                                            number_format($item->total, 0, ',', '.') }}
                                         </td>
-                                        <td class="px-4 py-3 text-right">@rupiah($item->bayar)</td>
-                                        <td class="px-4 py-3 text-right">@rupiah($item->kembalian)</td>
+                                        <td class="px-4 py-3 text-end">Rp {{ number_format($item->bayar, 0, ',', '.') }}
+                                        </td>
+                                        <td class="px-4 py-3 text-end">Rp {{ number_format($item->kembalian, 0, ',',
+                                            '.') }}</td>
                                         <td class="px-4 py-3">{{ $item->user_id }}</td>
                                     </tr>
                                     @empty
@@ -117,9 +122,9 @@
                             </select>
                         </div>
                     </div>
-                    <div class="mt-2 col-lg-6 d-flex justify-content-end align-items-center">
+                    {{-- <div class="mt-2 col-lg-6 d-flex justify-content-end align-items-center">
                         {{ $laporan->links() }}
-                    </div>
+                    </div> --}}
                 </div>
             </div>
         </div>

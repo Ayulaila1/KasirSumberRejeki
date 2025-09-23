@@ -136,8 +136,10 @@
         </div>
     </div>
 
+    @dump($cart)
+
     @if($showReceipt)
-    <div class="receipt-modal" style="display: flex;">
+    <div wire:ignore.self class="receipt-modal" style="display: flex;">
         <div class="receipt-content">
             <div class="close-receipt" wire:click="closeReceipt">&times;</div>
             <div class="receipt-header">
@@ -164,6 +166,11 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="action-buttons mt-3">
+        <button class="btn btn-success w-100" wire:click="processPayment()">
+            <i class="fas fa-print"></i> Bayar
+        </button>
     </div>
     @endif
 </div>

@@ -16,7 +16,7 @@ class LaporanPenjualanComponent extends Component
 
     public $search = '';
     public $tglStart;
-    public $tglEnd;
+    public $tglEnd, $perPage = 10;
 
     public function mount()
     {
@@ -31,7 +31,7 @@ class LaporanPenjualanComponent extends Component
             ->when($this->search, fn($q) =>
                 $q->where('nama_produk', 'like', "%{$this->search}%"))
             ->orderByDesc('tanggal')
-            ->paginate(10);
+            ->paginate($this->perPage);
 
         return view('livewire.laporan-penjualan-component', compact('laporan'));
     }
@@ -50,9 +50,13 @@ class LaporanPenjualanComponent extends Component
         $headers = ['Tanggal', 'Kode', 'Produk', 'Qty', 'Harga Jual', 'Subtotal', 'Total', 'Bayar', 'Kembalian', 'User'];
         $title = 'Laporan Penjualan';
 
-        $queryResult = LaporanPenjualan::whereBetween('tanggal', [$this->tglStart, $this->tglEnd])
-            ->orderBy('tanggal', 'desc')
-            ->get();
+        $queryResult = LaporanPenjualan::query()
+            ->when($this->tglStart && $this->tglEnd, fn($q) =>
+                $q->whereBetween('tanggal', [$this->tglStart, $this->tglEnd]))
+            ->when($this->search, fn($q) =>
+                $q->where('nama_produk', 'like', "%{$this->search}%"))
+            ->orderByDesc('tanggal')
+            ->paginate($this->perPage);
 
         $data = [];
         foreach ($queryResult as $item) {
