@@ -9,6 +9,9 @@ use Illuminate\Support\Str;
 use App\Models\PenjualanDtl;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Mike42\Escpos\Printer;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+
 
 class KasirComponent extends Component
 {
@@ -20,16 +23,82 @@ class KasirComponent extends Component
     public $paymentMethod = 'cash';
     public $cashAmount = 0;
     public $change = 0;
-    // public $discountCode = '';
-    // public $discount = 0;
-    // public $discountType = 'amount'; // 'amount' atau 'percentage'
     public $notes = '';
-    public $showReceipt = false;
+
+    // State modal
+    public $showConfirmModal = false; // Modal Konfirmasi
+    public $showReceipt = false;      // Modal Struk
     public $receiptData = [];
-    // public $heldOrders = [];
-    // public $showHeldOrdersModal = false;
 
     protected $listeners = ['produkDipilih' => 'addToCart'];
+
+    protected function printReceipt($receiptData)
+    {
+        try {
+            // === KONEKSI PRINTER ===
+            $connector = new WindowsPrintConnector("POS-58"); // ganti nama printer sesuai yg ada di Devices & Printers
+            $printer = new Printer($connector);
+
+            // === HEADER TOKO ===
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->setEmphasis(true);
+            $printer->text("Cafe Suki\n");
+            $printer->setEmphasis(false);
+            $printer->text("Jl. Contoh Alamat No. 123\n");
+            $printer->text("Telp: 0812-3456-7890\n");
+            $printer->text("==============================\n");
+
+            // === INFO TRANSAKSI ===
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+            $printer->text("No. Trx : " . $receiptData['number'] . "\n");
+            $printer->text("Tanggal : " . $receiptData['date'] . "\n");
+            $printer->text("Meja    : " . $receiptData['table'] . "\n");
+            $printer->text("Pelanggan: " . $receiptData['customer'] . "\n");
+            $printer->text("------------------------------\n");
+
+            // === ITEM LIST ===
+            foreach ($receiptData['items'] as $item) {
+                // Nama produk
+                $printer->setJustification(Printer::JUSTIFY_LEFT);
+                $printer->text($item['name'] . "\n");
+
+                // Qty x Harga
+                $line = sprintf(
+                    "  %2s x %-8s Rp %s",
+                    $item['quantity'],
+                    number_format($item['price'], 0, ',', '.'),
+                    number_format($item['price'] * $item['quantity'], 0, ',', '.')
+                );
+                $printer->text($line . "\n");
+            }
+
+            $printer->text("------------------------------\n");
+
+            // === TOTAL & PEMBAYARAN ===
+            $printer->setJustification(Printer::JUSTIFY_RIGHT);
+            $printer->setEmphasis(true);
+            $printer->text("TOTAL : Rp " . number_format($receiptData['total'], 0, ',', '.') . "\n");
+            $printer->setEmphasis(false);
+
+            $printer->text("Bayar : Rp " . number_format($receiptData['cash'], 0, ',', '.') . "\n");
+            $printer->text("Kembali: Rp " . number_format($receiptData['change'], 0, ',', '.') . "\n");
+            $printer->text("==============================\n");
+
+            // === FOOTER ===
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->text("Terima Kasih\n");
+            $printer->text("Semoga Puas dengan Layanan Kami\n");
+            $printer->feed(3); // spasi kosong biar rapi
+
+            $printer->cut();
+            $printer->close();
+
+        } catch (\Exception $e) {
+            logger()->error("Gagal cetak struk: " . $e->getMessage());
+        }
+    }
+
+
 
     public function render()
     {
@@ -81,7 +150,6 @@ class KasirComponent extends Component
         $this->dispatch('cartUpdated');
     }
 
-
     public function updateQty($productId, $delta = 1)
     {
         if (isset($this->cart[$productId])) {
@@ -117,46 +185,35 @@ class KasirComponent extends Component
         $this->selectedCategory = $category;
     }
 
-    // public function selectPaymentMethod($method)
-    // {
-    //     $this->paymentMethod = $method;
-    // }
+    // ================= Alur Sesuai Diagram =================
 
-    public function calculateChange()
+    // Step 1: Buka Modal Konfirmasi
+    public function openConfirmModal()
     {
-        $total = $this->getTotal();
-        $cash = floatval($this->cashAmount);
-
-        if ($cash >= $total) {
-            $this->change = $cash - $total;
-        } else {
-            $this->change = 0;
-            $this->dispatch('showAlert', 'Jumlah uang tunai kurang', 'danger');
+        if (empty($this->cart)) {
+            $this->dispatch('showAlert', 'Keranjang masih kosong', 'danger');
+            return;
         }
+        $this->showConfirmModal = true;
     }
 
+    // Step 2: Klik Konfirmasi → Tutup Modal Konfirmasi → Lanjut proses
+    public function confirmPayment()
+    {
+        $this->showConfirmModal = false;
+        $this->processPayment();
+        $this->showReceipt = true;
+
+        // 🔥 Cetak otomatis ke printer thermal
+        $this->printReceipt($this->receiptData);
+    }
+
+    // Step 3: Proses transaksi
     public function processPayment()
     {
-        // dd("test");
-        // if (empty($this->cart)) {
-        //     $this->dispatch('showAlert', 'Keranjang kosong, tidak ada yang dibayar', 'danger');
-        //     return;
-        // }
-
-        // if (empty($this->tableNumber)) {
-        //     $this->dispatch('showAlert', 'Silakan masukkan nomor meja', 'danger');
-        //     return;
-        // }
-
-        // if ($this->cashAmount < $this->getTotal()) {
-        //     $this->dispatch('showAlert', 'Jumlah uang tunai kurang', 'danger');
-        //     return;
-        // }
-
         try {
             DB::beginTransaction();
 
-            // Buat penjualan
             $penjualan = Penjualan::create([
                 'kode_penjualan' => 'TRX-' . now()->format('Ymd') . '-' . Str::random(4),
                 'tanggal' => now()->format('Y-m-d'),
@@ -166,7 +223,6 @@ class KasirComponent extends Component
                 'user_id' => Auth::user()->id,
             ]);
 
-            // Buat detail penjualan
             foreach ($this->cart as $item) {
                 PenjualanDtl::create([
                     'penjualan_idpenjualan' => $penjualan->idpenjualan,
@@ -175,45 +231,21 @@ class KasirComponent extends Component
                     'harga_jual' => $item['price'],
                     'subtotal' => $item['price'] * $item['quantity'],
                 ]);
-
-                // Tambahkan logika pengurangan stok jika perlu
-
-                $produk = Produk::where('idproduk', $item['id'])->first();
-
-
-                // Jika racikan, ambil bahan-bahannya
-                $bahanList = DB::table('produk_racikans')
-                    ->where('produk_idproduk', $produk->idproduk)
-                    ->get();
-
-                foreach ($bahanList as $bahan) {
-                    // Hitung stok yang harus dikurangkan = jumlah * takaran
-                    $jumlahBahan = $item['quantity'] * $bahan->takaran;
-
-                    DB::table('bahans')
-                        ->where('idbahan', $bahan->bahan_idbahan)
-                        ->decrement('stok', $jumlahBahan);
-                }
-
             }
 
-            DB::commit(); // Simpan transaksi
+            DB::commit();
 
-            // Siapkan data struk
             $this->receiptData = [
                 'number' => $penjualan->kode_penjualan,
                 'date' => now()->format('d/m/Y H:i:s'),
                 'customer' => $this->customerName ?: '-',
                 'table' => $this->tableNumber,
                 'items' => $this->cart,
-                'subtotal' => $this->getTotal(),
                 'total' => $this->getTotal(),
-                'paymentMethod' => 'Tunai',
                 'cash' => $this->cashAmount,
                 'change' => $this->cashAmount - $this->getTotal(),
             ];
 
-            $this->showReceipt();
             $this->clearCart();
 
         } catch (\Exception $e) {
@@ -221,12 +253,6 @@ class KasirComponent extends Component
             logger()->error('Gagal memproses pembayaran: ' . $e->getMessage());
             $this->dispatch('showAlert', 'Terjadi kesalahan saat memproses pembayaran.', 'danger');
         }
-    }
-
-
-    public function showReceipt()
-    {
-        $this->showReceipt = true;
     }
 
     public function closeReceipt()
@@ -237,9 +263,6 @@ class KasirComponent extends Component
     protected function updateCartTotals()
     {
         $this->dispatch('updateCartTotals', [
-            'subtotal' => $this->getTotal(),
-            // 'discount' => $this->getDiscountAmount(),
-            // 'tax' => $this->getTaxAmount(),
             'total' => $this->getTotal(),
         ]);
     }
@@ -251,115 +274,10 @@ class KasirComponent extends Component
         });
     }
 
-    protected function getPaymentMethodName()
+    public function clearCart()
     {
-        $methods = [
-            'cash' => 'Tunai',
-            'debit' => 'Kartu Debit',
-            'credit' => 'Kartu Kredit',
-            'qris' => 'QRIS',
-            'ewallet' => 'E-Wallet',
-            'transfer' => 'Transfer Bank',
-        ];
-
-        return $methods[$this->paymentMethod] ?? 'Unknown';
+        $this->cart = [];
+        $this->cashAmount = 0;
+        $this->change = 0;
     }
-
-    // public function removeFromCart($productId)
-    // {
-    //     $this->cart = collect($this->cart)->reject(function ($item) use ($productId) {
-    //         return $item['id'] == $productId;
-    //     })->values()->toArray();
-
-    //     $this->dispatch('cartUpdated');
-    // }
-
-    // public function clearCart()
-    // {
-    //     if (empty($this->cart)) {
-    //         return; //
-    //     }
-
-    //     $this->cart = [];
-    //     $this->discount = 0;
-    //     $this->discountCode = '';
-    //     // $this->dispatch('cartUpdated');
-    // }
-
-    // public function applyDiscount()
-    // {
-    //     // Contoh logika diskon sederhana
-    //     if ($this->discountCode === 'DISKON10') {
-    //         $this->discount = 10;
-    //         $this->discountType = 'percentage';
-    //         $this->dispatch('showAlert', 'Diskon 10% berhasil diterapkan', 'success');
-    //     } elseif ($this->discountCode === 'DISKON5K') {
-    //         $this->discount = 5000;
-    //         $this->discountType = 'amount';
-    //         $this->dispatch('showAlert', 'Diskon Rp 5.000 berhasil diterapkan', 'success');
-    //     } elseif ($this->discountCode) {
-    //         $this->dispatch('showAlert', 'Kode diskon tidak valid', 'danger');
-    //         $this->discount = 0;
-    //     } else {
-    //         $this->discount = 0;
-    //     }
-
-    //     $this->updateCartTotals();
-    // }
-
-    // public function holdOrder()
-    // {
-    //     if (empty($this->cart)) {
-    //         $this->dispatch('showAlert', 'Tidak ada pesanan untuk dihold', 'danger');
-    //         return;
-    //     }
-
-    //     if (empty($this->tableNumber)) {
-    //         $this->dispatch('showAlert', 'Silakan masukkan nomor meja', 'danger');
-    //         return;
-    //     }
-
-    //     $this->heldOrders[] = [
-    //         'id' => uniqid(),
-    //         'table' => $this->tableNumber,
-    //         'customer' => $this->customerName,
-    //         'items' => $this->cart,
-    //         'time' => now()->format('H:i:s'),
-    //         'subtotal' => $this->getTotal(),
-    //     ];
-
-    //     $this->clearCart();
-    //     $this->dispatch('showAlert', 'Pesanan berhasil dihold', 'success');
-    // }
-
-    // public function loadHeldOrder($index)
-    // {
-    //     if (isset($this->heldOrders[$index])) {
-    //         $order = $this->heldOrders[$index];
-
-    //         $this->tableNumber = $order['table'];
-    //         $this->customerName = $order['customer'];
-    //         $this->cart = $order['items'];
-
-    //         // Remove from held orders
-    //         unset($this->heldOrders[$index]);
-    //         $this->heldOrders = array_values($this->heldOrders);
-
-    //         $this->showHeldOrdersModal = false;
-    //         $this->dispatch('cartUpdated');
-    //         $this->dispatch('showAlert', 'Pesanan berhasil dimuat ke keranjang', 'success');
-    //     }
-    // }
-
-    // public function toggleHeldOrdersModal()
-    // {
-    //     $this->showHeldOrdersModal = !$this->showHeldOrdersModal;
-    // }
-
-    // public function getTotal()
-    // {
-    //     return $this->getTotal();
-
-    // }
 }
-

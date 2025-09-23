@@ -1,15 +1,15 @@
 <div class="pos-container">
     <!-- Product Section -->
     <div class="product-section">
-        <div class="header">
+        {{-- <div class="header">
             <h2><i class="fas fa-mug-hot"></i> Menu Cafe Suki</h2>
             <div class="search-box">
                 <i class="fas fa-search"></i>
                 <input wire:model.live.debounce.300ms="search" type="text" placeholder="Cari menu...">
             </div>
-        </div>
+        </div> --}}
 
-        <div class="category-tabs">
+        {{-- <div class="category-tabs">
             <div class="category-tab {{ $currentCategory === 'Semua' ? 'active' : '' }}"
                 wire:click="filterByCategory('Semua')">Semua</div>
             <div class="category-tab {{ $currentCategory === 'Minuman' ? 'active' : '' }}"
@@ -28,7 +28,7 @@
                 wire:click="filterByCategory('Promo')">
                 <i class="fas fa-tag"></i> Promo
             </div>
-        </div>
+        </div> --}}
 
         <div class="product-grid">
             @foreach($filteredProducts as $product)
