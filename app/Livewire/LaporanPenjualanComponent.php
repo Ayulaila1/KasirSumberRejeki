@@ -4,9 +4,11 @@ namespace App\Livewire;
 
 use Carbon\Carbon;
 use Livewire\Component;
+use App\Models\Penjualan;
 use Livewire\WithPagination;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\LaporanPenjualan;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\LaporanPenjualanExport;
 
@@ -25,16 +27,18 @@ class LaporanPenjualanComponent extends Component
     }
     public function render()
     {
-        $laporan = LaporanPenjualan::query()
+        $laporan = Penjualan::with('penjualanDtl.produk')
             ->when($this->tglStart && $this->tglEnd, fn($q) =>
                 $q->whereBetween('tanggal', [$this->tglStart, $this->tglEnd]))
             ->when($this->search, fn($q) =>
-                $q->where('nama_produk', 'like', "%{$this->search}%"))
+                $q->whereHas('penjualanDtl.produk', fn($q2) =>
+                    $q2->where('nama', 'like', "%{$this->search}%")))
             ->orderByDesc('tanggal')
             ->paginate($this->perPage);
 
         return view('livewire.laporan-penjualan-component', compact('laporan'));
     }
+
 
     public function exportToPdf()
     {

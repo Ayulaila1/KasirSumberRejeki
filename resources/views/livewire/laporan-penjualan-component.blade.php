@@ -60,9 +60,9 @@
                                         <th class="text-center" style="width: 3%">No</th>
                                         <th class="text-center">Tanggal</th>
                                         <th class="text-center">Kode</th>
-                                        <th class="text-center">Produk</th>
-                                        <th class="text-center">Qty</th>
-                                        <th class="text-center">Harga Jual</th>
+                                        <th class="text-center">Nama Produk</th>
+                                        <th class="text-center">Jumlah</th>
+                                        <th class="text-center">Harga</th>
                                         <th class="text-center">Subtotal</th>
                                         <th class="text-center">Total</th>
                                         <th class="text-center">Bayar</th>
@@ -71,35 +71,36 @@
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-200">
-                                    @forelse ($laporan as $index => $item)
-                                    <tr class="hover:bg-gray-50 transition-colors duration-150">
-                                        <td class="px-4 py-3">{{ $laporan->firstItem() + $index }}</td>
-                                        <td class="px-4 py-3">{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y')
-                                            }}</td>
-                                        <td class="px-4 py-3 font-medium text-gray-800">{{ $item->kode_penjualan }}</td>
-                                        <td class="px-4 py-3 text-gray-700">{{ $item->nama_produk }}</td>
-                                        <td class="px-4 py-3 text-end">{{ $item->qty }}</td>
-                                        <td class="px-4 py-3 text-end">Rp {{ number_format($item->harga_jual, 0, ',',
-                                            '.') }}</td>
-                                        <td class="px-4 py-3 text-end">Rp {{ number_format($item->subtotal, 0, ',', '.')
-                                            }}</td>
-                                        <td class="px-4 py-3 text-end font-bold text-indigo-600">Rp {{
-                                            number_format($item->total, 0, ',', '.') }}
-                                        </td>
-                                        <td class="px-4 py-3 text-end">Rp {{ number_format($item->bayar, 0, ',', '.') }}
-                                        </td>
-                                        <td class="px-4 py-3 text-end">Rp {{ number_format($item->kembalian, 0, ',',
-                                            '.') }}</td>
-                                        <td class="px-4 py-3">{{ $item->user_id }}</td>
-                                    </tr>
-                                    @empty
+                                    @foreach($laporan as $p)
+                                    @php $count = $p->penjualanDtl->count(); @endphp
                                     <tr>
-                                        <td colspan="11"
-                                            class="px-4 py-4 text-center text-gray-500 italic bg-gray-50 rounded-b-lg">
-                                            🙁 Data tidak ditemukan.
-                                        </td>
+                                        <td rowspan="{{ $count }}">{{ $loop->iteration }}</td>
+                                        <td rowspan="{{ $count }}">{{ date('d M Y', strtotime($p->tanggal)) }}</td>
+                                        <td rowspan="{{ $count }}">{{ $p->kode_penjualan }}</td>
+                                        <td>{{ $p->penjualanDtl[0]->produk->nama }}</td>
+                                        <td>{{ $p->penjualanDtl[0]->qty }}</td>
+                                        <td class="text-end">Rp {{
+                                            number_format($p->penjualanDtl[0]->harga_jual,0,',','.') }}</td>
+                                        <td class="text-end">Rp {{
+                                            number_format($p->penjualanDtl[0]->subtotal,0,',','.') }}</td>
+                                        <td rowspan="{{ $count }}" class="text-end">Rp {{
+                                            number_format($p->total,0,',','.') }}</td>
+                                        <td rowspan="{{ $count }}" class="text-end">Rp {{
+                                            number_format($p->bayar,0,',','.') }}</td>
+                                        <td rowspan="{{ $count }}" class="text-end">Rp {{
+                                            number_format($p->kembalian,0,',','.') }}</td>
+                                        <td rowspan="{{ $count }}">{{ $p->user_id }}</td>
                                     </tr>
-                                    @endforelse
+                                    @for($i = 1; $i < $count; $i++) <tr>
+                                        <td>{{ $p->penjualanDtl[$i]->produk->nama }}</td>
+                                        <td>{{ $p->penjualanDtl[$i]->qty }}</td>
+                                        <td class="text-end">Rp {{
+                                            number_format($p->penjualanDtl[$i]->harga_jual,0,',','.') }}</td>
+                                        <td class="text-end">Rp {{
+                                            number_format($p->penjualanDtl[$i]->subtotal,0,',','.') }}</td>
+                                        </tr>
+                                        @endfor
+                                        @endforeach
                                 </tbody>
                             </table>
 

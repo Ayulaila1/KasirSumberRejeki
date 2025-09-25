@@ -34,9 +34,11 @@ class Penjualan extends Model
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    /**
-     * Relasi one-to-many ke model PenjualanDtl.
-     */
+    public function penjualanDtl()
+    {
+        return $this->hasMany(PenjualanDtl::class, 'penjualan_idpenjualan', 'idpenjualan')
+            ->with('produk'); // optional, eager load produk langsung
+    }
     public function details()
     {
         return $this->hasMany(PenjualanDtl::class, 'penjualan_idpenjualan', 'idpenjualan');
