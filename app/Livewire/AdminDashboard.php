@@ -2,23 +2,50 @@
 
 namespace App\Livewire;
 
+use Carbon\Carbon;
+use App\Models\Produk;
 use Livewire\Component;
-use Livewire\WithFileUploads;
+use App\Models\LaporanPendapatan;
 use Illuminate\Support\Facades\Auth;
+
 
 class AdminDashboard extends Component
 {
-    use WithFileUploads;
+    public $halamanSekarang = 'dashboard';
+    public $tampilSidebar = false;
+    public $tampilModalTransaksi = false;
+    public $transaksiTerpilih = null;
+    public $tahunPendapatan = '2025';
+    public $bulanProdukTerlaris = 'sekarang';
+    public $totalPendapatan = 0;
+    public $persen = null;
+    protected $listeners = ['tutupModal'];
 
-    public $currentPage = 'dashboard';
-    public $showSidebar = false;
-    public $showDropdown = false;
-    public $showTransactionModal = false;
-    public $selectedTransaction = null;
-    public $revenueYear = '2025';
-    public $bestSellerMonth = 'current';
 
-    protected $listeners = ['closeModal'];
+    public function mount()
+    {
+        $bulanIni = Carbon::now()->format('Y-m');
+
+        // total bulan ini
+        $this->totalPendapatan = LaporanPendapatan::where('bulan', $bulanIni)
+            ->value('total_penjualan') ?? 0;
+
+        // cari bulan terakhir sebelum bulan ini
+        $totalLalu = LaporanPendapatan::where('bulan', '<', $bulanIni)
+            ->orderBy('bulan', 'desc')
+            ->value('total_penjualan');
+
+        if ($totalLalu && $totalLalu != 0) {
+            $this->persen = ($this->totalPendapatan - $totalLalu) / $totalLalu * 100;
+        } else {
+            $this->persen = 0; // aman kalau nggak ada data
+        }
+    }
+
+    public function totalProduk()
+    {
+        return Produk::count();
+    }
 
     public function render()
     {
@@ -27,29 +54,24 @@ class AdminDashboard extends Component
 
     public function toggleSidebar()
     {
-        $this->showSidebar = !$this->showSidebar;
+        $this->tampilSidebar = !$this->tampilSidebar;
     }
 
-    public function toggleDropdown()
+    public function pindahHalaman($halaman)
     {
-        $this->showDropdown = !$this->showDropdown;
+        $this->halamanSekarang = $halaman;
+        $this->tampilSidebar = false;
     }
 
-    public function navigateTo($page)
+    public function lihatTransaksi($idTransaksi)
     {
-        $this->currentPage = $page;
-        $this->showSidebar = false;
+        $this->transaksiTerpilih = $this->ambilDetailTransaksi($idTransaksi);
+        $this->tampilModalTransaksi = true;
     }
 
-    public function viewTransaction($transactionId)
+    public function tutupModal()
     {
-        $this->selectedTransaction = $this->getTransactionDetails($transactionId);
-        $this->showTransactionModal = true;
-    }
-
-    public function closeModal()
-    {
-        $this->showTransactionModal = false;
+        $this->tampilModalTransaksi = false;
     }
 
     public function logout()
@@ -58,38 +80,38 @@ class AdminDashboard extends Component
         return redirect('/login');
     }
 
-    protected function getTransactionDetails($id)
+    protected function ambilDetailTransaksi($id)
     {
-        // In a real app, you would fetch this from the database
-        $transactions = [
+        // Data contoh, nanti bisa diganti query dari database
+        $transaksi = [
             'TRX-20250628-001' => [
                 'id' => 'TRX-20250628-001',
-                'date' => '28 Jun 2025',
-                'customer' => 'Pelanggan 1',
+                'tanggal' => '28 Juni 2025',
+                'pelanggan' => 'Pelanggan 1',
                 'status' => 'Selesai',
                 'items' => [
-                    ['product' => 'Cappuccino', 'price' => 'Rp 25.000', 'qty' => 2, 'subtotal' => 'Rp 50.000'],
-                    ['product' => 'Teh Tarik', 'price' => 'Rp 15.000', 'qty' => 1, 'subtotal' => 'Rp 15.000'],
-                    ['product' => 'Nasi Goreng Spesial', 'price' => 'Rp 30.000', 'qty' => 2, 'subtotal' => 'Rp 60.000'],
+                    ['produk' => 'Cappuccino', 'harga' => 'Rp 25.000', 'jumlah' => 2, 'subtotal' => 'Rp 50.000'],
+                    ['produk' => 'Teh Tarik', 'harga' => 'Rp 15.000', 'jumlah' => 1, 'subtotal' => 'Rp 15.000'],
+                    ['produk' => 'Nasi Goreng Spesial', 'harga' => 'Rp 30.000', 'jumlah' => 2, 'subtotal' => 'Rp 60.000'],
                 ],
                 'total' => 'Rp 125.000'
             ],
-            // Add other transactions as needed
         ];
 
-        return $transactions[$id] ?? null;
+        return $transaksi[$id] ?? null;
     }
 
-    public function getRevenueData()
+    public function ambilDataPendapatan()
     {
-        return $this->revenueYear === '2024'
-            ? [7200000, 7800000, 8200000, 8800000, 9500000, 10200000, 9800000, 9200000, 8900000, 8500000, 9200000, 9700000]
-            : [8500000, 9200000, 10500000, 9800000, 11200000, 12450000, 0, 0, 0, 0, 0, 0];
+        return LaporanPendapatan::whereYear('bulan', $this->tahunPendapatan)
+            ->orderByRaw("STR_TO_DATE(bulan, '%Y-%m')") // biar urut Januari–Desember
+            ->pluck('total_penjualan')
+            ->toArray();
     }
 
-    public function getBestSellerData()
+    public function ambilDataProdukTerlaris()
     {
-        return $this->bestSellerMonth === 'last'
+        return $this->bulanProdukTerlaris === 'lalu'
             ? [38, 32, 25, 18, 12]
             : [45, 38, 28, 22, 18];
     }

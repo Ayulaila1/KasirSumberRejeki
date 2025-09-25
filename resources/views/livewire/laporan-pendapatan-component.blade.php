@@ -48,7 +48,7 @@
                                     <tr>
                                         <th class="text-center">No</th>
                                         <th class="text-center">Bulan</th>
-                                        <th class="text-center">Total Pendapatan</th>
+                                        {{-- <th class="text-center">Total Pendapatan</th> --}}
                                         <th class="text-center">Total Penjualan</th>
                                         <th class="text-center">Total Modal</th>
                                         <th class="text-center">Keuntungan</th>
@@ -60,11 +60,17 @@
                                     <tr class="hover:bg-gray-50 transition-colors duration-150">
                                         <td class="text-center">{{ $laporan->firstItem() + $index }}</td>
                                         <td class="text-center">{{ $item->bulan }}</td>
-                                        <td class="text-end">@rupiah($item->total_pendapatan)</td>
-                                        <td class="text-end">@rupiah($item->total_penjualan)</td>
-                                        <td class="text-end">@rupiah($item->total_modal)</td>
-                                        <td class="text-end text-success fw-bold">@rupiah($item->keuntungan)</td>
-                                        <td class="text-end text-danger">@rupiah($item->kerugian)</td>
+                                        {{-- <td class="text-end">Rp {{ number_format($item->total_pendapatan, 0, ',',
+                                            '.')
+                                            }}</td> --}}
+                                        <td class="text-end">Rp {{ number_format($item->total_penjualan, 0, ',', '.') }}
+                                        </td>
+                                        <td class="text-end">Rp {{ number_format($item->total_modal, 0, ',', '.') }}
+                                        </td>
+                                        <td class="text-end text-success fw-bold">Rp {{ number_format($item->keuntungan,
+                                            0, ',', '.') }}</td>
+                                        <td class="text-end text-danger">Rp {{ number_format($item->kerugian, 0, ',',
+                                            '.') }}</td>
                                     </tr>
                                     @empty
                                     <tr>
@@ -79,22 +85,22 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-lg-6 d-flex justify-content-between align-items-center">
+                    <div class=" col-lg-6 d-flex justify-content-between align-items-center">
                         <div>
                             Menampilkan {{ $laporan->firstItem() }} sampai {{ $laporan->lastItem() }}
                         </div>
                         <div>
                             Per Halaman
-                            <select class="form-control d-inline w-auto" wire:model.live='perPage'>
+                            <select name="form-control" wire:model.live='perPage'>
                                 <option value="10">10</option>
                                 <option value="100">100</option>
                                 <option value="10000">Semua</option>
                             </select>
                         </div>
                     </div>
-                    <div class="mt-2 col-lg-6 d-flex justify-content-end align-items-center">
+                    {{-- <div class="mt-2 col-lg-6 d-flex justify-content-end align-items-center">
                         {{ $laporan->links() }}
-                    </div>
+                    </div> --}}
                 </div>
             </div>
         </div>

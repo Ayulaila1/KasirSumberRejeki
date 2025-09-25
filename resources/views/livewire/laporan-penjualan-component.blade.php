@@ -111,14 +111,14 @@
                 <div class="row">
                     <div class=" col-lg-6 d-flex justify-content-between align-items-center">
                         <div>
-                            Showing {{ $laporan->firstItem() }} to {{ $laporan->lastItem() }}
+                            Menampilkan {{ $laporan->firstItem() }} sampai {{ $laporan->lastItem() }}
                         </div>
                         <div>
-                            Per Page
+                            Per Halaman
                             <select name="form-control" wire:model.live='perPage'>
                                 <option value="10">10</option>
                                 <option value="100">100</option>
-                                <option value="10000">All</option>
+                                <option value="10000">Semua</option>
                             </select>
                         </div>
                     </div>

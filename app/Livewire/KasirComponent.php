@@ -15,13 +15,15 @@ use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 
 class KasirComponent extends Component
 {
+
     public $cart = [];
     public $search = '';
     public $selectedCategory = 'Semua';
     public $customerName = '';
     public $tableNumber = '';
     public $paymentMethod = 'cash';
-    public $cashAmount = 0;
+    public $cashAmount;
+    public $cashFormatted;
     public $change = 0;
     public $notes = '';
 
@@ -98,7 +100,24 @@ class KasirComponent extends Component
         }
     }
 
+    public function updatedCashFormatted($value)
+    {
+        // ambil hanya angka
+        $numeric = preg_replace('/[^0-9]/', '', $value);
 
+        // simpan ke cashAmount (angka asli untuk hitung total/kembalian)
+        $this->cashAmount = (int) $numeric;
+
+        // update lagi tampilan format (biar input tetap rapi)
+        $this->cashFormatted = $this->formatRupiah($numeric);
+    }
+
+    private function formatRupiah($angka)
+    {
+        if (!$angka)
+            return '';
+        return 'Rp ' . number_format($angka, 0, ',', '.');
+    }
 
     public function render()
     {

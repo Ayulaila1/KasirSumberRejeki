@@ -55,7 +55,7 @@ class LaporanPendapatanComponent extends Component
         foreach ($queryResult as $item) {
             $data[] = [
                 $item->bulan,
-                number_format($item->total_pendapatan, 0, ',', '.'),
+                // number_format($item->total_pendapatan, 0, ',', '.'),
                 number_format($item->total_penjualan, 0, ',', '.'),
                 number_format($item->total_modal, 0, ',', '.'),
                 number_format($item->keuntungan, 0, ',', '.'),
