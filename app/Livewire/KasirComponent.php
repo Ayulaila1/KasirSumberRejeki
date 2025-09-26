@@ -2,14 +2,16 @@
 
 namespace App\Livewire;
 
+use App\Models\Bahan;
 use App\Models\Produk;
 use Livewire\Component;
 use App\Models\Penjualan;
+use Mike42\Escpos\Printer;
 use Illuminate\Support\Str;
 use App\Models\PenjualanDtl;
+use App\Models\ProdukRacikan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 
 
@@ -27,6 +29,11 @@ class KasirComponent extends Component
     public $cashFormatted;
     public $change = 0;
     public $notes = '';
+
+    public $showModal = false;
+    public $selectedProduk;
+    public $ingredients = [];
+
 
     // State modal
     public $showConfirmModal = false; // Modal Konfirmasi
@@ -119,6 +126,20 @@ class KasirComponent extends Component
             return '';
         return 'Rp ' . number_format($angka, 0, ',', '.');
     }
+
+    public function showIngredient($idproduk)
+    {
+        $this->selectedProduk = Produk::with('produkDetails.bahan')->find($idproduk);
+
+        if ($this->selectedProduk && $this->selectedProduk->produkDetails->count() > 0) {
+            $this->ingredients = $this->selectedProduk->produkDetails;
+        } else {
+            $this->ingredients = [];
+        }
+
+        $this->showModal = true;
+    }
+
 
     public function render()
     {
@@ -254,6 +275,26 @@ class KasirComponent extends Component
                     'harga_jual' => $item['price'],
                     'subtotal' => $item['price'] * $item['quantity'],
                 ]);
+
+                // 🔽 Update stok produk atau bahan kalau racikan
+                $racikanItems = ProdukRacikan::where('produk_idproduk', $item['id'])->get();
+
+                if ($racikanItems->isNotEmpty()) {
+                    foreach ($racikanItems as $racikan) {
+                        $bahan = Bahan::find($racikan->bahan_idbahan);
+                        if ($bahan) {
+                            $totalTakaran = $racikan->takaran * $item['quantity'];
+                            $bahan->stok = max(0, $bahan->stok - $totalTakaran);
+                            $bahan->save();
+                        }
+                    }
+                } else {
+                    $produk = Produk::find($item['id']);
+                    if ($produk) {
+                        $produk->stok = max(0, $produk->stok - $item['quantity']);
+                        $produk->save();
+                    }
+                }
             }
 
             DB::commit();
@@ -278,6 +319,7 @@ class KasirComponent extends Component
             $this->dispatch('showAlert', 'Terjadi kesalahan saat memproses pembayaran.', 'danger');
         }
     }
+
 
     public function closeReceipt()
     {

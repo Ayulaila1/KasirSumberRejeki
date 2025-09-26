@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 use App\Models\Bahan;
+use App\Models\Produk;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -37,8 +38,10 @@ class ProdukRacikan extends Model
 
     public function bahan()
     {
-        return $this->belongsTo(Bahan::class, 'bahan_idbahan', 'idbahan');
+        return $this->belongsTo(Produk::class, 'bahan_idbahan', 'idproduk');
     }
+
+
 
     // public function supplier()
     // {
