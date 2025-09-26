@@ -20,6 +20,7 @@ class KasirComponent extends Component
     public $search = '';
     public $selectedCategory = 'Semua';
     public $customerName = '';
+    public $catatan;
     public $tableNumber = '';
     public $paymentMethod = 'cash';
     public $cashAmount;
@@ -235,6 +236,9 @@ class KasirComponent extends Component
 
             $penjualan = Penjualan::create([
                 'kode_penjualan' => 'TRX-' . now()->format('Ymd') . '-' . Str::random(4),
+                'customer_name' => $this->customerName,
+                'no_meja' => $this->tableNumber,
+                'catatan' => $this->catatan,
                 'tanggal' => now()->format('Y-m-d'),
                 'total' => $this->getTotal(),
                 'bayar' => $this->cashAmount,
@@ -257,8 +261,9 @@ class KasirComponent extends Component
             $this->receiptData = [
                 'number' => $penjualan->kode_penjualan,
                 'date' => now()->format('d/m/Y H:i:s'),
-                'customer' => $this->customerName ?: '-',
-                'table' => $this->tableNumber,
+                'customer_name' => $this->customerName ?: '-',
+                'no_meja' => $this->tableNumber,
+                'catatan' => $this->catatan,
                 'items' => $this->cart,
                 'total' => $this->getTotal(),
                 'cash' => $this->cashAmount,

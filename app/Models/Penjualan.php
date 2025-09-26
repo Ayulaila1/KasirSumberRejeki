@@ -15,6 +15,9 @@ class Penjualan extends Model
 
     protected $fillable = [
         'kode_penjualan',
+        'customer_name',
+        'no_meja',
+        'catatan',
         'tanggal',
         'total',
         'bayar',
@@ -42,5 +45,12 @@ class Penjualan extends Model
     public function details()
     {
         return $this->hasMany(PenjualanDtl::class, 'penjualan_idpenjualan', 'idpenjualan');
+    }
+
+    public function scopeRangeTanggal($query, $value1, $value2)
+    {
+        if ($value1 && $value2) {
+            $query->whereBetween('tanggal', [$value1, $value2]);
+        }
     }
 }
