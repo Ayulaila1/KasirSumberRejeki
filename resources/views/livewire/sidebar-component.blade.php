@@ -72,6 +72,15 @@
                 <span>Kasir</span>
             </a>
 
+
+            <a href="{{ route('hold.index') }}"
+                class="menu-item {{ request()->routeIs('hold.index') ? 'active' : '' }}">
+                <i class="fas fa-shopping-basket"></i>
+                <span>Bayar Nanti</span>
+            </a>
+
+
+
             <a href="{{ route('pengguna.index') }}" class="menu-item" <i
                 class="fa-solid fa-circle-user {{ request()->routeIs('pengguna.index') ? 'active' : '' }}"></i>
                 <span>Pengguna</span>

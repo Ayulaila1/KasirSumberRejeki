@@ -126,11 +126,44 @@
                     <p>Kembalian: Rp {{ number_format(max($cashAmount - $this->getTotal(), 0), 0, ',', '.') }}</p>
 
                     <!-- Tombol Bayar -->
-                    <div class="action-buttons mt-3">
+                    <div class="d-flex justify-content-end mt-3">
+                        <button wire:click="hold" class="btn btn-warning me-2">
+                            <i class="fas fa-pause"></i> Hold
+                        </button>
+                        <button wire:click="openConfirmModal()" class="btn btn-success">
+                            <i class="fas fa-cash-register"></i> Bayar
+                        </button>
+                    </div>
+
+
+                    {{-- <div class="action-buttons mt-3">
                         <button class="btn btn-success w-100" wire:click="openConfirmModal()">
                             <i class="fas fa-money-bill"></i> Bayar
                         </button>
-                    </div>
+                    </div> --}}
+
+                    <!-- 🔽 Bagian Hold Order -->
+                    {{-- <div class="hold-section mt-4">
+                        <h5><i class="fas fa-clock"></i> Pesanan Hold</h5>
+                        @if(count($holds) > 0)
+                        <ul class="list-group">
+                            @foreach($holds as $hold)
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ $hold['id'] }}</strong><br>
+                                    Meja: {{ $hold['table'] }} | {{ $hold['customer'] }}
+                                    <div class="small text-muted">{{ $hold['created_at'] }}</div>
+                                </div>
+                                <button class="btn btn-sm btn-primary" wire:click="restoreHold('{{ $hold['id'] }}')">
+                                    <i class="fas fa-play"></i> Restore
+                                </button>
+                            </li>
+                            @endforeach
+                        </ul>
+                        @else
+                        <p class="text-muted">Belum ada pesanan hold.</p>
+                        @endif
+                    </div> --}}
                 </div>
             </div>
         </div>

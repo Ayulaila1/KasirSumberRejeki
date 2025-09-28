@@ -2,14 +2,17 @@
 
 namespace App\Livewire;
 
+use Carbon\Carbon;
+use App\Models\Hold;
 use App\Models\Produk;
 use Livewire\Component;
 use App\Models\Penjualan;
+use Mike42\Escpos\Printer;
 use Illuminate\Support\Str;
 use App\Models\PenjualanDtl;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
-use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 
 
@@ -17,6 +20,8 @@ class KasirComponent extends Component
 {
 
     public $cart = [];
+    public $holds = []; // daftar transaksi hold
+
     public $search = '';
     public $selectedCategory = 'Semua';
     public $customerName = '';
@@ -32,7 +37,13 @@ class KasirComponent extends Component
     public $showReceipt = false;      // Modal Struk
     public $receiptData = [];
 
-    protected $listeners = ['produkDipilih' => 'addToCart'];
+    protected $listeners = [
+        'produkDipilih' => 'addToCart',
+        'resumeFromHold' => 'resumeFromHold',
+        'deleteHold',
+
+    ];
+
 
     protected function printReceipt($receiptData)
     {
@@ -299,4 +310,124 @@ class KasirComponent extends Component
         $this->cashAmount = 0;
         $this->change = 0;
     }
+
+    public function hold()
+    {
+        if (empty($this->cart)) {
+            session()->flash('error', 'Tidak ada item di keranjang.');
+            return;
+        }
+
+        // generate kode transaksi format TRX
+        $kode = 'TRX-' . now()->format('Ymd') . '-' . Str::random(4);
+
+        // hitung total
+        $total = collect($this->cart)->sum(
+            fn($item) =>
+            ($item['quantity'] ?? 1) * ($item['price'] ?? 0)
+        );
+
+        Hold::create([
+            'kode_transaksi' => $kode,
+            'customer' => $this->customerName ?: '-', // default "-" biar tidak NULL
+            'table_number' => $this->tableNumber ?: '-',
+            'items' => $this->cart,   // otomatis JSON
+            'total' => $total,
+            'user_id' => Auth::id(),
+        ]);
+
+        // reset keranjang
+        $this->clearCart();
+        $this->customerName = null;
+        $this->tableNumber = null;
+        $this->notes = null;
+
+        session()->flash('success', 'Transaksi berhasil di-hold.');
+    }
+
+    public function mount($id = null)
+    {
+        if ($id) {
+            $this->resumeFromHold($id);
+        }
+    }
+
+    // Lanjutkan transaksi dari Hold
+    public function resumeFromHold($id)
+    {
+        $hold = \App\Models\Hold::findOrFail($id);
+
+        // cek kalau items masih string JSON, baru decode
+        $this->cart = is_string($hold->items)
+            ? json_decode($hold->items, true)
+            : $hold->items;
+
+        $this->customerName = $hold->customer;
+        $this->tableNumber = $hold->table_number;
+
+        // hapus hold setelah dilanjutkan
+        $hold->delete();
+
+        // langsung buka modal konfirmasi
+        $this->openConfirmModal();
+    }
+
+
+
+
+    // Hapus transaksi Hold
+    public function deleteHold($holdId)
+    {
+        $hold = Hold::findOrFail($holdId);
+        $hold->delete();
+
+        session()->flash('success', 'Data hold berhasil dihapus.');
+    }
+
+
+    // Fungsi Hold Cart
+    // public function holdCart()
+    // {
+    //     if (empty($this->cart)) {
+    //         $this->dispatch('showAlert', 'Keranjang masih kosong, tidak bisa di-hold', 'danger');
+    //         return;
+    //     }
+
+    //     $holdId = 'HOLD-' . now()->format('YmdHis');
+
+    //     $this->holds[$holdId] = [
+    //         'id' => $holdId,
+    //         'customer' => $this->customerName ?: '-',
+    //         'table' => $this->tableNumber ?: '-',
+    //         'notes' => $this->notes ?: '-',
+    //         'cart' => $this->cart,
+    //         'total' => $this->getTotal(),
+    //         'created_at' => now()->format('d/m/Y H:i:s'),
+    //     ];
+
+    //     // reset keranjang
+    //     $this->clearCart();
+    //     $this->dispatch('showAlert', "Pesanan berhasil di-hold dengan ID $holdId", 'success');
+    // }
+
+    // Fungsi Restore Cart dari Hold
+    // public function restoreHold($holdId)
+    // {
+    //     if (!isset($this->holds[$holdId])) {
+    //         $this->dispatch('showAlert', 'Data hold tidak ditemukan', 'danger');
+    //         return;
+    //     }
+
+    //     $hold = $this->holds[$holdId];
+
+    //     $this->cart = $hold['cart'];
+    //     $this->customerName = $hold['customer'];
+    //     $this->tableNumber = $hold['table'];
+    //     $this->notes = $hold['notes'];
+
+    //     unset($this->holds[$holdId]); // hapus dari daftar hold
+    //     $this->dispatch('showAlert', "Pesanan $holdId berhasil dikembalikan", 'success');
+    // }
+
+
 }

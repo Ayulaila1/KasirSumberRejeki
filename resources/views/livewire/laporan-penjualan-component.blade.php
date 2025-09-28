@@ -73,23 +73,46 @@
                                 <tbody class="divide-y divide-gray-200">
                                     @forelse ($laporan as $index => $item)
                                     <tr class="hover:bg-gray-50 transition-colors duration-150">
-                                        <td class="px-4 py-3">{{ $laporan->firstItem() + $index }}</td>
-                                        <td class="px-4 py-3">{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y')
-                                            }}</td>
+                                        {{-- Nomor urut --}}
+                                        <td class="px-4 py-3">{{ $loop->iteration }}</td>
+
+                                        {{-- Tanggal --}}
+                                        <td class="px-4 py-3">
+                                            {{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}
+                                        </td>
+
+                                        {{-- Kode Penjualan --}}
                                         <td class="px-4 py-3 font-medium text-gray-800">{{ $item->kode_penjualan }}</td>
-                                        <td class="px-4 py-3 text-gray-700">{{ $item->nama_produk }}</td>
+
+                                        {{-- Produk (hasil gabungan) --}}
+                                        <td class="px-4 py-3 text-gray-700">{!! $item->produk !!}</td>
+
+
+                                        {{-- Qty total --}}
                                         <td class="px-4 py-3 text-end">{{ $item->qty }}</td>
+
+                                        {{-- Harga jual (opsional: rata-rata / salah satu produk) --}}
                                         <td class="px-4 py-3 text-end">Rp {{ number_format($item->harga_jual, 0, ',',
                                             '.') }}</td>
+
+                                        {{-- Subtotal total --}}
                                         <td class="px-4 py-3 text-end">Rp {{ number_format($item->subtotal, 0, ',', '.')
                                             }}</td>
-                                        <td class="px-4 py-3 text-end font-bold text-indigo-600">Rp {{
-                                            number_format($item->total, 0, ',', '.') }}
+
+                                        {{-- Total transaksi --}}
+                                        <td class="px-4 py-3 text-end font-bold text-indigo-600">
+                                            Rp {{ number_format($item->total, 0, ',', '.') }}
                                         </td>
+
+                                        {{-- Bayar --}}
                                         <td class="px-4 py-3 text-end">Rp {{ number_format($item->bayar, 0, ',', '.') }}
                                         </td>
+
+                                        {{-- Kembalian --}}
                                         <td class="px-4 py-3 text-end">Rp {{ number_format($item->kembalian, 0, ',',
                                             '.') }}</td>
+
+                                        {{-- User --}}
                                         <td class="px-4 py-3">{{ $item->user_id }}</td>
                                     </tr>
                                     @empty
@@ -101,6 +124,8 @@
                                     </tr>
                                     @endforelse
                                 </tbody>
+
+
                             </table>
 
                         </div>
