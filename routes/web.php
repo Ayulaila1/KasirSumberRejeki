@@ -3,6 +3,7 @@
 use App\Livewire\Kasir;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
+use App\Livewire\HoldComponent;
 use App\Livewire\AdminDashboard;
 use App\Livewire\BahanComponent;
 use App\Livewire\Dashboard\Main;
@@ -67,6 +68,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/pembelian', PembelianComponent::class)->name('pembelian.index');
     Route::get('/penjualan', PenjualanComponent::class)->name('penjualan.index');
     Route::get('/kasir', KasirComponent::class)->name('kasir.index');
+    Route::get('/kasir/resume/{id}', KasirComponent::class)->name('kasir.resume');
+    Route::get('/hold', HoldComponent::class)->name('hold.index');
     Route::get('/bahan', BahanComponent::class)->name('bahan.index');
     Route::get('/returtitipan', ReturTitipanComponent::class)->name('returtitipan.index');
     Route::get('/laporan-penjualan', LaporanPenjualanComponent::class)->name('laporan.penjualan');
