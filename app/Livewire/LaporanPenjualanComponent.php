@@ -4,9 +4,11 @@ namespace App\Livewire;
 
 use Carbon\Carbon;
 use Livewire\Component;
+use App\Models\Penjualan;
 use Livewire\WithPagination;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\LaporanPenjualan;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\LaporanPenjualanExport;
 
@@ -17,6 +19,7 @@ class LaporanPenjualanComponent extends Component
     public $search = '';
     public $tglStart;
     public $tglEnd, $perPage = 10;
+    public $page = 1;
 
     public function mount()
     {
@@ -29,7 +32,12 @@ class LaporanPenjualanComponent extends Component
             ->when($this->tglStart && $this->tglEnd, fn($q) =>
                 $q->whereBetween('tanggal', [$this->tglStart, $this->tglEnd]))
             ->when($this->search, fn($q) =>
-                $q->where('nama_produk', 'like', "%{$this->search}%"))
+                $q->where(function ($q2) {
+                    $q2->where('kode_penjualan', 'like', "%{$this->search}%")
+                        ->orWhere('customer_name', 'like', "%{$this->search}%")
+                        ->orWhereHas('penjualanDtl.produk', fn($q3) =>
+                            $q3->where('nama', 'like', "%{$this->search}%"));
+                }))
             ->orderByDesc('tanggal')
             ->get();
 
@@ -80,40 +88,58 @@ class LaporanPenjualanComponent extends Component
             return;
         }
 
-        $headers = ['Tanggal', 'Kode', 'Produk', 'Qty', 'Harga Jual', 'Subtotal', 'Total', 'Bayar', 'Kembalian', 'User'];
-        $title = 'Laporan Penjualan';
+        $headers = ['Tanggal', 'Kode', 'Produk', 'Qty', 'Harga Jual', 'Subtotal', 'Total Penjualan', 'Bayar', 'Kembalian', 'User'];
+        $title = 'Laporan Penjualan (Halaman ' . $this->page . ')';
 
-        $queryResult = LaporanPenjualan::query()
+        // ambil data sesuai page yg sedang aktif
+        $penjualans = Penjualan::with('penjualanDtl.produk', 'user')
             ->when($this->tglStart && $this->tglEnd, fn($q) =>
                 $q->whereBetween('tanggal', [$this->tglStart, $this->tglEnd]))
             ->when($this->search, fn($q) =>
-                $q->where('nama_produk', 'like', "%{$this->search}%"))
+                $q->where(function ($q2) {
+                    $q2->where('kode_penjualan', 'like', "%{$this->search}%")
+                        ->orWhere('customer_name', 'like', "%{$this->search}%")
+                        ->orWhereHas('penjualanDtl.produk', fn($q3) =>
+                            $q3->where('nama', 'like', "%{$this->search}%"));
+                }))
             ->orderByDesc('tanggal')
-            ->paginate($this->perPage);
+            ->paginate($this->perPage, ['*'], 'page', $this->page); // <= penting
 
         $data = [];
-        foreach ($queryResult as $item) {
-            $data[] = [
-                Carbon::parse($item->tanggal)->format('d M Y'),
-                $item->kode_penjualan,
-                $item->nama_produk,
-                $item->qty,
-                $item->harga_jual,
-                $item->subtotal,
-                $item->total,
-                $item->bayar,
-                $item->kembalian,
-                $item->user_id,
-            ];
+        $grandTotal = 0;
+
+        foreach ($penjualans as $p) {
+            foreach ($p->penjualanDtl as $item) {
+                $data[] = [
+                    Carbon::parse($p->tanggal)->format('d M Y'),
+                    $p->kode_penjualan,
+                    $item->produk->nama,
+                    $item->qty,
+                    number_format($item->harga_jual, 0, ',', '.'),
+                    number_format($item->subtotal, 0, ',', '.'),
+                    number_format($p->total, 0, ',', '.'),
+                    number_format($p->bayar, 0, ',', '.'),
+                    number_format($p->kembalian, 0, ',', '.'),
+                    $p->user->name ?? '-',
+                ];
+            }
+
+            $grandTotal += $p->total;
         }
 
-        $pdf = Pdf::loadView('layouts.pdf_layout', compact('data', 'headers', 'title'));
-        $pdf->setPaper('A4', 'landscape');
+        $pdf = Pdf::loadView('layouts.pdf_layout', [
+            'data' => $data,
+            'headers' => $headers,
+            'title' => $title,
+            'showTotal' => true,
+            'grandTotal' => $grandTotal,
+        ])->setPaper('A4', 'landscape');
 
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->stream();
-        }, 'laporan-penjualan.pdf');
+        }, 'laporan-penjualan-halaman-' . $this->page . '.pdf');
     }
+
 
 
 }

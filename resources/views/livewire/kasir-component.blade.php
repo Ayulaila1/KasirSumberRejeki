@@ -32,15 +32,25 @@
             <div class="row row-cols-2 row-cols-md-4 g-3" id="product-grid">
                 @forelse($products as $product)
                 <div class="col">
-                    <div class="product-card h-100" wire:click="addToCart('{{ $product->idproduk }}')">
-                        <div class="product-image">
+                    <div class="product-card h-100 position-relative">
+
+                        <!-- Gambar Produk -->
+                        <div class="product-image position-relative">
                             <img src="{{ asset('storage/image-website/'. $product->image) }}" alt="{{ $product->nama }}"
                                 class="img-fluid rounded">
+
+                            <button type="button" class="btn btn-sm btn-light position-absolute top-0 end-0 m-2"
+                                style="z-index: 10" wire:click.prevent="showIngredient({{ $product->idproduk }})">
+                                <i class="fas fa-eye"></i>
+                            </button>
                         </div>
-                        <div class="product-info mt-2">
+
+                        <div class="product-info mt-2" wire:click="addToCart('{{ $product->idproduk }}')">
                             <div class="product-name fw-semibold">{{ $product->nama }}</div>
-                            <div class="product-price text-muted">Rp {{ number_format($product->harga_jual, 0, ',', '.')
-                                }}</div>
+                            <div class="product-price text-muted">
+                                Rp {{ number_format($product->harga_jual, 0, ',', '.') }}
+                                <span class="badge bg-info ms-2">Stok: {{ $product->stok }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -167,44 +177,70 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    {{-- @if($showReceipt)
-    <div class="receipt-modal" style="display: flex;">
-        <div class="receipt-content">
-            <div class="close-receipt" wire:click="closeReceipt">&times;</div>
-            <div class="receipt-header">
-                <h3>Struk Pembayaran</h3>
-                <p>Cafe Suki</p>
-            </div>
-            <div>
-                <div>No. Meja : {{ $tableNumber ?? '-' }}</div>
-                <div>Nama Pelanggan : {{ $customerName ?? '-' }}</div>
-                <div>Catatan : {{ $notes ?? '-' }}</div>
-            </div>
-            <div class="receipt-items">
-                @foreach($receiptData['items'] as $item)
-                <div class="receipt-item">
-                    <div>{{ $item['name'] }} x {{ $item['quantity'] }}</div>
-                    <div>Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}</div>
-                </div>
-                @endforeach
-            </div>
-            <div class="receipt-total">
-                <div class="receipt-total-row">
-                    <span>Total:</span>
-                    <span>Rp {{ number_format($receiptData['total'], 0, ',', '.') }}</span>
+        <!-- Modal Ingredient -->
+        @if($showModal)
+        <div class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.5)">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            Bahan {{ $selectedProduk?->nama }}
+                        </h5>
+                        <button type="button" class="btn-close" wire:click="$set('showModal', false)"></button>
+                    </div>
+                    <div class="modal-body">
+                        @if(count($ingredients) > 0)
+                        <ul>
+                            @foreach($ingredients as $item)
+                            <li>{{ $item->bahan?->nama }} - {{ $item->takaran }} {{ $item->satuan }}</li>
+                            @endforeach
+                        </ul>
+                        @else
+                        <p class="text-muted">Tidak ada bahan untuk produk ini.</p>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
+        @endif
+
+        {{-- @if($showReceipt)
+        <div class="receipt-modal" style="display: flex;">
+            <div class="receipt-content">
+                <div class="close-receipt" wire:click="closeReceipt">&times;</div>
+                <div class="receipt-header">
+                    <h3>Struk Pembayaran</h3>
+                    <p>Cafe Suki</p>
+                </div>
+                <div>
+                    <div>No. Meja : {{ $tableNumber ?? '-' }}</div>
+                    <div>Nama Pelanggan : {{ $customerName ?? '-' }}</div>
+                    <div>Catatan : {{ $notes ?? '-' }}</div>
+                </div>
+                <div class="receipt-items">
+                    @foreach($receiptData['items'] as $item)
+                    <div class="receipt-item">
+                        <div>{{ $item['name'] }} x {{ $item['quantity'] }}</div>
+                        <div>Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}</div>
+                    </div>
+                    @endforeach
+                </div>
+                <div class="receipt-total">
+                    <div class="receipt-total-row">
+                        <span>Total:</span>
+                        <span>Rp {{ number_format($receiptData['total'], 0, ',', '.') }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif --}}
+
+        @include('layouts.confirmPaymentModal')
+
+
+
+
     </div>
-    @endif --}}
 
-    @include('layouts.confirmPaymentModal')
-
-
-
-
-</div>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

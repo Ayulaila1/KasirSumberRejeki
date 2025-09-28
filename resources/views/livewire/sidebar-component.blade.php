@@ -1,8 +1,9 @@
 <div>
     <div class="sidebar {{ $showSidebar && !request()->routeIs('kasir.index') ? 'show' : '' }}" id="sidebar">
-        <div class="sidebar-header">
-            <i class="fas fa-mug-hot"></i>
-            <h3>Cafe Suki</h3>
+        <div class="sidebar-header d-flex align-items-center">
+            <img src="{{ asset('images/logo-cafe.png') }}" alt="Logo"
+                style="width:30px; height:auto; margin-right:8px;">
+            <h3 class="mb-0">Cafe Suki</h3>
         </div>
 
         <div class="sidebar-section mt-3 px-3 text-muted fw-bold small">
