@@ -127,18 +127,18 @@ class KasirComponent extends Component
         return 'Rp ' . number_format($angka, 0, ',', '.');
     }
 
-    public function showIngredient($idproduk)
+    public function showIngredients($produkId)
     {
-        $this->selectedProduk = Produk::with('produkDetails.bahan')->find($idproduk);
+        $this->selectedProduk = Produk::find($produkId);
 
-        if ($this->selectedProduk && $this->selectedProduk->produkDetails->count() > 0) {
-            $this->ingredients = $this->selectedProduk->produkDetails;
-        } else {
-            $this->ingredients = [];
-        }
+        // ambil bahan dari relasi ProdukRacikan
+        $this->ingredients = ProdukRacikan::with('bahan')
+            ->where('produk_idproduk', $produkId)
+            ->get();
 
         $this->showModal = true;
     }
+
 
 
     public function render()

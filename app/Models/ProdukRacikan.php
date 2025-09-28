@@ -38,10 +38,8 @@ class ProdukRacikan extends Model
 
     public function bahan()
     {
-        return $this->belongsTo(Produk::class, 'bahan_idbahan', 'idproduk');
+        return $this->belongsTo(Bahan::class, 'bahan_idbahan', 'idbahan');
     }
-
-
 
     // public function supplier()
     // {

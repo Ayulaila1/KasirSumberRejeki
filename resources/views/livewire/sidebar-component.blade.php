@@ -1,9 +1,14 @@
 <div>
     <div class="sidebar {{ $showSidebar && !request()->routeIs('kasir.index') ? 'show' : '' }}" id="sidebar">
-        <div class="sidebar-header d-flex align-items-center">
-            <img src="{{ asset('images/logo-cafe.png') }}" alt="Logo"
-                style="width:30px; height:auto; margin-right:8px;">
-            <h3 class="mb-0">Cafe Suki</h3>
+        <div class="sidebar-header d-flex align-items-center px-3 py-3" style="border-bottom:1px solid #ddd;">
+            <div class="logo-wrapper d-flex align-items-center justify-content-center"
+                style="width:90px; height:90px; background:#f1f1f1; border-radius:50%; margin-right:12px;">
+                <img src="{{ asset('backend/images/logoSR.png') }}" alt="Logo" style="max-width:80px; height:auto;">
+            </div>
+            <div>
+                <h3 class="mb-0 fw-bold" style="font-size:20px; line-height:1.2;">Cafe Suki</h3>
+                <small class="text-muted" style="font-size:13px;">Coffee & Eatery</small>
+            </div>
         </div>
 
         <div class="sidebar-section mt-3 px-3 text-muted fw-bold small">
@@ -110,9 +115,14 @@
                         <a href="{{ route('pengaturan.index') }}" class="dropdown-item">
                             <i class="fas fa-cog"></i> Pengaturan
                         </a>
-                        <a href="#" class="dropdown-item" wire:click="logout">
+                        <a href="{{ route('logout') }}" class="dropdown-item"
+                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                             <i class="fas fa-sign-out-alt"></i> Keluar
                         </a>
+
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display:none;">
+                            @csrf
+                        </form>
                     </div>
                 </div>
             </div>

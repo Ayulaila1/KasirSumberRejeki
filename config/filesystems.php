@@ -47,6 +47,14 @@ return [
             'report' => false,
         ],
 
+        'hosting' => [
+            'driver' => 'local',
+            'root' => storage_path() . '/../../public_html' . '/storage',
+            'url' => env('APP_URL') . '/../../public_html' . '/storage',
+            'visibility' => 'public',
+        ],
+
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

@@ -40,7 +40,7 @@
                                 class="img-fluid rounded">
 
                             <button type="button" class="btn btn-sm btn-light position-absolute top-0 end-0 m-2"
-                                style="z-index: 10" wire:click.prevent="showIngredient({{ $product->idproduk }})">
+                                style="z-index: 10" wire:click.prevent="showIngredients({{ $product->idproduk }})">
                                 <i class="fas fa-eye"></i>
                             </button>
                         </div>
@@ -149,12 +149,15 @@
         @if($showModal)
         <div class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.5)">
             <div class="modal-dialog">
-                <div class="modal-content">
+                {{-- <div class="modal-content"> --}}
                     <div class="modal-header">
-                        <h5 class="modal-title">
+                        <h5 class="modal-title text-white">
                             Bahan {{ $selectedProduk?->nama }}
                         </h5>
-                        <button type="button" class="btn-close" wire:click="$set('showModal', false)"></button>
+                        {{-- <button type="button" class="btn-close" wire:click="$set('showModal', false)"></button>
+                        --}}
+
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         @if(count($ingredients) > 0)
@@ -167,7 +170,9 @@
                         <p class="text-muted">Tidak ada bahan untuk produk ini.</p>
                         @endif
                     </div>
-                </div>
+
+                    {{--
+                </div> --}}
             </div>
         </div>
         @endif
@@ -211,3 +216,9 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        window.addEventListener('close-detail-modal', event =>{
+                $('#detailBahanModal').modal('hide');
+                });
+    </script>
