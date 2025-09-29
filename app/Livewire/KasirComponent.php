@@ -402,22 +402,30 @@ class KasirComponent extends Component
     // Lanjutkan transaksi dari Hold
     public function resumeFromHold($id)
     {
-        $hold = \App\Models\Hold::findOrFail($id);
+        $hold = Hold::findOrFail($id);
 
         // cek kalau items masih string JSON, baru decode
-        $this->cart = is_string($hold->items)
+        $items = is_string($hold->items)
             ? json_decode($hold->items, true)
             : $hold->items;
+
+        // masukkan item satu per satu ke keranjang lewat addToCart()
+        foreach ($items as $item) {
+            $this->addToCart(
+                $item['id'],       // id produk
+                $item['name'],     // nama produk
+                $item['price'],    // harga produk
+                $item['quantity']  // jumlah
+            );
+        }
 
         $this->customerName = $hold->customer;
         $this->tableNumber = $hold->table_number;
 
         // hapus hold setelah dilanjutkan
         $hold->delete();
-
-        // langsung buka modal konfirmasi
-        $this->openConfirmModal();
     }
+
 
 
 
