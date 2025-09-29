@@ -4,10 +4,10 @@ namespace App\Livewire;
 
 use Carbon\Carbon;
 use App\Models\Hold;
+use App\Models\Bahan;
 use App\Models\Produk;
 use Livewire\Component;
 use App\Models\Penjualan;
-use Mike42\Escpos\Printer;
 use Mike42\Escpos\Printer;
 use Illuminate\Support\Str;
 use App\Models\PenjualanDtl;

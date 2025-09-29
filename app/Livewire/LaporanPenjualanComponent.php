@@ -28,7 +28,7 @@ class LaporanPenjualanComponent extends Component
     }
     public function render()
     {
-        $laporanRaw = LaporanPenjualan::query()
+        $laporanRaw = Penjualan::query()
             ->when($this->tglStart && $this->tglEnd, fn($q) =>
                 $q->whereBetween('tanggal', [$this->tglStart, $this->tglEnd]))
             ->when($this->search, fn($q) =>
@@ -38,44 +38,14 @@ class LaporanPenjualanComponent extends Component
                         ->orWhereHas('penjualanDtl.produk', fn($q3) =>
                             $q3->where('nama', 'like', "%{$this->search}%"));
                 }))
+            ->with(['penjualanDtl.produk'])
             ->orderByDesc('tanggal')
-            ->get();
-
-        // Gabung produk berdasarkan kode_penjualan
-        $grouped = $laporanRaw->groupBy('kode_penjualan')->map(function ($items) {
-            $first = $items->first();
-            return (object) [
-                'tanggal' => $first->tanggal,
-                'kode_penjualan' => $first->kode_penjualan,
-                // Produk ditampilkan per baris
-                'produk' => $items->pluck('nama_produk')->implode(', '),
-                'qty' => $items->sum('qty'),
-                'harga_jual' => $items->avg('harga_jual'),
-                'subtotal' => $items->sum('subtotal'),
-                'total' => $first->total,
-                'bayar' => $first->bayar,
-                'kembalian' => $first->kembalian,
-                'user_id' => $first->user_id,
-            ];
-        })->values();
-
-        // Biar tetap bisa pakai firstItem(), lastItem(), dll → manual paginate Collection
-        $page = request('page', 1);
-        $perPage = $this->perPage;
-        $laporan = new \Illuminate\Pagination\LengthAwarePaginator(
-            $grouped->forPage($page, $perPage),
-            $grouped->count(),
-            $perPage,
-            $page,
-            ['path' => request()->url(), 'query' => request()->query()]
-        );
+            ->paginate($this->perPage);
 
         return view('livewire.laporan-penjualan-component', [
-            'laporan' => $laporan
+            'laporan' => $laporanRaw
         ]);
     }
-
-
 
     public function exportToPdf()
     {
