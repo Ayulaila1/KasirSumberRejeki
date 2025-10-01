@@ -33,7 +33,7 @@ class KasirComponent extends Component
     public $cashAmount;
     public $cashFormatted;
     public $change = 0;
-    public $notes = '';
+    public $orderNotes = '';
 
     public $showModal = false;
     public $selectedProduk;
@@ -49,7 +49,6 @@ class KasirComponent extends Component
         'produkDipilih' => 'addToCart',
         'resumeFromHold' => 'resumeFromHold',
         'deleteHold',
-
     ];
 
 
@@ -142,15 +141,20 @@ class KasirComponent extends Component
     {
         $this->selectedProduk = Produk::find($produkId);
 
-        // ambil bahan dari relasi ProdukRacikan
         $this->ingredients = ProdukRacikan::with('bahan')
             ->where('produk_idproduk', $produkId)
             ->get();
 
+        // dispatch event ke browser
         $this->showModal = true;
     }
 
-
+    public function closeModal()
+    {
+        $this->showModal = false;
+        $this->selectedProduk = null;
+        $this->ingredients = [];
+    }
 
     public function render()
     {
@@ -163,7 +167,11 @@ class KasirComponent extends Component
             })
             ->get();
 
-        $categories = ['Semua'] + Produk::select('kategori')->distinct()->pluck('kategori')->toArray();
+        $categories = ['Semua'] + Produk::whereNotNull('kategori')
+            ->where('kategori', '!=', '')
+            ->distinct()
+            ->pluck('kategori')
+            ->toArray();
 
         $this->updateCartTotals();
 
@@ -181,7 +189,17 @@ class KasirComponent extends Component
             return;
         }
 
+        // Hitung stok tersisa (misalnya stok asli dikurangi jumlah di cart)
+        $stokTersisa = $product->stok_tersedia ?? $product->stok;
+
+        // Cari jumlah yang sudah ada di keranjang
         $existingItem = collect($this->cart)->firstWhere('id', $productId);
+        $jumlahDiCart = $existingItem['quantity'] ?? 0;
+
+        if ($jumlahDiCart >= $stokTersisa) {
+            // Kalau stok habis, jangan bisa tambah lagi
+            return;
+        }
 
         if ($existingItem) {
             $this->cart = collect($this->cart)->map(function ($item) use ($productId) {
@@ -201,6 +219,7 @@ class KasirComponent extends Component
 
         $this->dispatch('cartUpdated');
     }
+
 
     public function updateQty($productId, $delta = 1)
     {
@@ -270,7 +289,7 @@ class KasirComponent extends Component
                 'kode_penjualan' => 'TRX-' . now()->format('Ymd') . '-' . Str::random(4),
                 'customer_name' => $this->customerName,
                 'no_meja' => $this->tableNumber,
-                'catatan' => $this->catatan,
+                'catatan' => $this->orderNotes,
                 'tanggal' => now()->format('Y-m-d'),
                 'total' => $this->getTotal(),
                 'bayar' => $this->cashAmount,
@@ -314,8 +333,8 @@ class KasirComponent extends Component
                 'number' => $penjualan->kode_penjualan,
                 'date' => now()->format('d/m/Y H:i:s'),
                 'customer_name' => $this->customerName ?: '-',
-                'no_meja' => $this->tableNumber,
-                'catatan' => $this->catatan,
+                'no_meja' => $this->tableNumber ?: '-',
+                'catatan' => $this->orderNotes ?: '-',
                 'items' => $this->cart,
                 'total' => $this->getTotal(),
                 'cash' => $this->cashAmount,
@@ -330,6 +349,7 @@ class KasirComponent extends Component
             $this->dispatch('showAlert', 'Terjadi kesalahan saat memproses pembayaran.', 'danger');
         }
     }
+
 
 
     public function closeReceipt()
@@ -378,6 +398,7 @@ class KasirComponent extends Component
             'kode_transaksi' => $kode,
             'customer' => $this->customerName ?: '-', // default "-" biar tidak NULL
             'table_number' => $this->tableNumber ?: '-',
+            'notes' => $this->orderNotes ?: '-',
             'items' => $this->cart,   // otomatis JSON
             'total' => $total,
             'user_id' => Auth::id(),
@@ -387,7 +408,7 @@ class KasirComponent extends Component
         $this->clearCart();
         $this->customerName = null;
         $this->tableNumber = null;
-        $this->notes = null;
+        $this->orderNotes = null;
 
         session()->flash('success', 'Transaksi berhasil di-hold.');
     }
@@ -421,14 +442,11 @@ class KasirComponent extends Component
 
         $this->customerName = $hold->customer;
         $this->tableNumber = $hold->table_number;
+        $this->orderNotes = $hold->notes;
 
         // hapus hold setelah dilanjutkan
         $hold->delete();
     }
-
-
-
-
 
     // Hapus transaksi Hold
     public function deleteHold($holdId)
@@ -438,51 +456,6 @@ class KasirComponent extends Component
 
         session()->flash('success', 'Data hold berhasil dihapus.');
     }
-
-
-    // Fungsi Hold Cart
-    // public function holdCart()
-    // {
-    //     if (empty($this->cart)) {
-    //         $this->dispatch('showAlert', 'Keranjang masih kosong, tidak bisa di-hold', 'danger');
-    //         return;
-    //     }
-
-    //     $holdId = 'HOLD-' . now()->format('YmdHis');
-
-    //     $this->holds[$holdId] = [
-    //         'id' => $holdId,
-    //         'customer' => $this->customerName ?: '-',
-    //         'table' => $this->tableNumber ?: '-',
-    //         'notes' => $this->notes ?: '-',
-    //         'cart' => $this->cart,
-    //         'total' => $this->getTotal(),
-    //         'created_at' => now()->format('d/m/Y H:i:s'),
-    //     ];
-
-    //     // reset keranjang
-    //     $this->clearCart();
-    //     $this->dispatch('showAlert', "Pesanan berhasil di-hold dengan ID $holdId", 'success');
-    // }
-
-    // Fungsi Restore Cart dari Hold
-    // public function restoreHold($holdId)
-    // {
-    //     if (!isset($this->holds[$holdId])) {
-    //         $this->dispatch('showAlert', 'Data hold tidak ditemukan', 'danger');
-    //         return;
-    //     }
-
-    //     $hold = $this->holds[$holdId];
-
-    //     $this->cart = $hold['cart'];
-    //     $this->customerName = $hold['customer'];
-    //     $this->tableNumber = $hold['table'];
-    //     $this->notes = $hold['notes'];
-
-    //     unset($this->holds[$holdId]); // hapus dari daftar hold
-    //     $this->dispatch('showAlert', "Pesanan $holdId berhasil dikembalikan", 'success');
-    // }
 
 
 }

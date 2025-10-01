@@ -1079,28 +1079,6 @@
             }
         }
 
-        :root {
-            --primary: #7a4b47;
-            --secondary: #ffbe5e;
-            --light: #f8f9fa;
-            --dark: #343a40;
-            --success: #28a745;
-            --danger: #dc3545;
-            --warning: #ffc107;
-            --info: #17a2b8;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: #f5f5f5;
-            overflow-x: hidden;
-        }
 
         /* Sidebar */
         .sidebar {
@@ -1849,29 +1827,6 @@
 
     {{-- STYLE Pengguna --}}
     <style>
-        :root {
-            --primary: #7a4b47;
-            --secondary: #ffbe5e;
-            --light: #f8f9fa;
-            --dark: #343a40;
-            --success: #28a745;
-            --danger: #dc3545;
-            --warning: #ffc107;
-            --info: #17a2b8;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: #f5f5f5;
-            overflow-x: hidden;
-        }
-
         /* Sidebar */
         .sidebar {
             width: 250px;
@@ -2359,6 +2314,8 @@
             gap: 15px;
         }
 
+
+
         /* Modal */
         .modal {
             display: none;
@@ -2379,7 +2336,7 @@
         }
 
         .modal-dialog {
-            background-color: white;
+            background-color: transparent;
             border-radius: 10px;
             width: 100%;
             max-width: 500px;
@@ -2511,29 +2468,6 @@
 
     {{-- STYLE Pengaturan --}}
     <style>
-        :root {
-            --primary: #7a4b47;
-            --secondary: #ffbe5e;
-            --light: #f8f9fa;
-            --dark: #343a40;
-            --success: #28a745;
-            --danger: #dc3545;
-            --warning: #ffc107;
-            --info: #17a2b8;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: #f5f5f5;
-            overflow-x: hidden;
-        }
-
         /* Sidebar */
         .sidebar {
             width: 250px;
@@ -3038,32 +2972,47 @@
 
     {{-- STYLE Tambahan Kasir --}}
     <style>
+        /* ----------------- POS Layout ----------------- */
         .pos-container {
             display: flex;
+            flex-wrap: wrap;
+            /* supaya bisa turun di layar kecil */
             height: 100vh;
             font-family: 'Poppins', sans-serif;
+            background: #f8f9fa;
         }
 
+        /* ----------------- Product Section ----------------- */
         .product-section {
             flex: 3;
+            min-width: 300px;
+            /* jangan terlalu kecil */
             padding: 20px;
             background: #f8f9fa;
             overflow-y: auto;
         }
 
+        /* ----------------- Cart Section ----------------- */
         .cart-section {
             flex: 1;
+            min-width: 250px;
             background: white;
             border-left: 1px solid #eee;
             display: flex;
             flex-direction: column;
+            padding: 15px;
+            box-sizing: border-box;
+            overflow-y: auto;
         }
 
+        /* ----------------- Category Tabs ----------------- */
         .category-tabs {
             display: flex;
             margin: 15px 0;
             gap: 10px;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            /* smooth scroll HP */
         }
 
         .category-tab {
@@ -3073,6 +3022,7 @@
             cursor: pointer;
             white-space: nowrap;
             font-size: 14px;
+            transition: 0.2s;
         }
 
         .category-tab.active {
@@ -3080,26 +3030,72 @@
             color: white;
         }
 
+        /* ----------------- Product Grid ----------------- */
         .product-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
             gap: 15px;
         }
 
+        /* ----------------- Product Card ----------------- */
         .product-card {
             background: white;
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .product-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
 
-        /* ... [CSS lainnya tetap sama] ... */
+        /* ----------------- Responsive ----------------- */
+        @media (max-width: 1200px) {
+            .pos-container {
+                flex-direction: row;
+            }
+
+            .product-section {
+                flex: 2.5;
+            }
+
+            .cart-section {
+                flex: 1.2;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .pos-container {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .product-section,
+            .cart-section {
+                min-width: 100%;
+                flex: unset;
+                margin-bottom: 15px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .category-tab {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+
+            .product-card {
+                border-radius: 8px;
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 10px;
+            }
+        }
     </style>
 
 

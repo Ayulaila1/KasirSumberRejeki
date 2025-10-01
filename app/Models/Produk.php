@@ -59,6 +59,20 @@ class Produk extends Model
     {
         return $this->hasMany(ProdukRacikan::class, 'produk_idproduk', 'idproduk');
     }
+
+    public function getStokTersediaAttribute()
+    {
+        // Hitung stok dari bahan racikan
+        $stokArray = $this->produkDetails->map(function ($racikan) {
+            if ($racikan->bahan && $racikan->takaran > 0) {
+                return floor($racikan->bahan->stok / $racikan->takaran);
+            }
+            return 0;
+        });
+
+        return $stokArray->min() ?? 0;
+    }
+
     public function scopeFilterJenisProduk($query, $value)
     {
         if (!empty($value)) {

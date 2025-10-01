@@ -12,7 +12,7 @@
         <div class="p-2 rounded bg-light mb-3">
             <div><strong>No. Meja:</strong> {{ $tableNumber ?: '-' }}</div>
             <div><strong>Nama Pelanggan:</strong> {{ $customerName ?: '-' }}</div>
-            <div><strong>Catatan:</strong> {{ $notes ?: '-' }}</div>
+            <div><strong>Catatan:</strong> {{ $orderNotes ?: '-' }}</div>
         </div>
 
         <!-- Daftar item -->

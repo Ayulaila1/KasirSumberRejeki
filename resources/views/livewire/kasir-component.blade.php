@@ -37,7 +37,7 @@
                         <!-- Gambar Produk -->
                         <div class="product-image position-relative">
                             <img src="{{ asset('storage/image-website/'. $product->image) }}" alt="{{ $product->nama }}"
-                                class="img-fluid rounded">
+                                class="img-fluid rounded {{ $product->stok_tersedia <= 0 ? 'grayscale' : '' }}">
 
                             <button type="button" class="btn btn-sm btn-light position-absolute top-0 end-0 m-2"
                                 style="z-index: 10" wire:click.prevent="showIngredients({{ $product->idproduk }})">
@@ -45,11 +45,23 @@
                             </button>
                         </div>
 
-                        <div class="product-info mt-2" wire:click="addToCart('{{ $product->idproduk }}')">
+                        <!-- Info Produk -->
+                        <div class="product-info mt-2" {{-- Kalau stok habis → tidak bisa diklik --}} @if($product->
+                            stok_tersedia >
+                            0)
+                            wire:click="addToCart('{{ $product->idproduk }}')"
+                            @endif
+                            >
                             <div class="product-name fw-semibold">{{ $product->nama }}</div>
-                            <div class="product-price text-muted">
-                                Rp {{ number_format($product->harga_jual, 0, ',', '.') }}
-                                <span class="badge bg-info ms-2">Stok: {{ $product->stok }}</span>
+
+                            <div class="product-price d-flex justify-content-between align-items-center text-muted">
+                                <!-- Harga -->
+                                <span>Rp {{ number_format($product->harga_jual, 0, ',', '.') }}</span>
+
+                                <!-- Stok -->
+                                <span class="badge {{ $product->stok_tersedia > 0 ? 'bg-info' : 'bg-secondary' }}">
+                                    Stok: {{ $product->stok_tersedia }}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -71,12 +83,6 @@
                         placeholder="Nama Pelanggan (Opsional)">
                 </div>
 
-                {{-- <div class="payment-methods-section">
-
-                    <div class="payment-methods">
-                    </div>
-                </div> --}}
-
                 <div class="notes-section">
                     <h4><i class="fas fa-sticky-note"></i> Catatan</h4>
                     <textarea wire:model.live="orderNotes" placeholder="Catatan untuk pesanan..."></textarea>
@@ -88,7 +94,8 @@
                         <div class="d-flex justify-content-between align-items-start mb-1">
                             <!-- Info Produk -->
                             <div class="cart-item-info">
-                                <div class="cart-item-name fw-semibold">{{ $item['product']->nama ?? $item['name'] }}
+                                <div class="cart-item-name fw-semibold">
+                                    {{ $item['product']->nama ?? $item['name'] }}
                                 </div>
                                 <div class="cart-item-price text-muted small">
                                     Rp {{ number_format($item['harga_jual'] ?? $item['price'], 0, ',', '.') }}
@@ -110,9 +117,11 @@
 
                         <!-- Subtotal -->
                         <div class="summary-row d-flex justify-content-between small text-muted">
-                            <span>Rp {{ number_format(($item['jumlah'] ?? $item['quantity']) * ($item['harga_jual'] ??
-                                $item['price']),
-                                0, ',', '.') }}</span>
+                            <span>
+                                Rp {{ number_format(($item['jumlah'] ?? $item['quantity']) * ($item['harga_jual'] ??
+                                $item['price']), 0,
+                                ',', '.') }}
+                            </span>
                         </div>
                     </div>
                     @empty
@@ -122,129 +131,255 @@
                     </div>
                     @endforelse
 
-                    <!-- TOTAL -->
-                    <div class="summary-row total-row mt-3 border-top pt-2 d-flex justify-content-between">
-                        <span style="font-size: 14px;" class="fw-bold">Total:</span>
-                        <span style="font-size: 14px;" class="fw-bold">Rp {{ number_format($this->getTotal(), 0, ',',
-                            '.') }}</span>
+                    <div class="p-3 border-top mt-3">
+                        <!-- Total -->
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong>Total :</strong>
+                            <span class="fs-5 text-success fw-bold">Rp 0</span>
+                        </div>
+
+                        <!-- Bayar -->
+                        <div class="row align-items-center mb-2">
+                            <label class="col-4 col-form-label fw-semibold">Bayar (Tunai) :</label>
+                            <div class="col-8">
+                                <input type="text" wire:model.live="cashFormatted" placeholder="Masukkan uang tunai..."
+                                    class="form-control text-end">
+                            </div>
+                        </div>
+
+                        <!-- Kembalian -->
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="fw-semibold">Kembalian :</span>
+                            <span class="fs-5 text-primary fw-bold">Rp 0</span>
+                        </div>
+
+                        <!-- Tombol -->
+                        <div class="d-flex justify-content-end gap-2">
+                            <button class="btn btn-warning">
+                                <i class="fas fa-pause"></i> Hold
+                            </button>
+                            <button class="btn btn-success">
+                                <i class="fas fa-cash-register"></i> Bayar
+                            </button>
+                        </div>
                     </div>
-
-                    <!-- Pembayaran -->
-                    <input type="text" wire:model.live="cashFormatted" placeholder="Masukkan uang tunai..."
-                        class="form-control">
-
-                    <p>Kembalian: Rp {{ number_format(max($cashAmount - $this->getTotal(), 0), 0, ',', '.') }}</p>
-
-                    <!-- Tombol Bayar -->
-                    <div class="d-flex justify-content-end mt-3">
-                        <button wire:click="hold" class="btn btn-warning me-2">
-                            <i class="fas fa-pause"></i> Hold
-                        </button>
-                        <button wire:click="openConfirmModal()" class="btn btn-success">
-                            <i class="fas fa-cash-register"></i> Bayar
-                        </button>
-                    </div>
-
-
-                    {{-- <div class="action-buttons mt-3">
-                        <button class="btn btn-success w-100" wire:click="openConfirmModal()">
-                            <i class="fas fa-money-bill"></i> Bayar
-                        </button>
-                    </div> --}}
-
-                    <!-- 🔽 Bagian Hold Order -->
-                    {{-- <div class="hold-section mt-4">
-                        <h5><i class="fas fa-clock"></i> Pesanan Hold</h5>
-                        @if(count($holds) > 0)
-                        <ul class="list-group">
-                            @foreach($holds as $hold)
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>{{ $hold['id'] }}</strong><br>
-                                    Meja: {{ $hold['table'] }} | {{ $hold['customer'] }}
-                                    <div class="small text-muted">{{ $hold['created_at'] }}</div>
-                                </div>
-                                <button class="btn btn-sm btn-primary" wire:click="restoreHold('{{ $hold['id'] }}')">
-                                    <i class="fas fa-play"></i> Restore
-                                </button>
-                            </li>
-                            @endforeach
-                        </ul>
-                        @else
-                        <p class="text-muted">Belum ada pesanan hold.</p>
-                        @endif
-                    </div> --}}
                 </div>
             </div>
         </div>
 
         <!-- Modal Ingredient -->
         @if($showModal)
-        <div class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.5)">
-            <div class="modal-dialog">
-                {{-- <div class="modal-content"> --}}
-                    <div class="modal-header">
-                        <h5 class="modal-title text-white">
-                            Bahan {{ $selectedProduk?->nama }}
-                        </h5>
-                        {{-- <button type="button" class="btn-close" wire:click="$set('showModal', false)"></button>
-                        --}}
-
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="custom-modal">
+            <div class="custom-modal-dialog">
+                <div class="custom-modal-content">
+                    <div class="custom-modal-header">
+                        <h5 class="custom-modal-title">Bahan {{ $selectedProduk?->nama }}</h5>
+                        <button type="button" class="custom-modal-close"
+                            wire:click="$set('showModal', false)">×</button>
                     </div>
-                    <div class="modal-body">
+                    <div class="custom-modal-body">
                         @if(count($ingredients) > 0)
-                        <ul>
-                            @foreach($ingredients as $item)
-                            <li>{{ $item->bahan?->nama }} - {{ $item->takaran }} {{ $item->satuan }}</li>
-                            @endforeach
-                        </ul>
+                        <table class="ingredient-table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama Bahan</th>
+                                    <th>Takaran</th>
+                                    <th>Satuan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($ingredients as $index => $item)
+                                <tr style="animation-delay: {{ $index * 0.1 }}s;">
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $item->bahan?->nama }}</td>
+                                    <td>{{ $item->takaran }}</td>
+                                    <td>{{ $item->satuan }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                         @else
-                        <p class="text-muted">Tidak ada bahan untuk produk ini.</p>
+                        <p class="text-muted text-center">Tidak ada bahan untuk produk ini.</p>
                         @endif
                     </div>
-
-                    {{--
-                </div> --}}
+                </div>
             </div>
         </div>
         @endif
 
-        {{-- @if($showReceipt)
-        <div class="receipt-modal" style="display: flex;">
-            <div class="receipt-content">
-                <div class="close-receipt" wire:click="closeReceipt">&times;</div>
-                <div class="receipt-header">
-                    <h3>Struk Pembayaran</h3>
-                    <p>Cafe Suki</p>
-                </div>
-                <div>
-                    <div>No. Meja : {{ $tableNumber ?? '-' }}</div>
-                    <div>Nama Pelanggan : {{ $customerName ?? '-' }}</div>
-                    <div>Catatan : {{ $notes ?? '-' }}</div>
-                </div>
-                <div class="receipt-items">
-                    @foreach($receiptData['items'] as $item)
-                    <div class="receipt-item">
-                        <div>{{ $item['name'] }} x {{ $item['quantity'] }}</div>
-                        <div>Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}</div>
-                    </div>
-                    @endforeach
-                </div>
-                <div class="receipt-total">
-                    <div class="receipt-total-row">
-                        <span>Total:</span>
-                        <span>Rp {{ number_format($receiptData['total'], 0, ',', '.') }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        @endif --}}
+        <style>
+            /* BACKDROP & MODAL */
+            .custom-modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                backdrop-filter: blur(4px);
+                background-color: rgba(0, 0, 0, 0.4);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1050;
+                padding: 15px;
+                animation: fadeIn 0.4s ease forwards;
+            }
+
+            .custom-modal-dialog {
+                width: 100%;
+                max-width: 500px;
+            }
+
+            /* CONTENT */
+            .custom-modal-content {
+                background: #fff;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+                display: flex;
+                flex-direction: column;
+                max-height: 85vh;
+                transform: scale(0.9) translateY(-15px);
+                opacity: 0;
+                animation: modalPop 0.4s forwards;
+            }
+
+            /* HEADER */
+            .custom-modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px 20px;
+                background: linear-gradient(90deg, #7a4b47, #ff7e5f);
+                color: #fff;
+                font-weight: 600;
+                flex-shrink: 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+                letter-spacing: 0.5px;
+                font-size: 1.1rem;
+            }
+
+            .custom-modal-close {
+                background: transparent;
+                border: none;
+                font-size: 1.6rem;
+                color: #fff;
+                cursor: pointer;
+                transition: transform 0.2s ease, color 0.2s ease;
+            }
+
+            .custom-modal-close:hover {
+                color: #ffeb3b;
+                transform: rotate(90deg) scale(1.2);
+            }
+
+            /* BODY */
+            .custom-modal-body {
+                padding: 20px;
+                overflow-y: auto;
+            }
+
+            /* TABLE */
+            .ingredient-table {
+                width: 100%;
+                border-collapse: collapse;
+                text-align: left;
+                font-size: 0.95rem;
+            }
+
+            .ingredient-table thead {
+                background-color: #f8f8f8;
+                color: #000;
+            }
+
+            .ingredient-table th,
+            .ingredient-table td {
+                padding: 10px 12px;
+                border-bottom: 1px solid #ddd;
+            }
+
+            .ingredient-table tbody tr {
+                opacity: 0;
+                transform: translateX(-15px);
+                animation: listFadeIn 0.4s forwards;
+            }
+
+            /* SCROLLBAR CUSTOM */
+            .custom-modal-body::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            .custom-modal-body::-webkit-scrollbar-track {
+                background: #f0f0f0;
+                border-radius: 4px;
+            }
+
+            .custom-modal-body::-webkit-scrollbar-thumb {
+                background: #7a4b47;
+                border-radius: 4px;
+            }
+
+            /* ANIMATIONS */
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+
+                to {
+                    opacity: 1;
+                }
+            }
+
+            @keyframes modalPop {
+                from {
+                    transform: scale(0.9) translateY(-15px);
+                    opacity: 0;
+                }
+
+                to {
+                    transform: scale(1) translateY(0);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes listFadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateX(-15px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            /* RESPONSIVE */
+            @media (max-width: 768px) {
+                .custom-modal-content {
+                    max-width: 95%;
+                    border-radius: 10px;
+                }
+
+                .custom-modal-header {
+                    font-size: 1rem;
+                    padding: 12px 15px;
+                }
+
+                .custom-modal-body {
+                    padding: 12px 15px;
+                }
+
+                .ingredient-table th,
+                .ingredient-table td {
+                    padding: 8px 10px;
+                }
+            }
+        </style>
+
 
         @include('layouts.confirmPaymentModal')
-
-
-
 
     </div>
 
