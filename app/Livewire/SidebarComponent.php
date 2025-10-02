@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use Illuminate\Support\Facades\Auth;
 
 class SidebarComponent extends Component
 {
@@ -28,6 +29,14 @@ class SidebarComponent extends Component
         $this->showSidebar = false;
     }
 
+    public function logout()
+    {
+        Auth::logout(); // keluarin user
+        session()->invalidate(); // hapus session
+        session()->regenerateToken(); // amankan CSRF
+
+        return redirect()->route('login'); // arahkan ke login
+    }
     public function render()
     {
         return view('livewire.sidebar-component');

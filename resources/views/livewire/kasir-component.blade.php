@@ -135,7 +135,8 @@
                         <!-- Total -->
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <strong>Total :</strong>
-                            <span class="fs-5 text-success fw-bold">Rp 0</span>
+                            <span class="fs-5 text-success fw-bold">Rp {{ number_format($this->getTotal(), 0, ',', '.')
+                                }}</span>
                         </div>
 
                         <!-- Bayar -->
@@ -150,15 +151,17 @@
                         <!-- Kembalian -->
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <span class="fw-semibold">Kembalian :</span>
-                            <span class="fs-5 text-primary fw-bold">Rp 0</span>
+                            <span class="fs-5 text-primary fw-bold">Rp {{ number_format(max($cashAmount -
+                                $this->getTotal(), 0), 0, ',', '.')
+                                }}</span>
                         </div>
 
                         <!-- Tombol -->
                         <div class="d-flex justify-content-end gap-2">
-                            <button class="btn btn-warning">
+                            <button class="btn btn-warning" wire:click="hold">
                                 <i class="fas fa-pause"></i> Hold
                             </button>
-                            <button class="btn btn-success">
+                            <button class="btn btn-success" wire:click="openConfirmModal()">
                                 <i class="fas fa-cash-register"></i> Bayar
                             </button>
                         </div>

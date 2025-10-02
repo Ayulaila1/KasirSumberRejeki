@@ -375,7 +375,11 @@ class KasirComponent extends Component
     {
         $this->cart = [];
         $this->cashAmount = 0;
+        $this->cashFormatted = '';
         $this->change = 0;
+        $this->customerName = '';
+        $this->tableNumber = '';
+        $this->orderNotes = '';
     }
 
     public function hold()
