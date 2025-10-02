@@ -8645,7 +8645,7 @@ body {
   line-height: 1.5;
   color: #001737;
   text-align: left;
-  background-color: #fff;
+  background-color: #f3e9e4;
 }
 
 [tabindex="-1"]:focus:not(:focus-visible) {
@@ -9159,6 +9159,74 @@ pre code {
     max-width: 1140px;
   }
 }
+ #preloader {
+  position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #fff8f1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    font-family: "Poppins", sans-serif;
+    color: #6f4e37;
+ }
+
+ .coffee-loader {
+   display: flex;
+   gap: 10px;
+ }
+
+ .coffee-loader {
+   display: flex;
+   gap: 10px;
+ }
+
+ .coffee-loader .bean {
+   width: 18px;
+   height: 25px;
+   background: #6f4e37;
+   border-radius: 50%;
+   animation: bounce 0.6s infinite alternate;
+ }
+
+ .coffee-loader .bean:nth-child(2) {
+   animation-delay: 0.2s;
+ }
+
+ .coffee-loader .bean:nth-child(3) {
+   animation-delay: 0.4s;
+ }
+
+ @keyframes bounce {
+   from {
+     transform: translateY(0);
+   }
+
+   to {
+     transform: translateY(-20px);
+   }
+ }
+
+ .loader-text {
+   margin-top: 15px;
+   font-size: 18px;
+   font-weight: 500;
+ }
+
+ /* === Background Video === */
+ .video-bg {
+   position: fixed;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   object-fit: cover;
+   z-index: -1;
+ }
 
 .row {
   display: flex;
@@ -10404,20 +10472,12 @@ pre code {
 }
 
 .form-control {
-  display: block;
   width: 100%;
-  height: 2.875rem;
-  padding: 0.875rem 1.375rem;
-  font-size: 0.875rem;
-  font-weight: 400;
-  line-height: 1;
-  color: #495057;
-  background-color: #ffffff;
-  background-clip: padding-box;
-  border: 1px solid #ced4da;
-  border-radius: 2px;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
+    padding: 12px;
+    border: 1px solid #d4b6a1;
+    border-radius: 8px;
+    margin-bottom: 15px;
+  }
 
 @media (prefers-reduced-motion: reduce) {
   .form-control {
@@ -10900,14 +10960,14 @@ fieldset:disabled a.btn {
 
 .btn-primary {
   color: #fff;
-  background-color: #6640b2;
-  border-color: #6640b2;
+  background-color: #6f4e37 !important;
+    /* coklat kopi */
+    border-color: #6f4e37 !important;
 }
 
 .btn-primary:hover {
   color: #fff;
-  background-color: #563696;
-  border-color: #51338c;
+  background-color: #5a3c29 !important;
 }
 
 .btn-primary:focus, .btn-primary.focus {
@@ -11497,6 +11557,19 @@ input[type="submit"].btn-block,
 input[type="reset"].btn-block,
 input[type="button"].btn-block {
   width: 100%;
+}
+
+.btn-brown {
+  background-color: #8B5E3C;
+  color: white;
+  border-radius: 8px;
+  padding: 10px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.btn-brown:hover {
+  background-color: #6e4327;
 }
 
 .fade {
@@ -20347,8 +20420,49 @@ dl li {
   height: 8px;
 }
 
+ /* === Login Box === */
+ .login-container {
+   min-height: 100vh;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+ }
+
+ .login-box {
+  background: rgba(255, 255, 255, 0.2);
+    /* transparan putih */
+    backdrop-filter: blur(10px);
+    /* efek kaca buram */
+    -webkit-backdrop-filter: blur(10px);
+    /* buat Safari */
+    border-radius: 15px;
+    padding: 30px;
+    width: 100%;
+    max-width: 400px;
+    margin: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    color: #4b2e2e;
+    /* warna teks agak coklat */
+ }
+
+ .brand-logo img {
+   width: 100px;
+   margin-bottom: 15px;
+ }
+
+ .login-box h4 {
+   color: #6f4e37;
+   font-weight: 700;
+   margin-bottom: 8px;
+ }
+
+ .login-box h6 {
+   color: #8b5e3c;
+   margin-bottom: 25px;
+ }
+
 /* === Landing screens === */
-/* Auth */
+Auth
 .auth .login-half-bg {
   background: url("../images/auth/loginnn.jpg");
   background-size: cover;
@@ -20383,7 +20497,10 @@ dl li {
 }
 
 .auth .auth-form-transparent {
-  background: transparent;
+  background: #fff7f2;
+    /* krem kopi */
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .auth .auth-form-transparent .form-control,
@@ -20435,12 +20552,24 @@ dl li {
 }
 
 .auth form .auth-form-btn {
-  height: 50px;
-  line-height: 1.5;
+  background: #6f4e37;
+    border: none;
+    color: #fff;
+    padding: 12px;
+    border-radius: 8px;
+    width: 100%;
+    font-size: 16px;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.auth-form-btn:hover {
+  background: #8b5e3c;
 }
 
 .auth form .auth-link {
-  font-size: 0.875rem;
+  color: #6f4e37;
+    font-weight: 500;
 }
 
 .auth form .auth-link:hover {
