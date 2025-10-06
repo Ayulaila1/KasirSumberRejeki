@@ -21,15 +21,15 @@
 </head>
 
 <body>
-    <!-- Loader -->
+    <!-- Preloader -->
     <div id="preloader">
-        <div class="coffee-loader">
-            <div class="bean"></div>
-            <div class="bean"></div>
-            <div class="bean"></div>
+        <div class="loader">
+            <div class="cup"></div>
+            <div class="handle"></div>
         </div>
-        <p class="loader-text">☕ Lagi diseduh... tunggu bentar ya 😋</p>
+        <p class="loader-text">Sedang menyiapkan kopi... ☕</p>
     </div>
+
 
     <!-- Background Video -->
     <video autoplay muted loop playsinline class="video-bg">
@@ -69,8 +69,10 @@
     <!-- Loader Trigger Script -->
     <script>
         window.addEventListener("load", function () {
-                document.getElementById("preloader").style.display = "none";
-            });
+        setTimeout(() => {
+            document.getElementById("preloader").style.display = "none";
+        }, 5000); // 5 detik
+    });
     </script>
 </body>
 

@@ -9159,63 +9159,80 @@ pre code {
     max-width: 1140px;
   }
 }
- #preloader {
+#preloader {
   position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: #fff8f1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    font-family: "Poppins", sans-serif;
-    color: #6f4e37;
- }
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #2c1a14;
+  /* lebih gelap, coklat kopi */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  font-family: "Poppins", sans-serif;
+  color: #f5e1c8;
+  /* kontras dengan background gelap */
+}
 
- .coffee-loader {
-   display: flex;
-   gap: 10px;
- }
+/* Cangkir Kopi */
+.loader {
+  position: relative;
+  width: 50px;
+  height: 40px;
+  border: 3px solid #f5e1c8;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  overflow: hidden;
+  animation: fill 3s infinite ease-in-out;
+}
 
- .coffee-loader {
-   display: flex;
-   gap: 10px;
- }
+.handle {
+  position: absolute;
+  top: 5px;
+  right: -15px;
+  width: 20px;
+  height: 20px;
+  border: 3px solid #f5e1c8;
+  border-radius: 50%;
+}
 
- .coffee-loader .bean {
-   width: 18px;
-   height: 25px;
-   background: #6f4e37;
-   border-radius: 50%;
-   animation: bounce 0.6s infinite alternate;
- }
+/* Animasi isi kopi */
+@keyframes fill {
+  0% {
+    background: transparent;
+  }
 
- .coffee-loader .bean:nth-child(2) {
-   animation-delay: 0.2s;
- }
+  50% {
+    background: #4b2e23;
+    /* warna coklat kopi pekat */
+  }
 
- .coffee-loader .bean:nth-child(3) {
-   animation-delay: 0.4s;
- }
+  100% {
+    background: transparent;
+  }
+}
 
- @keyframes bounce {
-   from {
-     transform: translateY(0);
-   }
+.loader-text {
+  margin-top: 20px;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: #f5e1c8;
+  animation: fade 2s infinite alternate;
+}
 
-   to {
-     transform: translateY(-20px);
-   }
- }
+@keyframes fade {
+  from {
+    opacity: 0.5;
+  }
 
- .loader-text {
-   margin-top: 15px;
-   font-size: 18px;
-   font-weight: 500;
- }
+  to {
+    opacity: 1;
+  }
+}
 
  /* === Background Video === */
  .video-bg {
