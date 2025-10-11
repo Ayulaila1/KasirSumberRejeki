@@ -15,19 +15,20 @@ use App\Models\ProdukRacikan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
+use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
-
 
 class KasirComponent extends Component
 {
-
-    public $cart = [];
-    public $holds = []; // daftar transaksi hold
+    // ========== STATE ==========
+    public $cart = []; // associative keyed by productId: [productId => ['id'=>..., 'name'=>..., 'price'=>..., 'quantity'=>...], ...]
+    public $holds = []; // optional, for UI list of holds
 
     public $search = '';
     public $selectedCategory = 'Semua';
     public $customerName = '';
     public $catatan;
+    public $products = [];
     public $tableNumber = '';
     public $paymentMethod = 'cash';
     public $cashAmount;
@@ -39,10 +40,8 @@ class KasirComponent extends Component
     public $selectedProduk;
     public $ingredients = [];
 
-
-    // State modal
-    public $showConfirmModal = false; // Modal Konfirmasi
-    public $showReceipt = false;      // Modal Struk
+    public $showConfirmModal = false; // modal konfirmasi bayar
+    public $showReceipt = false;      // tampilkan struk
     public $receiptData = [];
 
     protected $listeners = [
@@ -51,82 +50,64 @@ class KasirComponent extends Component
         'deleteHold',
     ];
 
-
-    protected function printReceipt($receiptData)
+    // ========== PRINTER (tetap seperti sebelumnya) ==========
+    protected function printReceipt($receiptData, $printerType = 'bluetooth')
     {
         try {
-            // === KONEKSI PRINTER ===
-            $connector = new WindowsPrintConnector("POS-58"); // ganti nama printer sesuai yg ada di Devices & Printers
-            $printer = new Printer($connector);
+            // ==== Pilih koneksi printer ====
+            if ($printerType === 'wifi') {
+                // 1️⃣ Printer Wi-Fi (dapur)
+                $ip = '192.168.1.50'; // Ganti dengan IP printer dapur
+                $port = 9100;
+                $connector = new NetworkPrintConnector($ip, $port);
+            } else {
+                // 2️⃣ Printer Bluetooth (RawBT / Windows)
+                // Jika pakai WindowsPrintConnector (PC / tablet Windows)
+                $connector = new WindowsPrintConnector("POS-58");
 
-            // === HEADER TOKO ===
-            $printer->setJustification(Printer::JUSTIFY_CENTER);
-            $printer->setEmphasis(true);
-            $printer->text("Cafe Suki\n");
-            $printer->setEmphasis(false);
-            $printer->text("Jl. Contoh Alamat No. 123\n");
-            $printer->text("Telp: 0812-3456-7890\n");
-            $printer->text("==============================\n");
-
-            // === INFO TRANSAKSI ===
-            $printer->setJustification(Printer::JUSTIFY_LEFT);
-            $printer->text("No. Trx : " . $receiptData['number'] . "\n");
-            $printer->text("Tanggal : " . $receiptData['date'] . "\n");
-            $printer->text("Meja    : " . $receiptData['table'] . "\n");
-            $printer->text("Pelanggan: " . $receiptData['customer'] . "\n");
-            $printer->text("------------------------------\n");
-
-            // === ITEM LIST ===
-            foreach ($receiptData['items'] as $item) {
-                // Nama produk
-                $printer->setJustification(Printer::JUSTIFY_LEFT);
-                $printer->text($item['name'] . "\n");
-
-                // Qty x Harga
-                $line = sprintf(
-                    "  %2s x %-8s Rp %s",
-                    $item['quantity'],
-                    number_format($item['price'], 0, ',', '.'),
-                    number_format($item['price'] * $item['quantity'], 0, ',', '.')
-                );
-                $printer->text($line . "\n");
+                // ❗ Jika murni Android + RawBT:
+                // $strukHTML = view('layouts.printkasir', array_merge($receiptData, ['printerType'=>'bluetooth']))->render();
+                // file_get_contents("http://IP_TABLET:2018/print?data=" . urlencode($strukHTML));
+                // return;
             }
 
-            $printer->text("------------------------------\n");
+            $printer = new Printer($connector);
 
-            // === TOTAL & PEMBAYARAN ===
-            $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->setEmphasis(true);
-            $printer->text("TOTAL : Rp " . number_format($receiptData['total'], 0, ',', '.') . "\n");
-            $printer->setEmphasis(false);
+            // ==== Render Blade ke string ====
+            $strukText = view('layouts.printkasir', array_merge($receiptData, ['printerType' => $printerType]))->render();
 
-            $printer->text("Bayar : Rp " . number_format($receiptData['cash'], 0, ',', '.') . "\n");
-            $printer->text("Kembali: Rp " . number_format($receiptData['change'], 0, ',', '.') . "\n");
-            $printer->text("==============================\n");
+            // ==== Hapus tag HTML untuk printer ESC/POS ====
+            $strukText = strip_tags($strukText); // biar aman, ESC/POS gak bisa HTML
 
-            // === FOOTER ===
-            $printer->setJustification(Printer::JUSTIFY_CENTER);
-            $printer->text("Terima Kasih\n");
-            $printer->text("Semoga Puas dengan Layanan Kami\n");
-            $printer->feed(3); // spasi kosong biar rapi
-
+            // ==== Kirim ke printer ====
+            $printer->text($strukText . "\n");
+            $printer->feed(3);
             $printer->cut();
             $printer->close();
 
         } catch (\Exception $e) {
-            logger()->error("Gagal cetak struk: " . $e->getMessage());
+            logger()->error("Gagal cetak struk ($printerType): " . $e->getMessage());
         }
     }
 
+    // ========== LIFECYCLE ==========
+    public function mount($id = null)
+    {
+        // load produk awal
+        $this->products = Produk::all();
+        $this->cart = $this->cart ?? [];
+
+        // jika mount dengan id hold (opsional), isi cart dari hold tanpa mengurangi stok
+        if ($id) {
+            $this->resumeFromHold($id);
+        }
+    }
+
+    // ========== UTILS ==========
     public function updatedCashFormatted($value)
     {
-        // ambil hanya angka
         $numeric = preg_replace('/[^0-9]/', '', $value);
-
-        // simpan ke cashAmount (angka asli untuk hitung total/kembalian)
         $this->cashAmount = (int) $numeric;
-
-        // update lagi tampilan format (biar input tetap rapi)
         $this->cashFormatted = $this->formatRupiah($numeric);
     }
 
@@ -140,12 +121,9 @@ class KasirComponent extends Component
     public function showIngredients($produkId)
     {
         $this->selectedProduk = Produk::find($produkId);
-
         $this->ingredients = ProdukRacikan::with('bahan')
             ->where('produk_idproduk', $produkId)
             ->get();
-
-        // dispatch event ke browser
         $this->showModal = true;
     }
 
@@ -181,74 +159,185 @@ class KasirComponent extends Component
         ])->layout('layouts.kasirlayout');
     }
 
-    public function addToCart($productId)
+    // ========== CART & STOCK LOGIC ==========
+
+    /**
+     * Tambah produk ke cart dan reserve stock langsung.
+     * Jika produk racikan: kurangi stok bahan sesuai takaran.
+     */
+    public function addToCart($productId, $quantity = 1)
     {
-        $product = Produk::find($productId);
-
-        if (!$product) {
+        $product = Produk::with('produkDetails.bahan')->find($productId);
+        if (!$product)
             return;
-        }
 
-        // Hitung stok tersisa (misalnya stok asli dikurangi jumlah di cart)
+        // hitung stok tersedia (accessor atau kolom stok)
         $stokTersisa = $product->stok_tersedia ?? $product->stok;
+        $existingQty = isset($this->cart[$productId]) ? $this->cart[$productId]['quantity'] : 0;
+        $requestedTotal = $existingQty + $quantity;
 
-        // Cari jumlah yang sudah ada di keranjang
-        $existingItem = collect($this->cart)->firstWhere('id', $productId);
-        $jumlahDiCart = $existingItem['quantity'] ?? 0;
-
-        if ($jumlahDiCart >= $stokTersisa) {
-            // Kalau stok habis, jangan bisa tambah lagi
+        if ($requestedTotal > $stokTersisa) {
+            $this->dispatch('showAlert', 'Stok tidak cukup', 'danger');
             return;
         }
 
-        if ($existingItem) {
-            $this->cart = collect($this->cart)->map(function ($item) use ($productId) {
-                if ($item['id'] == $productId) {
-                    $item['quantity'] += 1;
-                }
-                return $item;
-            })->toArray();
+        // update cart
+        if (isset($this->cart[$productId])) {
+            $this->cart[$productId]['quantity'] += $quantity;
         } else {
-            $this->cart[] = [
+            $this->cart[$productId] = [
                 'id' => $product->idproduk,
                 'name' => $product->nama,
                 'price' => $product->harga_jual ?? 0,
-                'quantity' => 1,
+                'quantity' => $quantity,
             ];
         }
 
+        // reserve stock immediately
+        $this->kurangiStokForItem(['id' => $productId, 'quantity' => $quantity]);
+
+        // refresh products (so accessor badges update)
+        $this->products = Produk::all();
         $this->dispatch('cartUpdated');
     }
 
-
+    /**
+     * Ubah quantity: delta bisa positif (tambah) atau negatif (kurangi).
+     * Jika naik, cek stok lalu reserve tambahan. Jika turun, restore stok.
+     */
     public function updateQty($productId, $delta = 1)
     {
-        if (isset($this->cart[$productId])) {
-            $this->cart[$productId]['quantity'] += $delta;
+        if (!isset($this->cart[$productId]))
+            return;
+        $delta = intval($delta);
+        if ($delta === 0)
+            return;
 
-            if ($this->cart[$productId]['quantity'] < 1) {
+        $product = Produk::with('produkDetails.bahan')->find($productId);
+        if (!$product)
+            return;
+
+        if ($delta > 0) {
+            $stokTersisa = $product->stok_tersedia ?? $product->stok;
+            $currentQty = $this->cart[$productId]['quantity'];
+            if ($currentQty + $delta > $stokTersisa) {
+                $this->dispatch('showAlert', 'Stok tidak cukup untuk menambah quantity.', 'danger');
+                return;
+            }
+            $this->cart[$productId]['quantity'] += $delta;
+            $this->kurangiStokForItem(['id' => $productId, 'quantity' => $delta]);
+        } else {
+            $abs = abs($delta);
+            $currentQty = $this->cart[$productId]['quantity'];
+            $newQty = $currentQty - $abs;
+            if ($newQty <= 0) {
+                // hapus item & restore stok penuh
+                $this->restoreStockForItem($this->cart[$productId]);
                 unset($this->cart[$productId]);
+            } else {
+                // kurangi qty di cart & restore sebagian stok
+                $this->cart[$productId]['quantity'] = $newQty;
+                $this->restorePartialStock($product, $abs);
+            }
+        }
+
+        $this->products = Produk::all();
+        $this->dispatch('cartUpdated');
+    }
+
+    /**
+     * Hapus satu item dari cart lalu restore stok sesuai quantity yang dihapus.
+     */
+    public function removeItem($productId)
+    {
+        if (!isset($this->cart[$productId]))
+            return;
+        $item = $this->cart[$productId];
+        $this->restoreStockForItem($item);
+        unset($this->cart[$productId]);
+        $this->products = Produk::all();
+        $this->dispatch('cartUpdated');
+    }
+
+    /**
+     * Kembalikan stok penuh untuk 1 item cart (dipakai saat hapus / batalkan).
+     * Item format: ['id'=>..., 'quantity'=>...]
+     */
+    protected function restoreStockForItem($item)
+    {
+        $product = Produk::with('produkDetails.bahan')->find($item['id']);
+        if (!$product)
+            return;
+        $qty = $item['quantity'] ?? 0;
+        if ($qty <= 0)
+            return;
+
+        if ($product->produkDetails->isEmpty()) {
+            $product->stok += $qty;
+            $product->save();
+        } else {
+            foreach ($product->produkDetails as $detail) {
+                if ($detail->bahan && $detail->takaran > 0) {
+                    $detail->bahan->stok += ($detail->takaran * $qty);
+                    $detail->bahan->save();
+                }
             }
         }
     }
 
-    public function removeItem($productId)
+    /**
+     * Restore sebagian stok untuk product object (dipakai saat mengurangi qty).
+     */
+    protected function restorePartialStock($product, $qty)
     {
-        unset($this->cart[$productId]);
+        if ($product->produkDetails->isEmpty()) {
+            $product->stok += $qty;
+            $product->save();
+        } else {
+            foreach ($product->produkDetails as $detail) {
+                if ($detail->bahan && $detail->takaran > 0) {
+                    $detail->bahan->stok += ($detail->takaran * $qty);
+                    $detail->bahan->save();
+                }
+            }
+        }
+    }
+
+    /**
+     * Kurangi stok untuk sebuah item (reserve / consume).
+     * Item: ['id'=>..., 'quantity'=>...]
+     */
+    protected function kurangiStokForItem($item)
+    {
+        $id = $item['id'];
+        $qty = $item['quantity'] ?? 1;
+        $product = Produk::with('produkDetails.bahan')->find($id);
+        if (!$product)
+            return;
+
+        if ($product->produkDetails->isEmpty()) {
+            $product->stok = max(0, $product->stok - $qty);
+            $product->save();
+        } else {
+            foreach ($product->produkDetails as $detail) {
+                if ($detail->bahan && $detail->takaran > 0) {
+                    $detail->bahan->stok = max(0, $detail->bahan->stok - ($detail->takaran * $qty));
+                    $detail->bahan->save();
+                }
+            }
+        }
     }
 
     public function setQuantity($productId, $quantity)
     {
         $quantity = max(1, intval($quantity));
-
-        $this->cart = collect($this->cart)->map(function ($item) use ($productId, $quantity) {
-            if ($item['id'] == $productId) {
-                $item['quantity'] = $quantity;
-            }
-            return $item;
-        })->toArray();
-
-        $this->dispatch('cartUpdated');
+        if (!isset($this->cart[$productId]))
+            return;
+        $current = $this->cart[$productId]['quantity'];
+        $diff = $quantity - $current;
+        if ($diff === 0)
+            return;
+        $this->updateQty($productId, $diff);
     }
 
     public function filterByCategory($category)
@@ -256,9 +345,8 @@ class KasirComponent extends Component
         $this->selectedCategory = $category;
     }
 
-    // ================= Alur Sesuai Diagram =================
+    // ========== PAYMENT FLOW ==========
 
-    // Step 1: Buka Modal Konfirmasi
     public function openConfirmModal()
     {
         if (empty($this->cart)) {
@@ -268,18 +356,24 @@ class KasirComponent extends Component
         $this->showConfirmModal = true;
     }
 
-    // Step 2: Klik Konfirmasi → Tutup Modal Konfirmasi → Lanjut proses
     public function confirmPayment()
     {
         $this->showConfirmModal = false;
         $this->processPayment();
         $this->showReceipt = true;
 
-        // 🔥 Cetak otomatis ke printer thermal
-        $this->printReceipt($this->receiptData);
+        // Print pelanggan
+        $this->printReceipt($this->receiptData, 'bluetooth');
+
+        // Print dapur
+        $this->printReceipt($this->receiptData, 'wifi');
+
     }
 
-    // Step 3: Proses transaksi
+    /**
+     * Proses penyimpanan transaksi final (penjualan). 
+     * Stok tidak dikurangi di sini karena sudah di-reserve di addToCart/hold.
+     */
     public function processPayment()
     {
         try {
@@ -305,26 +399,6 @@ class KasirComponent extends Component
                     'harga_jual' => $item['price'],
                     'subtotal' => $item['price'] * $item['quantity'],
                 ]);
-
-                // 🔽 Update stok produk atau bahan kalau racikan
-                $racikanItems = ProdukRacikan::where('produk_idproduk', $item['id'])->get();
-
-                if ($racikanItems->isNotEmpty()) {
-                    foreach ($racikanItems as $racikan) {
-                        $bahan = Bahan::find($racikan->bahan_idbahan);
-                        if ($bahan) {
-                            $totalTakaran = $racikan->takaran * $item['quantity'];
-                            $bahan->stok = max(0, $bahan->stok - $totalTakaran);
-                            $bahan->save();
-                        }
-                    }
-                } else {
-                    $produk = Produk::find($item['id']);
-                    if ($produk) {
-                        $produk->stok = max(0, $produk->stok - $item['quantity']);
-                        $produk->save();
-                    }
-                }
             }
 
             DB::commit();
@@ -335,22 +409,20 @@ class KasirComponent extends Component
                 'customer_name' => $this->customerName ?: '-',
                 'no_meja' => $this->tableNumber ?: '-',
                 'catatan' => $this->orderNotes ?: '-',
-                'items' => $this->cart,
+                'items' => array_values($this->cart),
                 'total' => $this->getTotal(),
                 'cash' => $this->cashAmount,
                 'change' => $this->cashAmount - $this->getTotal(),
             ];
 
-            $this->clearCart();
-
+            // Clear cart tanpa restore stok (stok sudah dikurangi di addToCart/hold)
+            $this->clearCart(false);
         } catch (\Exception $e) {
             DB::rollBack();
             logger()->error('Gagal memproses pembayaran: ' . $e->getMessage());
             $this->dispatch('showAlert', 'Terjadi kesalahan saat memproses pembayaran.', 'danger');
         }
     }
-
-
 
     public function closeReceipt()
     {
@@ -371,8 +443,19 @@ class KasirComponent extends Component
         });
     }
 
-    public function clearCart()
+    /**
+     * Clear cart
+     * $restoreStock = true -> restore stok untuk semua item (dipakai saat cancel)
+     * $restoreStock = false -> kosongkan tanpa restore (dipakai setelah payment finalize atau setelah hold)
+     */
+    public function clearCart($restoreStock = true)
     {
+        if ($restoreStock) {
+            foreach ($this->cart as $item) {
+                $this->restoreStockForItem($item);
+            }
+        }
+
         $this->cart = [];
         $this->cashAmount = 0;
         $this->cashFormatted = '';
@@ -380,8 +463,17 @@ class KasirComponent extends Component
         $this->customerName = '';
         $this->tableNumber = '';
         $this->orderNotes = '';
+
+        $this->products = Produk::all();
+        $this->dispatch('cartUpdated');
     }
 
+    // ========== HOLD FLOW ==========
+
+    /**
+     * Hold: simpan transaksi di tabel holds.
+     * IMPORTANT: stok sudah berkurang saat addToCart, jadi di sini kita TIDAK mengembalikan stok.
+     */
     public function hold()
     {
         if (empty($this->cart)) {
@@ -389,77 +481,71 @@ class KasirComponent extends Component
             return;
         }
 
-        // generate kode transaksi format TRX
         $kode = 'TRX-' . now()->format('Ymd') . '-' . Str::random(4);
-
-        // hitung total
-        $total = collect($this->cart)->sum(
-            fn($item) =>
-            ($item['quantity'] ?? 1) * ($item['price'] ?? 0)
-        );
+        $total = collect($this->cart)->sum(fn($item) => ($item['quantity'] ?? 1) * ($item['price'] ?? 0));
 
         Hold::create([
             'kode_transaksi' => $kode,
-            'customer' => $this->customerName ?: '-', // default "-" biar tidak NULL
+            'customer' => $this->customerName ?: '-',
             'table_number' => $this->tableNumber ?: '-',
             'notes' => $this->orderNotes ?: '-',
-            'items' => $this->cart,   // otomatis JSON
+            'items' => array_values($this->cart),
             'total' => $total,
             'user_id' => Auth::id(),
         ]);
 
-        // reset keranjang
-        $this->clearCart();
-        $this->customerName = null;
-        $this->tableNumber = null;
-        $this->orderNotes = null;
+        // kosongkan cart tanpa restore stok (karena stok sudah dikurangi waktu addToCart)
+        $this->clearCart(false);
 
-        session()->flash('success', 'Transaksi berhasil di-hold.');
+        session()->flash('success', 'Transaksi berhasil di-hold (stok dipertahankan).');
     }
 
-    public function mount($id = null)
-    {
-        if ($id) {
-            $this->resumeFromHold($id);
-        }
-    }
-
-    // Lanjutkan transaksi dari Hold
+    /**
+     * Resume dari hold: load cart dari hold tanpa mengurangi stok lagi.
+     * Catatan: fungsi ini menghapus record hold setelah dimuat.
+     */
     public function resumeFromHold($id)
     {
         $hold = Hold::findOrFail($id);
+        $items = is_string($hold->items) ? json_decode($hold->items, true) : $hold->items;
 
-        // cek kalau items masih string JSON, baru decode
-        $items = is_string($hold->items)
-            ? json_decode($hold->items, true)
-            : $hold->items;
-
-        // masukkan item satu per satu ke keranjang lewat addToCart()
+        // isi cart langsung tanpa memanggil addToCart (agar stok tidak dikurangi lagi)
+        $this->cart = [];
         foreach ($items as $item) {
-            $this->addToCart(
-                $item['id'],       // id produk
-                $item['name'],     // nama produk
-                $item['price'],    // harga produk
-                $item['quantity']  // jumlah
-            );
+            $this->cart[$item['id']] = [
+                'id' => $item['id'],
+                'name' => $item['name'],
+                'price' => $item['price'],
+                'quantity' => $item['quantity'],
+            ];
         }
 
         $this->customerName = $hold->customer;
         $this->tableNumber = $hold->table_number;
         $this->orderNotes = $hold->notes;
 
-        // hapus hold setelah dilanjutkan
+        // hapus hold (opsional: kalau mau simpan hingga pembayaran selesai, jangan hapus di sini)
         $hold->delete();
+
+        $this->dispatch('cartUpdated');
+        session()->flash('success', 'Transaksi hold berhasil dilanjutkan.');
     }
 
-    // Hapus transaksi Hold
+    /**
+     * Batalkan hold: kembalikan stok jika transaksi dibatalkan, lalu hapus record hold.
+     */
     public function deleteHold($holdId)
     {
         $hold = Hold::findOrFail($holdId);
+        $items = is_string($hold->items) ? json_decode($hold->items, true) : $hold->items;
+
+        // restore stok karena hold dibatalkan
+        foreach ($items as $item) {
+            $this->restoreStockForItem($item);
+        }
+
         $hold->delete();
-
-        session()->flash('success', 'Data hold berhasil dihapus.');
+        $this->products = Produk::all();
+        session()->flash('success', 'Hold dibatalkan dan stok dikembalikan.');
     }
-
-
 }

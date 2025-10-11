@@ -2512,10 +2512,13 @@
     </div>
 
     @livewireScripts
+    @stack('scripts')
     {{-- @livewireAlertScripts --}}
 
     <!-- Custom Script -->
     <script src="{{ asset('asset_offline/script.js') }}"></script>
+    <!-- ✅ Tambahkan di sini -->
+
 </body>
 
 </html>
