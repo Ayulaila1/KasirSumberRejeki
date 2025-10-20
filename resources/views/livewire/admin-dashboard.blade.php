@@ -103,42 +103,6 @@
                     </div>
                 </div>
 
-                <!-- Bagian Grafik -->
-                <div class="row">
-                    <div class="chart-container">
-                        <div class="chart-header">
-                            <h3 class="chart-title">Pendapatan Bulanan</h3>
-                            <div class="chart-actions">
-                                <select class="form-select" id="revenueYear" wire:model="tahunPendapatan"
-                                    style="width: 120px;">
-                                    @foreach ($daftarTahun as $tahun)
-                                    <option value="{{ $tahun }}">Tahun {{ $tahun }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div style="height: 400px;">
-                            <canvas id="chartPendapatan"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="chart-container">
-                        <div class="chart-header">
-                            <h3 class="chart-title">Produk Terlaris</h3>
-                            <div class="chart-actions">
-                                <select class="form-select" id="bestSellerMonth" wire:model="bulanProdukTerlaris"
-                                    style="width: 120px;">
-                                    <option value="sekarang">Bulan Ini</option>
-                                    <option value="lalu">Bulan Lalu</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="chart-wrapper" style="height:220px;">
-                            <canvas id="bestSellerChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Transaksi Terakhir -->
                 <div class="page-header" style="margin-top: 30px;">
                     <h2 class="page-title">
@@ -163,20 +127,45 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @forelse ($transaksiTerakhir as $transaksi)
                                 <tr>
-                                    <td>TRX-20250628-001</td>
-                                    <td>28 Jun 2025</td>
-                                    <td>Pelanggan 1</td>
-                                    <td>Rp 125.000</td>
-                                    <td><span class="status-badge success">Selesai</span></td>
+                                    {{-- ID Transaksi (Contoh format: TRX-20251020-057) --}}
+                                    <td>TRX-{{ $transaksi->created_at->format('Ymd') }}-{{
+                                        str_pad($transaksi->idpenjualan, 3, '0', STR_PAD_LEFT) }}</td>
+
+                                    {{-- Tanggal Transaksi --}}
+                                    <td>{{ $transaksi->created_at->format('d M Y') }}</td>
+
+                                    {{-- Nama Pelanggan (Asumsi ada kolom 'nama_pelanggan' atau relasi) --}}
+                                    <td>{{ $transaksi->nama_pelanggan ?? 'Umum' }}</td>
+
+                                    {{-- Total Harga (Asumsi ada kolom 'total_harga') --}}
+                                    <td>Rp {{ number_format($transaksi->total_harga ?? 0, 0, ',', '.') }}</td>
+
+                                    {{-- Status (Asumsi ada kolom 'status', misal: 'lunas', 'pending') --}}
                                     <td>
-                                        <button class="btn btn-sm btn-primary"
-                                            wire:click="lihatTransaksi('TRX-20250628-001')">
-                                            <i class="fas fa-eye"></i> Lihat
-                                        </button>
+                                        @if($transaksi->status == 'lunas')
+                                        <span class="status-badge success">Selesai</span>
+                                        @else
+                                        <span class="status-badge warning">{{ ucfirst($transaksi->status) }}</span>
+                                        @endif
+                                    </td>
+
+                                    {{-- Tombol Aksi --}}
+                                    <td>
+                                        {{-- 🔽 PERUBAHAN DI SINI 🔽 --}}
+                                        <a class="btn btn-sm btn-primary" href="/laporan-penjualan">
+                                            <i class="fas fa-eye"></i>Lihat</a>
                                     </td>
                                 </tr>
-                                <!-- transaksi contoh lain -->
+                                @empty
+                                {{-- Tampilan jika tidak ada transaksi --}}
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 20px;">
+                                        Belum ada transaksi terbaru.
+                                    </td>
+                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>

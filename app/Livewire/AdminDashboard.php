@@ -6,6 +6,8 @@ use Carbon\Carbon;
 use App\Models\Produk;
 use Livewire\Component;
 use App\Models\Supplier;
+// 🔽 1. Tambahkan model Penjualan
+use App\Models\Penjualan;
 use App\Models\LaporanPendapatan;
 use Illuminate\Support\Facades\Auth;
 
@@ -24,7 +26,8 @@ class AdminDashboard extends Component
     public $persen = null;
     public $dataPendapatan = [];
 
-
+    // 🔽 2. Tambahkan properti untuk menyimpan data transaksi
+    public $transaksiTerakhir = [];
     protected $listeners = ['tutupModal'];
 
     public function mount()
@@ -59,6 +62,18 @@ class AdminDashboard extends Component
 
         // 🔹 (opsional) cek stok menipis juga
         $this->cekStokMenipis();
+
+        // 🔽 3. Panggil fungsi untuk mengambil 5 transaksi terbaru
+        $this->ambilTransaksiTerakhir();
+    }
+
+    // 🔽 4. Buat fungsi baru untuk query data transaksi
+    public function ambilTransaksiTerakhir($limit = 5)
+    {
+        // Mengambil data dari tabel 'penjualans' diurutkan dari yang terbaru
+        $this->transaksiTerakhir = Penjualan::orderBy('created_at', 'desc')
+            ->take($limit)
+            ->get();
     }
 
     public function updatedTahunPendapatan()

@@ -51,44 +51,38 @@ class KasirComponent extends Component
     ];
 
     // ========== PRINTER (tetap seperti sebelumnya) ==========
-    protected function printReceipt($receiptData, $printerType = 'bluetooth')
+    protected function printReceipt($receiptData)
     {
         try {
-            // ==== Pilih koneksi printer ====
-            if ($printerType === 'wifi') {
-                // 1️⃣ Printer Wi-Fi (dapur)
-                $ip = '192.168.1.50'; // Ganti dengan IP printer dapur
-                $port = 9100;
-                $connector = new NetworkPrintConnector($ip, $port);
-            } else {
-                // 2️⃣ Printer Bluetooth (RawBT / Windows)
-                // Jika pakai WindowsPrintConnector (PC / tablet Windows)
-                $connector = new WindowsPrintConnector("POS-58");
-
-                // ❗ Jika murni Android + RawBT:
-                // $strukHTML = view('layouts.printkasir', array_merge($receiptData, ['printerType'=>'bluetooth']))->render();
-                // file_get_contents("http://IP_TABLET:2018/print?data=" . urlencode($strukHTML));
-                // return;
-            }
-
+            // ==== KONEKSI PRINTER USB ====
+            // Pastikan nama printer sama dengan di Control Panel → Devices and Printers
+            $printerName = "RPP210A"; // Ganti sesuai nama printer kamu (misal: "POS-58", "Thermal Printer", dll)
+            $connector = new WindowsPrintConnector($printerName);
             $printer = new Printer($connector);
 
-            // ==== Render Blade ke string ====
-            $strukText = view('layouts.printkasir', array_merge($receiptData, ['printerType' => $printerType]))->render();
+            // ==== AMBIL DATA STRUK DARI VIEW ====
+            $strukText = view('layouts.printkasir', array_merge($receiptData, [
+                'printerType' => 'usb'
+            ]))->render();
 
-            // ==== Hapus tag HTML untuk printer ESC/POS ====
-            $strukText = strip_tags($strukText); // biar aman, ESC/POS gak bisa HTML
+            // ==== BERSIHKAN TAG HTML ====
+            $strukText = strip_tags($strukText);
 
-            // ==== Kirim ke printer ====
+            // ==== CETAK STRUK ====
             $printer->text($strukText . "\n");
-            $printer->feed(3);
+            $printer->feed(3); // tambah jarak biar tidak terpotong
             $printer->cut();
             $printer->close();
 
+            logger()->info("✅ Struk berhasil dikirim ke printer $printerName via USB.");
+
         } catch (\Exception $e) {
-            logger()->error("Gagal cetak struk ($printerType): " . $e->getMessage());
+            logger()->error("❌ Gagal cetak struk USB: " . $e->getMessage());
+            session()->flash('error', 'Gagal mencetak struk. Pastikan printer RPP210A sudah terhubung & menyala.');
         }
     }
+
+
 
     // ========== LIFECYCLE ==========
     public function mount($id = null)
@@ -362,16 +356,13 @@ class KasirComponent extends Component
         $this->processPayment();
         $this->showReceipt = true;
 
-        // Print pelanggan
-        $this->printReceipt($this->receiptData, 'bluetooth');
-
-        // Print dapur
-        $this->printReceipt($this->receiptData, 'wifi');
+        // Cetak hanya ke printer USB
+        $this->printReceipt($this->receiptData);
 
     }
 
     /**
-     * Proses penyimpanan transaksi final (penjualan). 
+     * Proses penyimpanan transaksi final (penjualan).
      * Stok tidak dikurangi di sini karena sudah di-reserve di addToCart/hold.
      */
     public function processPayment()

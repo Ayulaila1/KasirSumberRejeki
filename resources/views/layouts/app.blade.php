@@ -1211,6 +1211,14 @@
             display: block;
             position: absolute;
             left: 20px;
+            transition: left 0.3s ease;
+
+        }
+
+        /* Aturan baru untuk mendorong tombol saat sidebar terbuka */
+        .main-content.sidebar-open .toggle-sidebar {
+            left: 270px;
+            /* Lebar sidebar (250px) + Jarak (20px) */
         }
 
         .user-profile {
