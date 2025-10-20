@@ -177,7 +177,7 @@
 </div>
 <!-- Tambahkan setelah semua HTML dashboard -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
+{{-- <script>
     document.addEventListener("livewire:load", () => {
     const ctx = document.getElementById('chartPendapatan');
     let chart;
@@ -211,4 +211,4 @@
         });
     });
 });
-</script>
+</script> --}}

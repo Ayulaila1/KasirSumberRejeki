@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Kasir;
+use App\Models\Penjualan;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
 use App\Livewire\HoldComponent;
@@ -81,6 +82,30 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/pengguna', PenggunaComponent::class)->name('pengguna.index');
     Route::get('/pengaturan', PengaturanComponent::class)->name('pengaturan.index');
     // Route::get('/profil', ProfilComponent::class)->name('profil.index');
+    Route::get('/print/struk/{id}', function ($id) {
+        $penjualan = Penjualan::with('detail.produk')->findOrFail($id);
+
+        $receiptData = [
+            'printerType' => 'bluetooth',
+            'storeName' => 'Cafe Sumber Rejeki',
+            'storeAddress' => 'Jl. Mawar No. 10, Bandung',
+            'storePhone' => '0812-3456-7890',
+            'number' => $penjualan->nomor ?? 'TRX-' . $penjualan->id,
+            'date' => $penjualan->created_at->format('d/m/Y H:i'),
+            'table' => $penjualan->meja ?? '-',
+            'customer' => $penjualan->pelanggan ?? '-',
+            'items' => $penjualan->detail->map(fn($d) => [
+                'name' => $d->produk->nama,
+                'quantity' => $d->qty,
+                'price' => $d->harga
+            ]),
+            'total' => $penjualan->total,
+            'cash' => $penjualan->tunai,
+            'change' => $penjualan->kembalian,
+        ];
+
+        return view('layouts.printkasir', $receiptData);
+    })->name('print.struk');
 });
 // dll
 

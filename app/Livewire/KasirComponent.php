@@ -8,15 +8,15 @@ use App\Models\Bahan;
 use App\Models\Produk;
 use Livewire\Component;
 use App\Models\Penjualan;
-use Mike42\Escpos\Printer;
+// use Mike42\Escpos\Printer;
 use Illuminate\Support\Str;
 use App\Models\PenjualanDtl;
 use App\Models\ProdukRacikan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
-use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
-use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+// use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
+// use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 
 class KasirComponent extends Component
 {
@@ -54,6 +54,7 @@ class KasirComponent extends Component
     protected function printReceipt($receiptData)
     {
         try {
+<<<<<<< HEAD
             // ==== KONEKSI PRINTER USB ====
             // Pastikan nama printer sama dengan di Control Panel → Devices and Printers
             $printerName = "RPP210A"; // Ganti sesuai nama printer kamu (misal: "POS-58", "Thermal Printer", dll)
@@ -73,17 +74,45 @@ class KasirComponent extends Component
             $printer->feed(3); // tambah jarak biar tidak terpotong
             $printer->cut();
             $printer->close();
+=======
+            // 1️⃣ Render HTML struk
+            $strukHTML = view('layouts.printkasir', $receiptData)->render();
+
+            // 2️⃣ Simpan ke folder public (bisa dibuka browser)
+            $fileName = 'struk-' . now()->format('YmdHis') . '.html';
+            $filePath = storage_path('app/public/struk/' . $fileName);
+
+            if (!file_exists(dirname($filePath))) {
+                mkdir(dirname($filePath), 0777, true);
+            }
+
+            file_put_contents($filePath, $strukHTML);
+
+            // 3️⃣ Buat URL publik ke struk
+            $publicUrl = asset('storage/struk/' . $fileName);
+
+            // 4️⃣ Arahkan browser (bisa ke aplikasi PrinterA atau tab baru)
+            $this->dispatch('redirectToPrinterA', $publicUrl);
+>>>>>>> 5c2af020bea258e53abd4c0afd580456577c27df
 
             logger()->info("✅ Struk berhasil dikirim ke printer $printerName via USB.");
 
         } catch (\Exception $e) {
+<<<<<<< HEAD
             logger()->error("❌ Gagal cetak struk USB: " . $e->getMessage());
             session()->flash('error', 'Gagal mencetak struk. Pastikan printer RPP210A sudah terhubung & menyala.');
+=======
+            logger()->error("❌ Gagal buat struk manual: " . $e->getMessage());
+            $this->dispatch('showAlert', 'Gagal menyiapkan struk.', 'danger');
+>>>>>>> 5c2af020bea258e53abd4c0afd580456577c27df
         }
     }
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5c2af020bea258e53abd4c0afd580456577c27df
     // ========== LIFECYCLE ==========
     public function mount($id = null)
     {
@@ -352,13 +381,48 @@ class KasirComponent extends Component
 
     public function confirmPayment()
     {
-        $this->showConfirmModal = false;
-        $this->processPayment();
-        $this->showReceipt = true;
+        if (empty($this->cart)) {
+            $this->dispatch('showAlert', 'Keranjang masih kosong', 'danger');
+            return;
+        }
 
+        $this->showConfirmModal = false;
+
+<<<<<<< HEAD
         // Cetak hanya ke printer USB
         $this->printReceipt($this->receiptData);
+=======
+        $penjualan = $this->processPayment();
 
+        if ($penjualan) {
+            // Siapkan data untuk struk
+            $this->receiptData = [
+                'storeName' => 'Cafe Sumber Rejeki',
+                'storeAddress' => 'Jl. Mawar No.10, Bandung',
+                'storePhone' => '0812-3456-7890',
+                'number' => $penjualan->kode_penjualan,
+                'date' => now()->format('d/m/Y H:i:s'),
+                'customer' => $this->customerName ?: '-',
+                'table' => $this->tableNumber ?: '-',
+                'notes' => $this->orderNotes ?: '-',
+                'items' => array_values($this->cart),
+                'total' => $this->getTotal(),
+                'cash' => $this->cashAmount,
+                'change' => $this->cashAmount - $this->getTotal(),
+            ];
+>>>>>>> 5c2af020bea258e53abd4c0afd580456577c27df
+
+            // 1️⃣ Cetak struk manual (buka ke PrinterA)
+            $this->printReceipt($this->receiptData);
+
+            // 2️⃣ Tampilkan notifikasi sukses
+            $this->dispatch('showAlert', 'Pembayaran berhasil dan struk siap dicetak.', 'success');
+
+            // 3️⃣ Bersihkan cart
+            $this->clearCart(false);
+        } else {
+            $this->dispatch('showAlert', 'Terjadi kesalahan saat menyimpan transaksi.', 'danger');
+        }
     }
 
     /**
