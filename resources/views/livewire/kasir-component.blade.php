@@ -392,4 +392,14 @@
         window.addEventListener('close-detail-modal', event =>{
                 $('#detailBahanModal').modal('hide');
                 });
+                
+    document.addEventListener('redirectToPrinterA', function(event) {
+    const url = event.detail;
+    
+    // Jika mau langsung buka tab baru (tanpa aplikasi printer):
+    // window.open(url, '_blank');
+    
+    // Kalau mau langsung lempar ke aplikasi PrinterA (Android Intent)
+    window.location.href = `intent:${url}#Intent;package=com.printera.app;scheme=https;end`;
+    });          
     </script>

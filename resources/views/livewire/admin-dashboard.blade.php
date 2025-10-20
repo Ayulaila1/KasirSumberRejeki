@@ -103,42 +103,6 @@
                     </div>
                 </div>
 
-                <!-- Bagian Grafik -->
-                <div class="row">
-                    <div class="chart-container">
-                        <div class="chart-header">
-                            <h3 class="chart-title">Pendapatan Bulanan</h3>
-                            <div class="chart-actions">
-                                <select class="form-select" id="revenueYear" wire:model="tahunPendapatan"
-                                    style="width: 120px;">
-                                    @foreach ($daftarTahun as $tahun)
-                                    <option value="{{ $tahun }}">Tahun {{ $tahun }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div style="height: 400px;">
-                            <canvas id="chartPendapatan"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="chart-container">
-                        <div class="chart-header">
-                            <h3 class="chart-title">Produk Terlaris</h3>
-                            <div class="chart-actions">
-                                <select class="form-select" id="bestSellerMonth" wire:model="bulanProdukTerlaris"
-                                    style="width: 120px;">
-                                    <option value="sekarang">Bulan Ini</option>
-                                    <option value="lalu">Bulan Lalu</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="chart-wrapper" style="height:220px;">
-                            <canvas id="bestSellerChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Transaksi Terakhir -->
                 <div class="page-header" style="margin-top: 30px;">
                     <h2 class="page-title">
@@ -188,7 +152,7 @@
 </div>
 <!-- Tambahkan setelah semua HTML dashboard -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
+{{-- <script>
     document.addEventListener("livewire:load", () => {
     const ctx = document.getElementById('chartPendapatan');
     let chart;
@@ -222,4 +186,4 @@
         });
     });
 });
-</script>
+</script> --}}

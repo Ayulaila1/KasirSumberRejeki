@@ -8,15 +8,15 @@ use App\Models\Bahan;
 use App\Models\Produk;
 use Livewire\Component;
 use App\Models\Penjualan;
-use Mike42\Escpos\Printer;
+// use Mike42\Escpos\Printer;
 use Illuminate\Support\Str;
 use App\Models\PenjualanDtl;
 use App\Models\ProdukRacikan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
-use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
-use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+// use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
+// use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 
 class KasirComponent extends Component
 {
@@ -51,44 +51,34 @@ class KasirComponent extends Component
     ];
 
     // ========== PRINTER (tetap seperti sebelumnya) ==========
-    protected function printReceipt($receiptData, $printerType = 'bluetooth')
+    protected function printReceipt($receiptData)
     {
         try {
-            // ==== Pilih koneksi printer ====
-            if ($printerType === 'wifi') {
-                // 1️⃣ Printer Wi-Fi (dapur)
-                $ip = '192.168.1.50'; // Ganti dengan IP printer dapur
-                $port = 9100;
-                $connector = new NetworkPrintConnector($ip, $port);
-            } else {
-                // 2️⃣ Printer Bluetooth (RawBT / Windows)
-                // Jika pakai WindowsPrintConnector (PC / tablet Windows)
-                $connector = new WindowsPrintConnector("POS-58");
+            // 1️⃣ Render HTML struk
+            $strukHTML = view('layouts.printkasir', $receiptData)->render();
 
-                // ❗ Jika murni Android + RawBT:
-                // $strukHTML = view('layouts.printkasir', array_merge($receiptData, ['printerType'=>'bluetooth']))->render();
-                // file_get_contents("http://IP_TABLET:2018/print?data=" . urlencode($strukHTML));
-                // return;
+            // 2️⃣ Simpan ke folder public (bisa dibuka browser)
+            $fileName = 'struk-' . now()->format('YmdHis') . '.html';
+            $filePath = storage_path('app/public/struk/' . $fileName);
+
+            if (!file_exists(dirname($filePath))) {
+                mkdir(dirname($filePath), 0777, true);
             }
 
-            $printer = new Printer($connector);
+            file_put_contents($filePath, $strukHTML);
 
-            // ==== Render Blade ke string ====
-            $strukText = view('layouts.printkasir', array_merge($receiptData, ['printerType' => $printerType]))->render();
+            // 3️⃣ Buat URL publik ke struk
+            $publicUrl = asset('storage/struk/' . $fileName);
 
-            // ==== Hapus tag HTML untuk printer ESC/POS ====
-            $strukText = strip_tags($strukText); // biar aman, ESC/POS gak bisa HTML
-
-            // ==== Kirim ke printer ====
-            $printer->text($strukText . "\n");
-            $printer->feed(3);
-            $printer->cut();
-            $printer->close();
+            // 4️⃣ Arahkan browser (bisa ke aplikasi PrinterA atau tab baru)
+            $this->dispatch('redirectToPrinterA', $publicUrl);
 
         } catch (\Exception $e) {
-            logger()->error("Gagal cetak struk ($printerType): " . $e->getMessage());
+            logger()->error("❌ Gagal buat struk manual: " . $e->getMessage());
+            $this->dispatch('showAlert', 'Gagal menyiapkan struk.', 'danger');
         }
     }
+
 
     // ========== LIFECYCLE ==========
     public function mount($id = null)
@@ -358,16 +348,43 @@ class KasirComponent extends Component
 
     public function confirmPayment()
     {
+        if (empty($this->cart)) {
+            $this->dispatch('showAlert', 'Keranjang masih kosong', 'danger');
+            return;
+        }
+
         $this->showConfirmModal = false;
-        $this->processPayment();
-        $this->showReceipt = true;
 
-        // Print pelanggan
-        $this->printReceipt($this->receiptData, 'bluetooth');
+        $penjualan = $this->processPayment();
 
-        // Print dapur
-        $this->printReceipt($this->receiptData, 'wifi');
+        if ($penjualan) {
+            // Siapkan data untuk struk
+            $this->receiptData = [
+                'storeName' => 'Cafe Sumber Rejeki',
+                'storeAddress' => 'Jl. Mawar No.10, Bandung',
+                'storePhone' => '0812-3456-7890',
+                'number' => $penjualan->kode_penjualan,
+                'date' => now()->format('d/m/Y H:i:s'),
+                'customer' => $this->customerName ?: '-',
+                'table' => $this->tableNumber ?: '-',
+                'notes' => $this->orderNotes ?: '-',
+                'items' => array_values($this->cart),
+                'total' => $this->getTotal(),
+                'cash' => $this->cashAmount,
+                'change' => $this->cashAmount - $this->getTotal(),
+            ];
 
+            // 1️⃣ Cetak struk manual (buka ke PrinterA)
+            $this->printReceipt($this->receiptData);
+
+            // 2️⃣ Tampilkan notifikasi sukses
+            $this->dispatch('showAlert', 'Pembayaran berhasil dan struk siap dicetak.', 'success');
+
+            // 3️⃣ Bersihkan cart
+            $this->clearCart(false);
+        } else {
+            $this->dispatch('showAlert', 'Terjadi kesalahan saat menyimpan transaksi.', 'danger');
+        }
     }
 
     /**
