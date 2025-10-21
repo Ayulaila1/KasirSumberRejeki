@@ -1,7 +1,7 @@
 <div>
     @if ($isOpen)
     <div class="modal d-block" style="background-color: rgba(0,0,0,0.5); z-index:9999;">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content p-4">
                 <div class="modal-header">
                     <h5 class="modal-title">Pilih Produk</h5>
@@ -17,15 +17,16 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>Nama</th>
-                                    <th>Gambar</th>
-                                    <th>Jenis Produk</th>
+                                    {{-- <th>Gambar</th> --}}
+                                    {{-- <th>Jenis Produk</th> --}}
                                     <th>Kategori</th>
                                     <th>Supplier</th>
                                     <th>Harga Jual</th>
                                     <th>Harga Beli</th>
-                                    <th>Tgl Kedaluwarsa</th>
+                                    <th>Aksi</th>
+                                    {{-- <th>Tgl Kedaluwarsa</th>
                                     <th>Stok Minimum</th>
-                                    <th>Barang Titipan</th>
+                                    <th>Barang Titipan</th> --}}
                                 </tr>
                             </thead>
                             <tbody>
@@ -33,15 +34,11 @@
                                 <tr>
                                     <td>{{ $produk->idproduk }}</td>
                                     <td>{{ $produk->nama }}</td>
-                                    <td>{{ $produk->img }}</td>
-                                    <td>{{ $produk->jenisproduk }}</td>
                                     <td>{{ $produk->kategori }}</td>
                                     <td>{{ $produk->supplier->nama ?? '-' }}</td>
-                                    <td>{{ $produk->harga_beli }}</td>
-                                    <td>{{ $produk->harga_jual }}</td>
-                                    <td>{{ $produk->tanggal_kedaluwarsa }}</td>
-                                    <td>{{ $produk->stok_minimum }}</td>
-                                    <td>{{ $produk->is_titipan }}</td>
+                                    <td>Rp {{ number_format($produk->harga_jual, 0, ',', '.') }}</td>
+                                    <td>Rp {{ number_format($produk->harga_beli, 0, ',', '.') }}</td>
+                                    {{-- 4. Pindahkan tombol 'Pilih' ke dalam kolom (td) terakhir --}}
                                     <td>
                                         <button wire:click="pilih({{ $produk->idproduk }})"
                                             class="btn btn-sm btn-primary">Pilih</button>
@@ -49,7 +46,8 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="4">Tidak ada data.</td>
+                                    {{-- 5. Sesuaikan colspan dengan jumlah kolom header --}}
+                                    <td colspan="7" class="text-center text-muted">Data produk tidak ditemukan.</td>
                                 </tr>
                                 @endforelse
                             </tbody>

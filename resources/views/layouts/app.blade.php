@@ -1077,6 +1077,9 @@
             transition: all 0.3s ease;
             z-index: 1000;
             transform: translateX(-100%);
+            /* -- TAMBAHAN -- */
+            display: flex;
+            flex-direction: column;
         }
 
         .sidebar.show {
@@ -1103,7 +1106,8 @@
         .sidebar-menu {
             padding: 15px 0;
             overflow-y: auto;
-            max-height: calc(100vh - 70px);
+            /* -- GANTI max-height DENGAN flex: 1 -- */
+            flex: 1;
         }
 
         .menu-item {

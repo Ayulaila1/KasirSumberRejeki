@@ -5,10 +5,12 @@
             <div class="modal-content p-4">
                 <div class="modal-header">
                     <h5 class="modal-title">Pilih Supplier</h5>
-                    <button type="button" wire:click="tutup" class="btn-close"></button>
+                    {{-- Ganti button dengan livewire click prevent agar tidak submit form --}}
+                    <button type="button" wire:click.prevent="tutup" class="btn-close"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="text" wire:model.debounce.500ms="search" class="form-control mb-2"
+                    {{-- Ganti wire:model.debounce menjadi wire:model.live.debounce --}}
+                    <input type="text" wire:model.live.debounce.300ms="search" class="form-control mb-2"
                         placeholder="Cari supplier...">
 
                     <table class="table table-bordered">

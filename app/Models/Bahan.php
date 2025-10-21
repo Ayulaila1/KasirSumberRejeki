@@ -67,11 +67,11 @@ class Bahan extends Model
     */
 
 
-    //contoh relasi untu menampilkan tabel child atau detail 
+    //contoh relasi untu menampilkan tabel child atau detail
 /*
    public function nama_table_detail()
    {
-   return $this->hasMany(nama_model_child::class, 'nama_kolom_relasi_tabel_child', 'nama_kolom_primary_key_table_parent'); 
+   return $this->hasMany(nama_model_child::class, 'nama_kolom_relasi_tabel_child', 'nama_kolom_primary_key_table_parent');
    }
 */
 
@@ -79,7 +79,7 @@ class Bahan extends Model
 /*
    public function nama_table_parent()
    {
-   return $this->belongsTo(nama_model_parent::class, 'nama_kolom_relasi_tabel_child', 'nama_kolom_primary_key_table_parent'); 
+   return $this->belongsTo(nama_model_parent::class, 'nama_kolom_relasi_tabel_child', 'nama_kolom_primary_key_table_parent');
    }
 */
 

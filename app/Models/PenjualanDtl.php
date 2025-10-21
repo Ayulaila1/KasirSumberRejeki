@@ -32,6 +32,16 @@ class PenjualanDtl extends Model
         return $this->belongsTo(Penjualan::class, 'penjualan_idpenjualan', 'idpenjualan');
     }
 
+    public function scopeSearch($query, $value)
+    {
+        $query->where('penjualan_idpenjualan', 'like', "%{$value}%")
+            ->orWhere('produk_idproduk', 'like', "%{$value}%")
+            ->orWhere('qty', 'like', "%{$value}%")
+            ->orWhere('harga_jual', 'like', "%{$value}%")
+            ->orWhere('subtotal', 'like', "%{$value}%")
+        ;
+    }
+
     /**
      * Relasi many-to-one ke model Produk.
      */

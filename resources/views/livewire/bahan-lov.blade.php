@@ -1,14 +1,14 @@
 <div>
     @if ($isOpen)
     <div class="modal d-block" style="background-color: rgba(0,0,0,0.5); z-index:9999;">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content p-4">
                 <div class="modal-header">
                     <h5 class="modal-title">Pilih Bahan</h5>
                     <button type="button" wire:click="tutup" class="btn-close"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="text" wire:model.debounce.500ms="search" class="form-control mb-2"
+                    <input type="text" wire:model.live.debounce.300ms="search" class="form-control mb-2"
                         placeholder="Cari bahan...">
 
                     <table class="table table-bordered">
@@ -37,12 +37,17 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="4">Tidak ada data.</td>
+                                {{-- 5. Sesuaikan colspan dengan jumlah kolom header --}}
+                                <td colspan="7" class="text-center text-muted">Data produk tidak ditemukan.</td>
                             </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
+                {{-- 6. Tambahkan link untuk pagination --}}
+                {{-- <div class="mt-3">
+                    {{ $produks->links() }}
+                </div> --}}
             </div>
         </div>
     </div>
