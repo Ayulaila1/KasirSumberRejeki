@@ -1181,6 +1181,8 @@
 
         /* Main Content */
         .main-content {
+            padding: 15px;
+            /* <-- TAMBAHKAN BARIS INI */
             margin-right: 0;
             transition: all 0.3s;
         }
@@ -1817,9 +1819,13 @@
             }
 
             .main-content {
-                margin-right: 0;
+                /* margin-right: 250px; */
                 width: calc(100% - 250px);
                 /* Sesuaikan dengan lebar sidebar */
+
+                .content-area {
+                    /* Hapus margin-left dari sini agar tidak dobel */
+                }
             }
 
             .toggle-sidebar {

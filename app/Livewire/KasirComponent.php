@@ -54,27 +54,6 @@ class KasirComponent extends Component
     protected function printReceipt($receiptData)
     {
         try {
-<<<<<<< HEAD
-            // ==== KONEKSI PRINTER USB ====
-            // Pastikan nama printer sama dengan di Control Panel → Devices and Printers
-            $printerName = "RPP210A"; // Ganti sesuai nama printer kamu (misal: "POS-58", "Thermal Printer", dll)
-            $connector = new WindowsPrintConnector($printerName);
-            $printer = new Printer($connector);
-
-            // ==== AMBIL DATA STRUK DARI VIEW ====
-            $strukText = view('layouts.printkasir', array_merge($receiptData, [
-                'printerType' => 'usb'
-            ]))->render();
-
-            // ==== BERSIHKAN TAG HTML ====
-            $strukText = strip_tags($strukText);
-
-            // ==== CETAK STRUK ====
-            $printer->text($strukText . "\n");
-            $printer->feed(3); // tambah jarak biar tidak terpotong
-            $printer->cut();
-            $printer->close();
-=======
             // 1️⃣ Render HTML struk
             $strukHTML = view('layouts.printkasir', $receiptData)->render();
 
@@ -93,26 +72,14 @@ class KasirComponent extends Component
 
             // 4️⃣ Arahkan browser (bisa ke aplikasi PrinterA atau tab baru)
             $this->dispatch('redirectToPrinterA', $publicUrl);
->>>>>>> 5c2af020bea258e53abd4c0afd580456577c27df
-
-            logger()->info("✅ Struk berhasil dikirim ke printer $printerName via USB.");
 
         } catch (\Exception $e) {
-<<<<<<< HEAD
-            logger()->error("❌ Gagal cetak struk USB: " . $e->getMessage());
-            session()->flash('error', 'Gagal mencetak struk. Pastikan printer RPP210A sudah terhubung & menyala.');
-=======
             logger()->error("❌ Gagal buat struk manual: " . $e->getMessage());
             $this->dispatch('showAlert', 'Gagal menyiapkan struk.', 'danger');
->>>>>>> 5c2af020bea258e53abd4c0afd580456577c27df
         }
     }
 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 5c2af020bea258e53abd4c0afd580456577c27df
     // ========== LIFECYCLE ==========
     public function mount($id = null)
     {
@@ -388,10 +355,6 @@ class KasirComponent extends Component
 
         $this->showConfirmModal = false;
 
-<<<<<<< HEAD
-        // Cetak hanya ke printer USB
-        $this->printReceipt($this->receiptData);
-=======
         $penjualan = $this->processPayment();
 
         if ($penjualan) {
@@ -410,7 +373,6 @@ class KasirComponent extends Component
                 'cash' => $this->cashAmount,
                 'change' => $this->cashAmount - $this->getTotal(),
             ];
->>>>>>> 5c2af020bea258e53abd4c0afd580456577c27df
 
             // 1️⃣ Cetak struk manual (buka ke PrinterA)
             $this->printReceipt($this->receiptData);
