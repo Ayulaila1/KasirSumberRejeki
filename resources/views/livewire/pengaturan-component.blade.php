@@ -1,10 +1,10 @@
-<div class="main-content">
+<div class="container-fluid mb-5" style="margin-top: 40px">
     <!-- Content Area -->
-    <div class="content-area">
+    <div class="container-fluid px-0 p-3 rounded-top">
         <div class="page-header">
             <div class="page-title">
                 <i class="fas fa-cog"></i>
-                <h1>Pengaturan</h1>
+                <p class="p-0 m-0 h3 fw-bold">Pengaturan</p>
             </div>
         </div>
 

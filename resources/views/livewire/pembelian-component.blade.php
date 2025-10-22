@@ -299,55 +299,55 @@
 
 
 <script>
-    window.addEventListener('close-pembelian-modal', event =>{ 
-            $('#addPembelianModal').modal('hide'); 
-            $('#editPembelianModal').modal('hide'); 
-            $('#deletePembelianModal').modal('hide'); 
-        }); 
- 
- 
-  // copy dan aktifkan jika ingin menggunakan LOV  
- 
-  //       window.addEventListener('close-modal-lov', event =>{ 
-   //          $('#pembelianModal').modal('hide'); 
-   //     }); 
- 
- 
-  // $(document).ready(function(){ 
-   //      $('#btnpembelianModalLovAdd').click(function(){ 
-   //       $('#pembelianModal').modal('show'); 
-    //    }); 
-  //  }); 
- 
- 
-  // $(document).ready(function(){ 
-   //      $('#btnpembelianModalLovEdit').click(function(){ 
-   //       $('#pembelianModal').modal('show'); 
-    //    }); 
-  //  }); 
- 
- 
-       $('#addPembelianModal').on('shown.bs.modal', function () { 
-            $("id input form pertama").focus(); 
-        }); 
- 
- 
-        window.addEventListener('show-add-pembelian-modal', event =>{ 
-            $('#addPembelianModal').modal('show'); 
-        }); 
- 
- 
-        window.addEventListener('show-edit-pembelian-modal', event =>{ 
-            $('#editPembelianModal').modal('show'); 
-        }); 
- 
- 
-        window.addEventListener('show-delete-confirmation-pembelian-modal', event =>{ 
-            $('#deletePembelianModal').modal('show'); 
-        }); 
-    
-        
- 
+    window.addEventListener('close-pembelian-modal', event =>{
+            $('#addPembelianModal').modal('hide');
+            $('#editPembelianModal').modal('hide');
+            $('#deletePembelianModal').modal('hide');
+        });
+
+
+  // copy dan aktifkan jika ingin menggunakan LOV
+
+  //       window.addEventListener('close-modal-lov', event =>{
+   //          $('#pembelianModal').modal('hide');
+   //     });
+
+
+  // $(document).ready(function(){
+   //      $('#btnpembelianModalLovAdd').click(function(){
+   //       $('#pembelianModal').modal('show');
+    //    });
+  //  });
+
+
+  // $(document).ready(function(){
+   //      $('#btnpembelianModalLovEdit').click(function(){
+   //       $('#pembelianModal').modal('show');
+    //    });
+  //  });
+
+
+       $('#addPembelianModal').on('shown.bs.modal', function () {
+            $("id input form pertama").focus();
+        });
+
+
+        window.addEventListener('show-add-pembelian-modal', event =>{
+            $('#addPembelianModal').modal('show');
+        });
+
+
+        window.addEventListener('show-edit-pembelian-modal', event =>{
+            $('#editPembelianModal').modal('show');
+        });
+
+
+        window.addEventListener('show-delete-confirmation-pembelian-modal', event =>{
+            $('#deletePembelianModal').modal('show');
+        });
+
+
+
 </script>
 
 <script>
@@ -361,7 +361,7 @@
         });
         });
 
-            
+
         window.addEventListener('pembelian-error', event => {
         Swal.fire({
         icon: 'error',
@@ -385,6 +385,6 @@
         Livewire.dispatch('hapusPembelian'); // untuk Livewire v3
         }
         });
-        });   
-                
+        });
+
 </script>

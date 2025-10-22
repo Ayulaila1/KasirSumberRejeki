@@ -68,14 +68,18 @@ class PembelianComponent extends Component
     {
         $this->reset([
             'idpembelian',
-            'tanggal',
+            // 'tanggal',
             'supplier_idsupplier',
+            'supplierName',
             'user_iduser',
             'created_at',
             'updated_at'
         ]);
+        // Tambahkan baris ini untuk mengisi tanggal hari ini
+        $this->tanggal = now()->format('Y-m-d');
         $this->isOpen = true;
         $this->isEdit = false;
+        $this->dispatch('show-add-pembelian-modal');
 
     }
 
@@ -95,6 +99,8 @@ class PembelianComponent extends Component
         $this->tglstart = now()->firstOfMonth()->format('Y-m-d');
         $this->tglend = now()->format('Y-m-d');
         $this->tanggal = now()->format('Y-m-d');
+
+        // Biarkan dispatch ini, karena ini akan ditangkap JS untuk menutup modal
         $this->dispatch('close-pembelian-modal');
     }
 
@@ -135,7 +141,7 @@ class PembelianComponent extends Component
         $this->created_at = $pembelian->created_at;
         $this->updated_at = $pembelian->updated_at;
 
-        $this->isEdit = true;
+        // $this->isEdit = true;
 
         $this->dispatch('show-edit-pembelian-modal');
     }
@@ -189,11 +195,11 @@ class PembelianComponent extends Component
         $this->dispatch('close-pembelian-modal');
     }
 
-    #[On('buka-modal-lov-supplier')]
-    public function bukaModal()
-    {
-        $this->isOpen = true;
-    }
+    // #[On('buka-modal-lov-supplier')]
+    // public function bukaModal()
+    // {
+    //     $this->isOpen = true;
+    // }
 
     #[On('supplierDipilih')]
     public function supplierLov($id)
