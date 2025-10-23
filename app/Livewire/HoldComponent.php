@@ -8,6 +8,7 @@ use App\Models\Bahan;
 use App\Models\ProdukRacikan;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Barryvdh\DomPDF\Facade\Pdf; // TAMBAHKAN INI
 
 class HoldComponent extends Component
 {
@@ -84,20 +85,60 @@ class HoldComponent extends Component
 
     public function render()
     {
-        $holds = Hold::query()
+        // 1. Ambil data, jangan dipaginasi
+        $holdsData = Hold::query()
             ->when(
                 $this->search,
                 fn($query) =>
                 $query->where('customer', 'like', '%' . $this->search . '%')
             )
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->get(); // Ubah dari paginate() menjadi get()
 
-        return view('livewire.hold-component', compact('holds'));
+        // 2. Kelompokkan berdasarkan customer
+        $groupedHolds = $holdsData->groupBy(function ($item) {
+            // Kelompokkan customer yang null/kosong ke 'Tanpa Customer'
+            return $item->customer ?? 'Tanpa Customer';
+        })->sortKeys(); // Urutkan berdasarkan nama customer
+
+        // 3. Kirim data yang sudah dikelompokkan ke view
+        return view('livewire.hold-component', [
+            'groupedHolds' => $groupedHolds
+        ]);
     }
 
     public function lanjutkan($id)
     {
         return redirect()->route('kasir.resume', ['id' => $id]);
+    }
+
+    // TAMBAHKAN FUNGSI BARU UNTUK PRINT PDF
+    public function printPdf()
+    {
+        // 1. Ambil data (logika yang sama dengan render)
+        $holdsData = Hold::query()
+            ->when(
+                $this->search,
+                fn($query) =>
+                $query->where('customer', 'like', '%' . $this->search . '%')
+            )
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $groupedHolds = $holdsData->groupBy(function ($item) {
+            return $item->customer ?? 'Tanpa Customer';
+        })->sortKeys();
+
+        // 2. Load view PDF dengan data
+        $pdf = Pdf::loadView('pdf.hold-report', [
+            'groupedHolds' => $groupedHolds,
+            'tanggalCetak' => now()->format('d/m/Y H:i')
+        ]);
+
+        // 3. Berikan nama file dan kirim sebagai download
+        $namaFile = 'laporan-hold-' . now()->format('Y-m-d') . '.pdf';
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->stream();
+        }, $namaFile);
     }
 }

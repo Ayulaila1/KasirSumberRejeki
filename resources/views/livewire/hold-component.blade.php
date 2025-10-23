@@ -16,7 +16,7 @@
     </div>
 
     {{-- Loader --}}
-    <div wire:loading wire:target="search, delete, lanjutkan" class="loading-spinner">
+    <div wire:loading wire:target="search, delete, lanjutkan, printPdf" class="loading-spinner">
         <div class="loader"></div>
     </div>
     {{-- End Loader --}}
@@ -26,6 +26,11 @@
             <div>
                 <input type="text" class="form-control mb-1 mb-lg-0" placeholder="Cari customer..."
                     wire:model.live.debounce.300ms="search">
+            </div>
+            <div>
+                <button wire:click="printPdf" class="btn btn-primary d-flex align-items-center gap-1">
+                    <i class="fas fa-print"></i> Print PDF
+                </button>
             </div>
         </div>
     </div>
@@ -37,22 +42,34 @@
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-bordered" style="width:100%; white-space:nowrap">
+                            {{-- MODIFIKASI HEADER TABEL --}}
                             <thead>
                                 <tr>
                                     <th class="text-center" style="width: 3%">No</th>
                                     <th class="text-center">Kode Transaksi</th>
-                                    <th class="text-center">Customer</th>
+                                    {{-- HAPUS KOLOM CUSTOMER DARI SINI --}}
                                     <th class="text-center">Total</th>
                                     <th class="text-center">Tanggal</th>
                                     <th style="width: 100px; text-align: center">Action</th>
                                 </tr>
                             </thead>
+                            {{-- MODIFIKASI BODY TABEL --}}
                             <tbody>
-                                @forelse($holds as $index => $hold)
+                                @php $counter = 1; @endphp
+                                {{-- Gunakan $groupedHolds yang baru --}}
+                                @forelse($groupedHolds as $customerName => $holds)
+
+                                <tr style="background-color: #f0f0f0;">
+                                    <td colspan="5" class="fw-bold ps-3">
+                                        Customer: {{ $customerName }}
+                                    </td>
+                                </tr>
+
+                                @foreach($holds as $hold)
                                 <tr>
-                                    <td class="text-center">{{ $holds->firstItem() + $index }}</td>
+                                    <td class="text-center">{{ $counter++ }}</td>
                                     <td class="text-center">{{ $hold->kode_transaksi }}</td>
-                                    <td>{{ $hold->customer ?? '-' }}</td>
+                                    {{-- HAPUS KOLOM CUSTOMER DARI SINI --}}
                                     <td class="text-end">Rp {{ number_format($hold->total, 0, ',', '.') }}</td>
                                     <td class="text-center">{{ $hold->created_at->format('d/m/Y H:i') }}</td>
                                     <td>
@@ -68,9 +85,11 @@
                                         </div>
                                     </td>
                                 </tr>
+                                @endforeach
                                 @empty
                                 <tr>
-                                    <td colspan="6" class="text-center">Belum ada transaksi hold</td>
+                                    {{-- Sesuaikan colspan menjadi 5 --}}
+                                    <td colspan="5" class="text-center">Belum ada transaksi hold</td>
                                 </tr>
                                 @endforelse
                             </tbody>
@@ -80,7 +99,7 @@
             </div>
 
             {{-- Pagination Info --}}
-            <div class="row">
+            {{-- <div class="row">
                 <div class="col-lg-6 d-flex justify-content-between align-items-center">
                     <div>
                         Showing {{ $holds->firstItem() }} to {{ $holds->lastItem() }}
@@ -98,7 +117,7 @@
                 <div class="mt-2 col-lg-6 d-flex justify-content-end align-items-center">
                     {{ $holds->links() }}
                 </div>
-            </div>
+            </div> --}}
 
         </div>
     </div>
