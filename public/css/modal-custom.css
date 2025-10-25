@@ -1,0 +1,92 @@
+.text-brown {
+    color: #5d4037;
+}
+
+.btn-brown {
+    background-color: #795548;
+    border-color: #6d4c41;
+}
+
+.btn-brown:hover {
+    background-color: #6d4c41;
+    border-color: #5d4037;
+}
+
+.table-brown {
+    background-color: #795548 !important;
+    color: #fff !important;
+}
+
+/* Modal Custom */
+.custom-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    /* ⛔ ubah dari center ke flex-start */
+    padding-top: 60px;
+    /* ✅ tambahkan jarak dari atas */
+    overflow-y: auto;
+    /* ✅ biar bisa scroll kalau modal panjang */
+    z-index: 1055;
+    backdrop-filter: blur(3px);
+}
+
+.custom-modal-dialog {
+    background: #fff;
+    border-radius: 14px;
+    width: 90%;
+    max-width: 420px;
+    margin-bottom: 60px;
+    /* ✅ supaya bawahnya gak kepotong */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    animation: slideDown 0.35s ease-out;
+}
+
+.custom-modal-header {
+    background-color: #795548;
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+}
+
+.custom-modal-header .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: 1;
+}
+
+.custom-modal-body {
+    padding: 20px;
+}
+
+.custom-modal-footer {
+    background-color: #f8f8f8;
+    padding: 12px 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    /* ✅ jadikan flex container */
+    justify-content: flex-end;
+    /* ✅ semua tombol sejajar ke kanan */
+    align-items: center;
+    /* ✅ vertikal rata tengah */
+    gap: 10px;
+    /* ✅ beri jarak antar tombol */
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

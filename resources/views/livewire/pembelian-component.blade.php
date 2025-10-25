@@ -6,10 +6,10 @@
         <div class="container-fluid px-0 p-3 rounded-top">
             <div class="d-lg-flex justify-content-between align-items-center mb-lg-1">
                 <div class="mb-3 mb-lg-0">
-                    <p class="p-0 m-0 h3 fw-bold ">Pembelian</p>
+                    <p class="p-0 m-0 h3 fw-bold ">Restok</p>
                     <div class="mt-2" style="color: #868686">
                         <i class="fa-regular fa-circle-question me-1 text-danger"></i>Menu ini digunakan untuk
-                        mengelola Data Pembelian, termasuk menambahkan atau mengubah informasi.
+                        mengelola Data Restok, termasuk menambahkan atau mengubah informasi.
                     </div>
                 </div>
                 <div>
@@ -74,6 +74,7 @@
                                         <th class="text-center">Tanggal</th>
                                         <th class="text-center">Supplier</th>
                                         <th class="text-center">User</th>
+                                        <th class="text-center">Shift</th>
                                         <th class="text-center">Total Item</th>
                                         <th class="text-center">Total Harga Beli</th>
                                     </tr>
@@ -108,6 +109,17 @@
                                         <td>{{ $datas->tanggal }}</td>
                                         <td>{{ $datas->supplier->nama ?? '-' }}</td>
                                         <td>{{ $datas->user->name ?? '-' }}</td>
+                                        <td class="text-center">
+                                            @if ($datas->shift == 1)
+                                            <span class="badge bg-primary">Shift 1</span>
+                                            @elseif ($datas->shift == 2)
+                                            <span class="badge bg-warning text-dark">Shift 2</span>
+                                            @elseif ($datas->shift == 3)
+                                            <span class="badge bg-danger">Shift 3</span>
+                                            @else
+                                            <span class="badge bg-secondary">-</span>
+                                            @endif
+                                        </td>
                                         @php
                                         $total_item = App\Models\Pembeliandtl::where('pembelian_idpembelian',
                                         $datas->idpembelian)->sum('jumlah');

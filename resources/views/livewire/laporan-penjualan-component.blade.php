@@ -32,8 +32,19 @@
             <div class="d-lg-flex align-items-center gap-2">
                 <input type="date" class="form-control" wire:model.live.debounce.300ms="tglStart">
                 <input type="date" class="form-control" wire:model.live.debounce.300ms="tglEnd">
+                <div class="col-md-3">
+                    <select wire:model="shift" class="form-control">
+                        <option value="">-- Pilih Shift --</option>
+                        <option value="1">Shift 1 (08:00 - 16:00)</option>
+                        <option value="2">Shift 2 (16:00 - 00:00)</option>
+                        <option value="3">Shift 3 (00:00 - 13:00)</option>
+                    </select>
+                </div>
                 <button class="btn bg-danger text-white d-flex align-items-center" wire:click="exportToPdf">
                     <i class="fa-regular fa-file-pdf me-1"></i> PDF
+                </button>
+                <button class="btn bg-danger text-white d-flex align-items-center" wire:click="exportToExcel">
+                    <i class="fa-regular fa-file-excel me-1"></i> Excel
                 </button>
             </div>
         </div>

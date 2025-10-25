@@ -11,6 +11,7 @@ use Livewire\WithPagination;
 use App\Models\ProdukRacikan;
 use Livewire\WithFileUploads;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 
 class ReturTitipanComponent extends Component
 {
@@ -18,10 +19,7 @@ class ReturTitipanComponent extends Component
 
     public $idretur_titipan, $tanggal, $supplier_idsupplier, $produk_idproduk, $qty, $keterangan, $created_at, $updated_at;
     public $produkName;
-    // public $produk_idBaru, $tanggalBaru, $qtyBaru, $keteranganBaru, $produkNameBaru;
     public $tanggalBaru, $produk_idBaru, $produkNameBaru, $qtyBaru, $keteranganBaru;
-
-    // public $tanggalBaru, $produk_idBaru, $produkNameBaru, $qtyBaru, $keteranganBaru;
     public $search = '';
     public $searchlov = '';
     public $tglstart = '';
@@ -116,6 +114,8 @@ class ReturTitipanComponent extends Component
             // 'keterangan' => 'required',
         ]);
 
+        $user = Auth::user();
+
         $returtitipan = new ReturTitipan();
         $returtitipan->idretur_titipan = $this->idretur_titipan;
         $returtitipan->tanggal = $this->tanggal;
@@ -123,6 +123,7 @@ class ReturTitipanComponent extends Component
         $returtitipan->produk_idproduk = $this->produk_idproduk;
         $returtitipan->qty = $this->qty;
         $returtitipan->keterangan = $this->keterangan;
+        $returtitipan->user_iduser = $user->id;
         $returtitipan->save();
 
         $this->close();
@@ -258,6 +259,8 @@ class ReturTitipanComponent extends Component
             'qtyBaru' => 'required|numeric|min:1',
         ]);
 
+        $user = Auth::user();
+
         $produk = Produk::with('produkDetails.bahan')->find($this->produk_idBaru);
         // dd($produk);
         if (!$produk) {
@@ -292,6 +295,7 @@ class ReturTitipanComponent extends Component
                 'supplier_idsupplier' => $produk->supplier_idsupplier,
                 'qty' => $this->qtyBaru,
                 'keterangan' => $this->keteranganBaru,
+                'user_iduser' => $user->id,
             ]);
 
             // Kurangi stok semua bahan racikan

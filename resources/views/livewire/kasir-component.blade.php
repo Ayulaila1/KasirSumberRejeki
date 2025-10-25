@@ -1,23 +1,38 @@
 <div>
     <div class="d-flex flex-wrap gap-3 align-items-start">
         <div class="product-section" style="flex: 2.5;">
-            <div class="header">
-                <h2><i class="fas fa-mug-hot"></i> Menu Cafe Suki</h2>
-                <div class="d-flex align-items-center gap-2 mb-3">
-                    <!-- Kotak Search -->
-                    <div class="d-flex align-items-center bg-light rounded-pill px-2 py-1 shadow-sm">
+            <div class="header d-flex justify-content-between align-items-center mb-3"
+                style="background-color: #fff8f5; padding: 10px 20px; border-radius: 12px; box-shadow: 0 3px 6px rgba(0,0,0,0.05);">
+
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fas fa-mug-hot fs-4 text-warning"></i>
+                    <h2 class="fw-bold mb-0" style="color: #7a4b47;">Menu Cafe Suki</h2>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    {{-- 🔹 Info Kasir & Shift --}}
+                    <div class="text-end">
+                        <div class="fw-semibold" style="color:#007bff; font-size: 14px;">
+                            {{ Auth::user()->name ?? 'Kasir' }}
+                        </div>
+                        <span class="badge bg-success" style="font-size: 12px;">Shift {{ Auth::user()->shift ?? '-'
+                            }}</span>
+                    </div>
+
+                    {{-- 🔹 Kotak Search --}}
+                    <div class="d-flex align-items-center bg-white rounded-pill shadow-sm px-3 py-1"
+                        style="border:1px solid #eee; min-width: 230px;">
                         <i class="fas fa-search text-muted me-2"></i>
-                        <input type="text" wire:model.live="search" placeholder="Cari menu..." id="search-input"
+                        <input type="text" wire:model.live="search" placeholder="Cari menu..."
                             class="form-control form-control-sm border-0 bg-transparent shadow-none" />
                     </div>
 
-                    <!-- Tombol ke Dashboard -->
-                    <a class="btn btn-sm btn-primary fw-bold d-flex align-items-center justify-content-center"
-                        href="/dashboard">
+                    {{-- 🔹 Tombol Home --}}
+                    <a class="btn btn-sm d-flex align-items-center justify-content-center" href="/dashboard"
+                        style="background-color:#7a4b47; color:white; border-radius:12px; width:34px; height:34px;">
                         <i class="fa-solid fa-house-chimney"></i>
                     </a>
                 </div>
-
             </div>
 
             <div class="category-tabs">

@@ -77,6 +77,7 @@
                                         <th class="text-center">Produk</th>
                                         <th class="text-center">Jumlah</th>
                                         <th class="text-center">Keterangan</th>
+                                        <th class="text-center">User</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -123,6 +124,7 @@
                                         <td>{{ $datas->produk->nama ?? '-' }}</td>
                                         <td>{{ $datas->qty }}</td>
                                         <td>{{ $datas->keterangan }}</td>
+                                        <td>{{ $datas->user->name ?? '-' }}</td>
                                     </tr>
                                     @endforeach
                                 </tbody>

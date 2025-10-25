@@ -176,6 +176,50 @@ return [
 
             // ⚠️ Tambahkan ini supaya route API aktif
         RouteServiceProvider::class,
+
+
+    ],
+
+    /*
+   |--------------------------------------------------------------------------
+   | Class Aliases
+   |--------------------------------------------------------------------------
+   |
+   | Aliases ini akan diregistrasi ketika aplikasi dijalankan. Kamu bisa
+   | memanggil class facade seperti PDF, Excel, dsb secara langsung.
+   |
+   */
+
+    'aliases' => [
+        'App' => Illuminate\Support\Facades\App::class,
+        'Arr' => Illuminate\Support\Arr::class,
+        'Auth' => Illuminate\Support\Facades\Auth::class,
+        'Blade' => Illuminate\Support\Facades\Blade::class,
+        'Cache' => Illuminate\Support\Facades\Cache::class,
+        'Config' => Illuminate\Support\Facades\Config::class,
+        'Cookie' => Illuminate\Support\Facades\Cookie::class,
+        'Crypt' => Illuminate\Support\Facades\Crypt::class,
+        'DB' => Illuminate\Support\Facades\DB::class,
+        'File' => Illuminate\Support\Facades\File::class,
+        'Gate' => Illuminate\Support\Facades\Gate::class,
+        'Hash' => Illuminate\Support\Facades\Hash::class,
+        'Http' => Illuminate\Support\Facades\Http::class,
+        'Log' => Illuminate\Support\Facades\Log::class,
+        'Mail' => Illuminate\Support\Facades\Mail::class,
+        'Queue' => Illuminate\Support\Facades\Queue::class,
+        'Request' => Illuminate\Support\Facades\Request::class,
+        'Response' => Illuminate\Support\Facades\Response::class,
+        'Route' => Illuminate\Support\Facades\Route::class,
+        'Storage' => Illuminate\Support\Facades\Storage::class,
+        'Str' => Illuminate\Support\Str::class,
+        'Validator' => Illuminate\Support\Facades\Validator::class,
+        'View' => Illuminate\Support\Facades\View::class,
+
+        // ✅ Tambahkan alias berikut supaya bisa pakai PDF::loadView()
+        'PDF' => Barryvdh\DomPDF\Facade\Pdf::class,
+
+        // ✅ Kalau nanti kamu pakai Excel export juga
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ],
 
 ];

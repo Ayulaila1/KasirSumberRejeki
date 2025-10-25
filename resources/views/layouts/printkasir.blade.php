@@ -53,6 +53,9 @@
     <div class="center">
         Terima Kasih<br>
         Semoga Puas dengan Layanan Kami
+        <div class="center" style="margin-top:8px;">
+            Dicetak oleh: {{ Auth::user()->name ?? 'Kasir' }} (Shift {{ Auth::user()->shift ?? '-' }})
+        </div>
     </div>
 
     @else
@@ -63,6 +66,7 @@
     </div>
     Meja : {{ $table ?? '-' }}<br>
     Pelanggan: {{ $customer ?? '-' }}<br>
+    Kasir: {{ Auth::user()->name ?? 'Kasir' }} (Shift {{ Auth::user()->shift ?? '-' }})<br>
     ------------------------------<br>
     @foreach($items as $item)
     {{ $item['name'] }} ({{ $item['quantity'] }})<br>

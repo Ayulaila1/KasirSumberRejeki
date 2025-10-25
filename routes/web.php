@@ -1,87 +1,94 @@
 <?php
 
-use App\Livewire\Kasir;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\LaporanController;
 use App\Models\Penjualan;
+
+// Livewire Components
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
-use App\Livewire\HoldComponent;
 use App\Livewire\AdminDashboard;
-use App\Livewire\BahanComponent;
 use App\Livewire\Dashboard\Main;
-use App\Livewire\KasirComponent;
 use App\Livewire\ProdukComponent;
-use App\Livewire\PenggunaComponent;
 use App\Livewire\SupplierComponent;
 use App\Livewire\PembelianComponent;
 use App\Livewire\PenjualanComponent;
+use App\Livewire\KasirComponent;
+use App\Livewire\HoldComponent;
+use App\Livewire\BahanComponent;
+use App\Livewire\PengeluaranComponent;
+use App\Livewire\KasMutasiComponent;
+use App\Livewire\PenggunaComponent;
 use App\Livewire\PengaturanComponent;
-use Illuminate\Support\Facades\Route;
-use App\Livewire\PembeliandtlComponent;
 use App\Livewire\ReturTitipanComponent;
+use App\Livewire\PembeliandtlComponent;
 use App\Livewire\ProdukRacikanComponent;
-use App\Http\Controllers\LoginController;
 use App\Livewire\LaporanPenjualanComponent;
 use App\Livewire\LaporanPendapatanComponent;
-// use App\Http\Livewire\ProfilComponent;
-// use App\Livewire\LaporanPenjualanComponent;
-// use App\Livewire\LaporanPendapatanComponent;
-// use App\Http\Controllers\LoginController;
-// use App\Http\Livewire\ProfilComponent;
-// use App\Livewire\LaporanPenjualanComponent;
-// use App\Livewire\LaporanPendapatanComponent;
+use App\Livewire\LaporanPembukuanComponent;
 
-Route::get('/', function () {
-    return redirect('/login_1');
-});
-// Public Routes
+// ============================
+// 🔹 ROUTE GUEST / LOGIN
+// ============================
+Route::get('/', fn() => redirect('/login_1'));
+
 Route::middleware('guest')->group(function () {
     Route::get('/login_1', [LoginController::class, 'index'])->name('login');
     Route::post('/login', [LoginController::class, 'authenticate'])->name('login.attempt');
     Route::get('/registermiaw', Register::class)->name('registermiaw');
 });
 
-// Logout Route (accessible to authenticated users)
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-Route::post('/roarr', [LoginController::class, 'authenticate']);
+Route::post('/roarr', [LoginController::class, 'authenticate']); // sepertinya buat debug login alternatif
 
-
-// Authenticated Routes
+// ============================
+// 🔹 ROUTE UNTUK ADMIN DAN SHIFT
+// ============================
 Route::middleware('auth')->group(function () {
-    // Main Dashboard
-    Route::get('/dashboard', AdminDashboard::class)->name('admin.dashboard');
-    // Other Dashboard Pages
-    // Route::get('/produk', ProdukComponent::class)->name('produk.index');
-    Route::get('/penjualan', function () {
-        return view('penjualan');
-    })->name('penjualan');
 
-    Route::get('/laporan', function () {
-        return view('laporan');
-    })->name('laporan');
-});
-
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    // Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
-    // Route::get('/dashboard', Main::class)->name('dashboard.index');
+    // 📊 Dashboard & Master Data
     Route::get('/dashboard', AdminDashboard::class)->name('admin.dashboard');
     Route::get('/produk', ProdukComponent::class)->name('produk.index');
     Route::get('/supplier', SupplierComponent::class)->name('supplier.index');
+    Route::get('/bahan', BahanComponent::class)->name('bahan.index');
+    Route::get('/pengguna', PenggunaComponent::class)->name('pengguna.index');
+    Route::get('/pengaturan', PengaturanComponent::class)->name('pengaturan.index');
+
+    // 🛒 Transaksi
     Route::get('/pembelian', PembelianComponent::class)->name('pembelian.index');
+    Route::get('/pembeliandtl/{id}', PembeliandtlComponent::class)->name('pembeliandtl.index');
     Route::get('/penjualan', PenjualanComponent::class)->name('penjualan.index');
     Route::get('/kasir', KasirComponent::class)->name('kasir.index');
     Route::get('/kasir/resume/{id}', KasirComponent::class)->name('kasir.resume');
     Route::get('/hold', HoldComponent::class)->name('hold.index');
-    Route::get('/bahan', BahanComponent::class)->name('bahan.index');
     Route::get('/returtitipan', ReturTitipanComponent::class)->name('returtitipan.index');
+    Route::get('/retur-produk/{idproduk}', ReturTitipanComponent::class)->name('retur.produk');
+    Route::get('/produkracikan/{id}', ProdukRacikanComponent::class)->name('produkracikan.index');
+    Route::get('/pengeluaran', PengeluaranComponent::class)->name('pengeluaran.index');
+    Route::get('/kas-mutasi', KasMutasiComponent::class)->name('kas-mutasi');
+
+    // 🧾 Laporan
     Route::get('/laporan-penjualan', LaporanPenjualanComponent::class)->name('laporan.penjualan');
     Route::get('/laporan-pendapatan', LaporanPendapatanComponent::class)->name('laporan.pendapatan');
-    Route::get('/produkracikan/{id}', ProdukRacikanComponent::class)->name('produkracikan.index');
-    Route::get('/pembeliandtl/{id}', PembeliandtlComponent::class)->name('pembeliandtl.index');
-    Route::get('/retur-produk/{idproduk}', ReturTitipanComponent::class)->name('retur.produk');
+    Route::get('/laporan/pembukuan', LaporanPembukuanComponent::class)->name('laporan.pembukuan');
+
+    // 📄 Export / Cetak PDF & Excel - Pembukuan
+    Route::get('/laporan/pembukuan/pdf/{tanggal}/{shift}', [LaporanController::class, 'cetakPembukuanPDF'])
+        ->name('laporan.pembukuan.pdf');
+    Route::get('/laporan/pembukuan/excel/{tanggal}/{shift}', [LaporanController::class, 'exportPembukuanExcel'])
+        ->name('laporan.pembukuan.excel');
+
+    // 📄 Export / Cetak PDF & Excel - Kas Mutasi
+    Route::get('/laporan/kasmutasi/pdf', [LaporanController::class, 'cetakKasMutasiPDF'])
+        ->name('laporan.kasmutasi.pdf');
+    Route::get('/laporan/kasmutasi/excel', [LaporanController::class, 'exportKasMutasiExcel'])
+        ->name('laporan.kasmutasi.excel');
+
+    // 📠 Cetak Pembelian
     Route::get('/cetakPembelian/{idPage}', [PembeliandtlComponent::class, 'cetakLaporan'])->name('cetakPembelian');
-    Route::get('/pengguna', PenggunaComponent::class)->name('pengguna.index');
-    Route::get('/pengaturan', PengaturanComponent::class)->name('pengaturan.index');
-    // Route::get('/profil', ProfilComponent::class)->name('profil.index');
+
+    // 🧾 Cetak Struk Kasir
     Route::get('/print/struk/{id}', function ($id) {
         $penjualan = Penjualan::with('detail.produk')->findOrFail($id);
 
@@ -107,13 +114,3 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         return view('layouts.printkasir', $receiptData);
     })->name('print.struk');
 });
-// dll
-
-
-// Optional: Frontend Routes (commented out as per your original)
-// Route::get('/', HomeFrontend::class)->name('home.frontend');
-// Route::get('/about', AboutFrontend::class)->name('about.frontend');
-// Route::get('/features', FeaturesFrontend::class)->name('features.frontend');
-// Route::get('/team', TeamFrontend::class)->name('team.frontend');
-// Route::get('/pricing', PricingFrontend::class)->name('pricing.frontend');
-// Route::get('/contact', ContactFrontend::class)->name('contact.frontend');

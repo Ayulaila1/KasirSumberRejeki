@@ -96,7 +96,7 @@
                                         </td>
                                         {{-- <td>{{ $datas->produk_idproduk }}</td> --}}
                                         <td>{{ $datas->bahan->nama ?? '-' }}</td>
-                                        <td class="text-end class=" text-center"">{{ $datas->takaran }}</td>
+                                        <td class="text-end">{{ $datas->takaran }}</td>
                                         <td>{{ $datas->satuan }}</td>
                                         {{-- <td>{{ $datas->created_at }}</td> --}}
                                         {{-- <td>{{ $datas->updated_at }}</td> --}}

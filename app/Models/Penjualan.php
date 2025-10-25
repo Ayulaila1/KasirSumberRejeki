@@ -22,7 +22,7 @@ class Penjualan extends Model
         'total',
         'bayar',
         'kembalian',
-        'user_id',
+        'user_iduser',
     ];
 
     protected $casts = [
@@ -34,7 +34,7 @@ class Penjualan extends Model
      */
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'user_iduser', 'id');
     }
 
     public function penjualanDtl()
@@ -42,7 +42,7 @@ class Penjualan extends Model
         return $this->hasMany(PenjualanDtl::class, 'penjualan_idpenjualan', 'idpenjualan')
             ->with('produk'); // optional, eager load produk langsung
     }
-    public function details()
+    public function detail()
     {
         return $this->hasMany(PenjualanDtl::class, 'penjualan_idpenjualan', 'idpenjualan');
     }

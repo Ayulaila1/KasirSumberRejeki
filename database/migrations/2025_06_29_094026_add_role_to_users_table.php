@@ -11,6 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
+            $table->tinyInteger('shift')->nullable()->after('email'); // nullable untuk admin
             $table->string('role')->default('kasir'); // default: kasir
         });
     }
@@ -18,10 +19,10 @@ return new class extends Migration {
     /**
      * Reverse the migrations.
      */
-    public function down(): void
+    public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            //
+            $table->dropColumn(['shift', 'role']);
         });
     }
 };

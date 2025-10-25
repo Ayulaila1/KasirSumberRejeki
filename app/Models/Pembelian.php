@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 use App\Models\User;
+use App\Models\Pembeliandtl;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -51,6 +52,11 @@ class Pembelian extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_iduser', 'id');
+    }
+
+    public function pembeliandtls()
+    {
+        return $this->hasMany(Pembeliandtl::class, 'pembelian_idpembelian', 'idpembelian');
     }
 
     // public function kategoripembelian()

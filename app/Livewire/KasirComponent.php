@@ -396,6 +396,8 @@ class KasirComponent extends Component
         try {
             DB::beginTransaction();
 
+            $user = Auth::user();
+
             $penjualan = Penjualan::create([
                 'kode_penjualan' => 'TRX-' . now()->format('Ymd') . '-' . Str::random(4),
                 'customer_name' => $this->customerName,
@@ -405,8 +407,10 @@ class KasirComponent extends Component
                 'total' => $this->getTotal(),
                 'bayar' => $this->cashAmount,
                 'kembalian' => $this->cashAmount - $this->getTotal(),
-                'user_id' => Auth::user()->id,
+                'user_iduser' => $user->iduser ?? $user->id, // otomatis isi user aktif
+                'shift' => $user->shift ?? null,              // otomatis isi shift user login
             ]);
+
 
             foreach ($this->cart as $item) {
                 PenjualanDtl::create([
@@ -501,6 +505,8 @@ class KasirComponent extends Component
         $kode = 'TRX-' . now()->format('Ymd') . '-' . Str::random(4);
         $total = collect($this->cart)->sum(fn($item) => ($item['quantity'] ?? 1) * ($item['price'] ?? 0));
 
+        $user = Auth::user();
+
         Hold::create([
             'kode_transaksi' => $kode,
             'customer' => $this->customerName ?: '-',
@@ -508,7 +514,8 @@ class KasirComponent extends Component
             'notes' => $this->orderNotes ?: '-',
             'items' => array_values($this->cart),
             'total' => $total,
-            'user_id' => Auth::id(),
+            'user_iduser' => $user->iduser ?? $user->id,
+            'shift' => $user->shift ?? null,
         ]);
 
         // kosongkan cart tanpa restore stok (karena stok sudah dikurangi waktu addToCart)

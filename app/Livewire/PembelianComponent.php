@@ -110,23 +110,21 @@ class PembelianComponent extends Component
             'tanggal' => 'required',
         ]);
 
+        $user = Auth::user();
+
         $pembelian = new Pembelian();
-        $pembelian->idpembelian = $this->idpembelian;
         $pembelian->tanggal = $this->tanggal;
         $pembelian->supplier_idsupplier = $this->supplier_idsupplier;
-        $pembelian->user_iduser = Auth::user()->id;
+        $pembelian->user_iduser = $user->id;
+        $pembelian->shift = $user->shift; // 🟢 otomatis ambil shift kasir yang login
+        $pembelian->created_at = $this->created_at ?? now();
+        $pembelian->updated_at = $this->updated_at ?? now();
         $pembelian->status = 'unsaved';
-        $pembelian->created_at = $this->created_at;
-        $pembelian->updated_at = $this->updated_at;
         $pembelian->save();
 
-        return redirect('/pembeliandtl/' . $pembelian->idpembelian);
-
-
-        $this->close();
-        $this->resetPage('pageLOV');
-        $this->dispatch('pembelian-disimpan', ['pesan' => 'Pembelian berhasil disimpan!']);
-        $this->dispatch('close-pembelian-modal');
+        // 🔁 setelah data tersimpan baru redirect ke halaman detail
+        return redirect('/pembeliandtl/' . $pembelian->idpembelian)
+            ->with('message', 'Pembelian berhasil disimpan untuk Shift ' . ($user->shift ?? '-'));
     }
 
     public function editPembelian($idpembelian)
@@ -231,6 +229,8 @@ class PembelianComponent extends Component
         return Pembelian::search($this->search)
             ->with(['supplier', 'user']) // Eager load supplier and user relationships
             ->rangeTanggal($this->tglstart, $this->tglend) //aktifkan kalau pake filter tanggal
+            ->orderBy('tanggal', 'desc')
+            ->orderBy('shift', 'asc') // 🟢 biar shift urut
             ->simplePaginate($this->perPage);
     }
 

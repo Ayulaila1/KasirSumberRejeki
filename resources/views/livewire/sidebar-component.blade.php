@@ -51,7 +51,7 @@
             <a href="{{ route('pembelian.index') }}"
                 class="menu-item {{ request()->routeIs('pembelian.index') ? 'active' : '' }}">
                 <i class="fas fa-shopping-cart"></i>
-                <span>Pembelian</span>
+                <span>Restok</span>
             </a>
 
             <a href="{{ route('returtitipan.index') }}"
@@ -59,6 +59,28 @@
                 <i class="fas fa-exchange-alt"></i>
                 <span>Retur Titipan</span>
             </a>
+
+            <a href="{{ route('pengeluaran.index') }}"
+                class="menu-item {{ request()->routeIs('pengeluaran.index') ? 'active' : '' }}">
+                <i class="fas fa-cash-register"></i>
+                <span>Pengeluaran Harian</span>
+            </a>
+
+            <a href="{{ route('kasir.index') }}"
+                class="menu-item {{ request()->routeIs('kasir.index') ? 'active' : '' }}">
+                <i class="fas fa-cash-register"></i>
+                <span>Kasir</span>
+            </a>
+
+            <a href="{{ route('hold.index') }}"
+                class="menu-item {{ request()->routeIs('hold.index') ? 'active' : '' }}">
+                <i class="fas fa-shopping-basket"></i>
+                <span>Bayar Nanti</span>
+            </a>
+
+            <div class="sidebar-section mt-3 px-3 text-muted fw-bold small">
+                Data Laporan
+            </div>
 
             <a href="{{ route('laporan.penjualan') }}"
                 class="menu-item {{ request()->routeIs('laporan.penjualan') ? 'active' : '' }}">
@@ -72,17 +94,16 @@
                 <span>Laporan Pendapatan</span>
             </a>
 
-            <a href="{{ route('kasir.index') }}"
-                class="menu-item {{ request()->routeIs('kasir.index') ? 'active' : '' }}">
-                <i class="fas fa-cash-register"></i>
-                <span>Kasir</span>
+            <a href="{{ route('laporan.pembukuan') }}"
+                class="menu-item {{ request()->routeIs('laporan.pembukuan') ? 'active' : '' }}">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <span>Laporan Pembukuan</span>
             </a>
 
-
-            <a href="{{ route('hold.index') }}"
-                class="menu-item {{ request()->routeIs('hold.index') ? 'active' : '' }}">
-                <i class="fas fa-shopping-basket"></i>
-                <span>Bayar Nanti</span>
+            <a href="{{ route('kas-mutasi') }}"
+                class="menu-item {{ request()->routeIs('kas-mutasi') ? 'active' : '' }}">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <span>Laporan Kas Mutasi</span>
             </a>
 
             <a href="{{ route('pengguna.index') }}" class="menu-item">

@@ -1,5 +1,7 @@
 <?php
 namespace App\Models;
+use App\Models\Pengeluaran;
+use App\Models\Pembeliandtl;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -32,6 +34,18 @@ class Bahan extends Model
             ->orWhere('created_at', 'like', "%{$value}%")
             ->orWhere('updated_at', 'like', "%{$value}%")
         ;
+    }
+
+    // Relasi ke detail pembelian
+    public function pembeliandtls()
+    {
+        return $this->hasMany(Pembeliandtl::class, 'bahan_idbahan', 'idbahan');
+    }
+
+    // Relasi ke pengeluaran
+    public function pengeluarans()
+    {
+        return $this->hasMany(Pengeluaran::class, 'bahan_idbahan', 'idbahan');
     }
 
     // public function kategoribahan()
