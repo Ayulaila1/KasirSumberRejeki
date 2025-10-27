@@ -121,18 +121,26 @@
                     </thead>
                     <tbody>
                         @forelse ($transaksiTerakhir as $transaksi)
+                        @php
+                        // 🔽 Logika Status berdasarkan kolom 'status' di tabel penjualans
+                        // Asumsi: 'lunas' = Lunas, 'bon' = Bon, selain itu = Pending/Hold
+                        $statusDisplay = ($transaksi->status == 'lunas') ? 'Lunas' :
+                        (($transaksi->status == 'bon') ? 'Bon' : ucfirst($transaksi->status));
+                        $badgeClass = ($transaksi->status == 'lunas') ? 'success' :
+                        (($transaksi->status == 'bon') ? 'warning' : 'secondary');
+
+                        @endphp
                         <tr>
-                            <td>TRX-{{ $transaksi->created_at->format('Ymd') }}-{{ str_pad($transaksi->idpenjualan, 3,
-                                '0', STR_PAD_LEFT) }}</td>
+                            <td>TRX-{{ $transaksi->created_at->format('Ymd') }}-{{ str_pad($transaksi->idpenjualan,
+                                3,'0', STR_PAD_LEFT) }}</td>
                             <td>{{ $transaksi->created_at->format('d M Y') }}</td>
+                            {{-- Menggunakan nama_pelanggan yang di-alias di query Livewire --}}
                             <td>{{ $transaksi->nama_pelanggan ?? 'Umum' }}</td>
-                            <td>Rp {{ number_format($transaksi->total_harga ?? 0, 0, ',', '.') }}</td>
+                            {{-- 🔽 Menampilkan kolom 'total' dari model Penjualan --}}
+                            <td>Rp {{ number_format($transaksi->total ?? 0, 0, ',', '.') }}</td>
                             <td>
-                                @if($transaksi->status == 'lunas')
-                                <span class="status-badge success">Selesai</span>
-                                @else
-                                <span class="status-badge warning">{{ ucfirst($transaksi->status) }}</span>
-                                @endif
+                                {{-- 🔽 Menggunakan logika status dari kolom 'status' --}}
+                                <span class="status-badge {{ $badgeClass }}">{{ $statusDisplay }}</span>
                             </td>
                             <td>
                                 <a class="btn btn-sm btn-primary" href="/laporan-penjualan">

@@ -8,8 +8,12 @@ use Livewire\Component;
 use App\Models\Supplier;
 // 🔽 1. Tambahkan model Penjualan
 use App\Models\Penjualan;
+// 🔽 1.1 Tambahkan model Pembayaran untuk cek bon
+use App\Models\Pembayaran; // Asumsi ada model Pembayaran atau sejenisnya
 use App\Models\LaporanPendapatan;
 use Illuminate\Support\Facades\Auth;
+// 🔽 1.2 Import DB untuk query lanjutan
+// use Illuminate\Support\Facades\DB;
 
 class AdminDashboard extends Component
 {
@@ -68,45 +72,26 @@ class AdminDashboard extends Component
         // 🔽 3. Panggil fungsi untuk mengambil 5 transaksi terbaru
         $this->ambilTransaksiTerakhir();
     }
-    public function tampilkanData($tipe)
-    {
-        $this->halamanSekarang = 'detail';
-        $this->judulTabel = ucfirst(str_replace('-', ' ', $tipe));
 
-        switch ($tipe) {
-            case 'total-pendapatan':
-                $this->dataTabel = LaporanPendapatan::orderBy('bulan', 'desc')->get();
-                break;
-
-            case 'total-produk':
-                $this->dataTabel = Produk::orderBy('nama', 'asc')->get();
-                break;
-
-            case 'stok-menipis':
-                $this->dataTabel = $this->produkMenipis;
-                break;
-
-            case 'total-supplier':
-                $this->dataTabel = Supplier::orderBy('nama', 'asc')->get();
-                break;
-
-            case 'transaksi-terakhir':
-                $this->dataTabel = Penjualan::orderBy('created_at', 'desc')->get();
-                break;
-        }
-    }
     public function kembaliDashboard()
     {
         $this->halamanSekarang = 'dashboard';
     }
 
-    // 🔽 4. Buat fungsi baru untuk query data transaksi
     public function ambilTransaksiTerakhir($limit = 5)
     {
-        // Mengambil data dari tabel 'penjualans' diurutkan dari yang terbaru
-        $this->transaksiTerakhir = Penjualan::orderBy('created_at', 'desc')
+        // Query disederhanakan, hanya mengambil dari tabel 'penjualans'
+        $this->transaksiTerakhir = Penjualan::select('penjualans.*')
+            // 🔽 Ganti nama kolom pelanggan sesuai dengan yang ada di tabel 'penjualans'
+            ->selectRaw('customer_name as nama_pelanggan')
+            // 🔽 Tambahkan kolom dummy/virtual 'sisa_pembayaran'
+            // untuk kompatibilitas di Blade, tapi kita tidak menghitungnya
+            ->selectRaw('CASE WHEN status = "bon" THEN 1 ELSE 0 END AS sisa_pembayaran')
+            ->orderBy('created_at', 'desc')
             ->take($limit)
             ->get();
+
+        // Catatan: Asumsi kolom 'status' di tabel 'penjualans' berisi 'lunas' atau 'bon'.
     }
 
     public function updatedTahunPendapatan()
@@ -179,6 +164,38 @@ class AdminDashboard extends Component
         ];
 
         return $transaksi[$id] ?? null;
+    }
+    public function tampilkanData($tipe)
+    {
+        $this->halamanSekarang = 'detail';
+        $this->judulTabel = ucfirst(str_replace('-', ' ', $tipe));
+
+        switch ($tipe) {
+            case 'total-pendapatan':
+                $this->dataTabel = LaporanPendapatan::orderBy('bulan', 'desc')->get();
+                break;
+
+            case 'total-produk':
+                $this->dataTabel = Produk::orderBy('nama', 'asc')->get();
+                break;
+
+            case 'stok-menipis':
+                $this->dataTabel = $this->produkMenipis;
+                break;
+
+            case 'total-supplier':
+                $this->dataTabel = Supplier::orderBy('nama', 'asc')->get();
+                break;
+
+            case 'transaksi-terakhir':
+                // Ambil semua data penjualan tanpa join ke 'pembayarans'
+                $this->dataTabel = Penjualan::select('penjualans.*')
+                    ->selectRaw('customer_name as nama_pelanggan')
+                    ->selectRaw('CASE WHEN status = "bon" THEN 1 ELSE 0 END AS sisa_pembayaran')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+                break;
+        }
     }
 
     // 🔹 Ambil data pendapatan bulanan untuk grafik
