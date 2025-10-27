@@ -25,6 +25,8 @@ class AdminDashboard extends Component
     public $totalPendapatan = 0;
     public $persen = null;
     public $dataPendapatan = [];
+    public $dataTabel = [];
+    public $judulTabel = '';
 
     // 🔽 2. Tambahkan properti untuk menyimpan data transaksi
     public $transaksiTerakhir = [];
@@ -65,6 +67,37 @@ class AdminDashboard extends Component
 
         // 🔽 3. Panggil fungsi untuk mengambil 5 transaksi terbaru
         $this->ambilTransaksiTerakhir();
+    }
+    public function tampilkanData($tipe)
+    {
+        $this->halamanSekarang = 'detail';
+        $this->judulTabel = ucfirst(str_replace('-', ' ', $tipe));
+
+        switch ($tipe) {
+            case 'total-pendapatan':
+                $this->dataTabel = LaporanPendapatan::orderBy('bulan', 'desc')->get();
+                break;
+
+            case 'total-produk':
+                $this->dataTabel = Produk::orderBy('nama', 'asc')->get();
+                break;
+
+            case 'stok-menipis':
+                $this->dataTabel = $this->produkMenipis;
+                break;
+
+            case 'total-supplier':
+                $this->dataTabel = Supplier::orderBy('nama', 'asc')->get();
+                break;
+
+            case 'transaksi-terakhir':
+                $this->dataTabel = Penjualan::orderBy('created_at', 'desc')->get();
+                break;
+        }
+    }
+    public function kembaliDashboard()
+    {
+        $this->halamanSekarang = 'dashboard';
     }
 
     // 🔽 4. Buat fungsi baru untuk query data transaksi
