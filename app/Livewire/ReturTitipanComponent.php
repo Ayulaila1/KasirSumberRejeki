@@ -12,14 +12,15 @@ use App\Models\ProdukRacikan;
 use Livewire\WithFileUploads;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ReturTitipanComponent extends Component
 {
     use WithPagination, WithFileUploads;
 
-    public $idretur_titipan, $tanggal, $supplier_idsupplier, $produk_idproduk, $qty, $keterangan, $created_at, $updated_at;
+    public $idretur_titipan, $tanggal, $supplier_idsupplier, $produk_idproduk, $qty, $harga_beli, $subtotal, $keterangan;
     public $produkName;
-    public $tanggalBaru, $produk_idBaru, $produkNameBaru, $qtyBaru, $keteranganBaru;
+    public $tanggalBaru, $produk_idBaru, $produkNameBaru, $qtyBaru, $harga_beliBaru, $subtotalBaru, $keteranganBaru;
     public $search = '';
     public $searchlov = '';
     public $tglstart = '';
@@ -65,10 +66,6 @@ class ReturTitipanComponent extends Component
     {
         $this->resetPage();
     }
-    public function updatingSelectedReturTitipan()
-    {
-        $this->resetPage();
-    }
 
     public function tambahReturTitipan()
     {
@@ -78,11 +75,12 @@ class ReturTitipanComponent extends Component
             'supplier_idsupplier',
             'produk_idproduk',
             'qty',
+            'harga_beli',
+            'subtotal',
             'keterangan'
         ]);
         $this->isOpen = true;
         $this->isEdit = false;
-
     }
 
     public function close()
@@ -93,6 +91,8 @@ class ReturTitipanComponent extends Component
             'supplier_idsupplier',
             'produk_idproduk',
             'qty',
+            'harga_beli',
+            'subtotal',
             'keterangan',
             'isOpen',
             'isEdit'
@@ -103,156 +103,9 @@ class ReturTitipanComponent extends Component
         $this->dispatch('close-retur-titipan-modal');
     }
 
-    public function storeReturTitipan()
-    {
-        $this->validate([
-            //'idretur_titipan' => 'required',
-            'tanggal' => 'required',
-            // 'supplier_idsupplier' => 'required',
-            // 'produk_idproduk' => 'required',
-            // 'qty' => 'required',
-            // 'keterangan' => 'required',
-        ]);
-
-        $user = Auth::user();
-
-        $returtitipan = new ReturTitipan();
-        $returtitipan->idretur_titipan = $this->idretur_titipan;
-        $returtitipan->tanggal = $this->tanggal;
-        $returtitipan->supplier_idsupplier = $this->supplier_idsupplier;
-        $returtitipan->produk_idproduk = $this->produk_idproduk;
-        $returtitipan->qty = $this->qty;
-        $returtitipan->keterangan = $this->keterangan;
-        $returtitipan->user_iduser = $user->id;
-        $returtitipan->save();
-
-        $this->close();
-        $this->resetPage('pageLOV');
-        $this->dispatch('retur-titipan-disimpan', ['pesan' => 'ReturTitipan berhasil disimpan!']);
-        $this->dispatch('close-retur-titipan-modal');
-    }
-
-    public function editReturTitipan($idretur_titipan)
-    {
-        $returtitipan = ReturTitipan::where('idretur_titipan', $idretur_titipan)->first();
-        $this->tanggal = $returtitipan->tanggal;
-        $this->supplier_idsupplier = $returtitipan->supplier_idsupplier;
-        $this->produk_idproduk = $returtitipan->produk_idproduk;
-        $this->qty = $returtitipan->qty;
-        $this->keterangan = $returtitipan->keterangan;
-
-        $this->isEdit = true;
-
-        $this->dispatch('show-edit-retur-titipan-modal');
-    }
-
-    public function updateReturTitipan()
-    {
-        $this->validate([
-            //'idretur_titipan' => 'required',
-            'tanggal' => 'required',
-            // 'supplier_idsupplier' => 'required',
-            // 'produk_idproduk' => 'required',
-            // 'qty' => 'required',
-            // 'keterangan' => 'required',
-        ]);
-
-        $returtitipan = ReturTitipan::where('idretur_titipan', $this->idretur_titipan)->firstOrFail();
-        $returtitipan->idretur_titipan = $this->idretur_titipan;
-        $returtitipan->tanggal = $this->tanggal;
-        $returtitipan->supplier_idsupplier = $this->supplier_idsupplier;
-        $returtitipan->produk_idproduk = $this->produk_idproduk;
-        $returtitipan->qty = $this->qty;
-        $returtitipan->keterangan = $this->keterangan;
-        $returtitipan->save();
-
-        $this->close();
-        $this->resetPage('pageLOV');
-        $this->dispatch('retur-titipan-disimpan', ['pesan' => 'Produk Racikan berhasil diupdate!']);
-        $this->dispatch('close-retur-titipan-modal');
-    }
-
-    public function deleteConfirmationReturTitipan($idretur_titipan)
-    {
-        $this->idretur_titipanToDelete = $idretur_titipan;
-        $this->dispatch('konfirmasi-hapus');
-    }
-
-    #[On('hapusReturTitipan')]
-    public function deleteReturTitipan()
-    {
-        $returtitipan = ReturTitipan::with('produk.produkDetails.bahan')->find($this->idretur_titipanToDelete);
-
-        if (!$returtitipan) {
-            $this->dispatch('swal', [
-                'title' => 'Gagal!',
-                'text' => 'Data retur tidak ditemukan!',
-                'icon' => 'error'
-            ]);
-            return;
-        }
-
-        $produk = $returtitipan->produk;
-
-        // Jika Produk Titipan (tanpa detail racikan)
-        if ($produk && $produk->produkDetails->isEmpty()) {
-            $this->dispatch('swal', [
-                'title' => 'Gagal!',
-                'text' => 'Produk titipan tidak memiliki stok bahan yang tercatat.',
-                'icon' => 'error'
-            ]);
-            return;
-        }
-
-        // Jika Produk Racikan (punya detail racikan)
-        if ($produk) {
-            foreach ($produk->produkDetails as $detail) {
-                if ($detail->bahan) {
-                    $bahan = $detail->bahan;
-                    $bahan->stok += ($detail->takaran * $returtitipan->qty);
-                    $bahan->save();
-                }
-            }
-        }
-
-        $returtitipan->delete();
-        $this->reset('idretur_titipanToDelete');
-
-        // ✅ Berhasil hapus dan kembalikan stok → SweetAlert sukses
-        $this->dispatch('swal', [
-            'title' => 'Berhasil!',
-            'text' => 'Retur berhasil dihapus dan stok dikembalikan.',
-            'icon' => 'success'
-        ]);
-
-        $this->dispatch('close-retur-titipan-modal');
-    }
-
-
-
-    #[On('buka-modal-lov-produk')]
-    public function bukaModal()
-    {
-        $this->isOpen = true;
-    }
-
-    #[On('produkDipilih')]
-    public function produkLov($id)
-    {
-        $produk = Produk::find($id);
-        $this->produk_idproduk = $produk->idproduk;
-        $this->produkName = $produk->nama;
-    }
-
-    public function dataReturTitipan()
-    {
-        return ReturTitipan::with(['supplier', 'produk'])->search($this->search)
-            ->simplePaginate($this->perPage);
-    }
-
+    /** 🔹 Simpan retur baru */
     public function simpanReturBaru()
     {
-        // dd('test');
         $this->validate([
             'tanggalBaru' => 'required|date',
             'produk_idBaru' => 'required|exists:produks,idproduk',
@@ -260,70 +113,136 @@ class ReturTitipanComponent extends Component
         ]);
 
         $user = Auth::user();
-
         $produk = Produk::with('produkDetails.bahan')->find($this->produk_idBaru);
-        // dd($produk);
+
         if (!$produk) {
             session()->flash('error', 'Produk tidak ditemukan.');
             return;
         }
-        if ($produk->produkDetails->isEmpty()) {
-            session()->flash('error', "Gagal menyimpan retur. Produk titipan tidak memiliki stok bahan yang tercatat.");
-            return;
-        } else {
-            // dd('ini ada racikan');
-            foreach ($produk->produkDetails as $detail) {
-                $bahan = $detail->bahan;
 
-                if (!$bahan) {
-                    session()->flash('error', 'Ada bahan dalam racikan yang belum terdaftar.');
-                    return;
-                }
-
-                $totalPengurangan = $detail->takaran * $this->qtyBaru;
-
-                if ($bahan->stok < $totalPengurangan) {
-                    session()->flash('error', "Stok bahan '{$bahan->nama}' tidak cukup untuk retur.");
-                    return;
-                }
+        // cek bahan cukup
+        foreach ($produk->produkDetails as $detail) {
+            $bahan = $detail->bahan;
+            if (!$bahan) {
+                session()->flash('error', 'Ada bahan dalam racikan yang belum terdaftar.');
+                return;
             }
 
-            // Semua bahan cukup → simpan retur
-            ReturTitipan::create([
-                'tanggal' => $this->tanggalBaru,
-                'produk_idproduk' => $this->produk_idBaru,
-                'supplier_idsupplier' => $produk->supplier_idsupplier,
-                'qty' => $this->qtyBaru,
-                'keterangan' => $this->keteranganBaru,
-                'user_iduser' => $user->id,
-            ]);
-
-            // Kurangi stok semua bahan racikan
-            foreach ($produk->produkDetails as $detail) {
-                $bahan = $detail->bahan;
-                $bahan->stok -= $detail->takaran * $this->qtyBaru;
-                $bahan->save();
+            $totalPengurangan = $detail->takaran * $this->qtyBaru;
+            if ($bahan->stok < $totalPengurangan) {
+                session()->flash('error', "Stok bahan '{$bahan->nama}' tidak cukup untuk retur.");
+                return;
             }
         }
 
-        // Reset input form
-        $this->reset(['tanggalBaru', 'produk_idBaru', 'produkNameBaru', 'qtyBaru', 'keteranganBaru']);
+        /** 🧾 ambil harga beli produk */
+        $hargaBeli = $produk->harga_beli ?? 0;
+        $subtotal = $hargaBeli * $this->qtyBaru;
 
+        /** 💾 simpan retur */
+        ReturTitipan::create([
+            'tanggal' => $this->tanggalBaru,
+            'produk_idproduk' => $this->produk_idBaru,
+            'supplier_idsupplier' => $produk->supplier_idsupplier,
+            'qty' => $this->qtyBaru,
+            'harga_beli' => $hargaBeli,
+            'subtotal' => $subtotal,
+            'keterangan' => $this->keteranganBaru,
+            'user_iduser' => $user->id,
+        ]);
+
+        /** 📉 kurangi stok bahan */
+        foreach ($produk->produkDetails as $detail) {
+            $bahan = $detail->bahan;
+            $bahan->stok -= $detail->takaran * $this->qtyBaru;
+            $bahan->save();
+        }
+
+        $this->reset(['tanggalBaru', 'produk_idBaru', 'produkNameBaru', 'qtyBaru', 'harga_beliBaru', 'subtotalBaru', 'keteranganBaru']);
         session()->flash('success', 'Retur berhasil disimpan!');
     }
 
+    /** 🔹 Update retur (edit mode) */
+    public function updateReturTitipan()
+    {
+        $this->validate([
+            'tanggal' => 'required|date',
+            'qty' => 'required|numeric|min:1',
+        ]);
+
+        $retur = ReturTitipan::findOrFail($this->idretur_titipan);
+        $retur->tanggal = $this->tanggal;
+        $retur->qty = $this->qty;
+        $retur->keterangan = $this->keterangan;
+
+        // hitung ulang subtotal kalau harga beli ada
+        $retur->subtotal = $retur->harga_beli ? $retur->harga_beli * $this->qty : $retur->subtotal;
+        $retur->save();
+
+        $this->close();
+        session()->flash('success', 'Retur berhasil diupdate!');
+    }
+
+    /** 🔹 Hapus retur + kembalikan stok bahan */
+    public function deleteReturTitipan($id)
+    {
+        $retur = ReturTitipan::with('produk.produkDetails.bahan')->find($id);
+        if (!$retur) {
+            $this->dispatch('retur-titipan-error', [
+                'pesan' => 'Data retur tidak ditemukan!',
+            ]);
+            return;
+        }
+
+        // ✅ Kembalikan stok bahan
+        if ($retur->produk) {
+            foreach ($retur->produk->produkDetails as $detail) {
+                if ($detail->bahan) {
+                    $detail->bahan->increment('stok', $detail->takaran * $retur->qty);
+                }
+            }
+        }
+
+        $retur->delete();
+
+        $this->dispatch('retur-titipan-disimpan', [
+            'pesan' => 'Retur berhasil dihapus dan stok bahan dikembalikan.',
+        ]);
+    }
+
+    /** 🔹 Query utama data retur */
+    public function dataReturTitipan()
+    {
+        return ReturTitipan::with(['supplier', 'produk'])
+            ->when($this->tglstart, fn($q) => $q->whereDate('tanggal', '>=', $this->tglstart))
+            ->when($this->tglend, fn($q) => $q->whereDate('tanggal', '<=', $this->tglend))
+            ->search($this->search)
+            ->simplePaginate($this->perPage);
+    }
+
+    /** 🔹 Export PDF */
     public function exportToPdf()
     {
-        $headers = ['Tanggal', 'Produk', 'Supplier', 'Jumlah', 'Keterangan'];
-        $title = 'Export Data ReturTitipan';
+        $headers = ['Tanggal', 'Produk', 'Supplier', 'Jumlah', 'Harga Beli', 'Subtotal', 'Keterangan'];
+        $title = 'Export Data Retur Titipan';
         $queryResult = $this->dataReturTitipan();
         $data = [];
-        foreach ($queryResult as $result) {
-            $data[] = [$result->tanggal, $result->produk->nama ?? '-', $result->supplier->nama ?? '-', $result->qty, $result->keterangan];
-        }
-        $pdf = Pdf::loadView('layouts.pdf_layout', compact('data', 'headers', 'title'));
 
-        $pdf->setPaper('A4', 'portrait');
+        foreach ($queryResult as $result) {
+            $data[] = [
+                $result->tanggal,
+                $result->produk->nama ?? '-',
+                $result->supplier->nama ?? '-',
+                $result->qty,
+                number_format($result->harga_beli ?? 0, 0, ',', '.'),
+                number_format($result->subtotal ?? 0, 0, ',', '.'),
+                $result->keterangan
+            ];
+        }
+
+        $pdf = Pdf::loadView('layouts.pdf_layout', compact('data', 'headers', 'title'))
+            ->setPaper('A4', 'portrait');
+
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->stream();
         }, 'ReturTitipan.pdf');

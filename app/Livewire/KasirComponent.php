@@ -355,10 +355,11 @@ class KasirComponent extends Component
 
         $this->showConfirmModal = false;
 
+        // Proses simpan transaksi ke DB
         $penjualan = $this->processPayment();
 
         if ($penjualan) {
-            // Siapkan data untuk struk
+            // ✅ Siapkan data untuk struk
             $this->receiptData = [
                 'storeName' => 'Cafe Sumber Rejeki',
                 'storeAddress' => 'Jl. Mawar No.10, Bandung',
@@ -374,14 +375,18 @@ class KasirComponent extends Component
                 'change' => $this->cashAmount - $this->getTotal(),
             ];
 
-            // 1️⃣ Cetak struk manual (buka ke PrinterA)
+            // 🧾 Cetak struk manual
             $this->printReceipt($this->receiptData);
 
-            // 2️⃣ Tampilkan notifikasi sukses
-            $this->dispatch('showAlert', 'Pembayaran berhasil dan struk siap dicetak.', 'success');
-
-            // 3️⃣ Bersihkan cart
+            // ✅ Bersihkan cart tanpa restore stok
             $this->clearCart(false);
+
+            // 🔁 Refresh tampilan produk dan keranjang
+            $this->products = Produk::all();
+            $this->dispatch('cartUpdated');
+
+            // ✅ Tampilkan notifikasi sukses
+            $this->dispatch('showAlert', 'Pembayaran berhasil dan struk siap dicetak.', 'success');
         } else {
             $this->dispatch('showAlert', 'Terjadi kesalahan saat menyimpan transaksi.', 'danger');
         }
@@ -398,6 +403,7 @@ class KasirComponent extends Component
 
             $user = Auth::user();
 
+            // Simpan ke tabel penjualans
             $penjualan = Penjualan::create([
                 'kode_penjualan' => 'TRX-' . now()->format('Ymd') . '-' . Str::random(4),
                 'customer_name' => $this->customerName,
@@ -407,11 +413,12 @@ class KasirComponent extends Component
                 'total' => $this->getTotal(),
                 'bayar' => $this->cashAmount,
                 'kembalian' => $this->cashAmount - $this->getTotal(),
-                'user_iduser' => $user->iduser ?? $user->id, // otomatis isi user aktif
-                'shift' => $user->shift ?? null,              // otomatis isi shift user login
+                'user_iduser' => $user->iduser ?? $user->id,  // ✅ kasir yang login
+                'closed_by' => $user->iduser ?? $user->id,    // ✅ sementara isi sama kasir juga
+                'shift' => $user->shift ?? null,               // ✅ shift otomatis
             ]);
 
-
+            // Simpan detail barang
             foreach ($this->cart as $item) {
                 PenjualanDtl::create([
                     'penjualan_idpenjualan' => $penjualan->idpenjualan,
@@ -424,24 +431,13 @@ class KasirComponent extends Component
 
             DB::commit();
 
-            $this->receiptData = [
-                'number' => $penjualan->kode_penjualan,
-                'date' => now()->format('d/m/Y H:i:s'),
-                'customer_name' => $this->customerName ?: '-',
-                'no_meja' => $this->tableNumber ?: '-',
-                'catatan' => $this->orderNotes ?: '-',
-                'items' => array_values($this->cart),
-                'total' => $this->getTotal(),
-                'cash' => $this->cashAmount,
-                'change' => $this->cashAmount - $this->getTotal(),
-            ];
-
-            // Clear cart tanpa restore stok (stok sudah dikurangi di addToCart/hold)
-            $this->clearCart(false);
+            // ✅ Kembalikan data penjualan untuk confirmPayment
+            return $penjualan;
         } catch (\Exception $e) {
             DB::rollBack();
-            logger()->error('Gagal memproses pembayaran: ' . $e->getMessage());
+            logger()->error('❌ Gagal memproses pembayaran: ' . $e->getMessage());
             $this->dispatch('showAlert', 'Terjadi kesalahan saat memproses pembayaran.', 'danger');
+            return null;
         }
     }
 

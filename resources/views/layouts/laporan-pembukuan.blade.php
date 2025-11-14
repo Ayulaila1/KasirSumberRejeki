@@ -176,7 +176,7 @@
             @forelse ($pengeluaran as $key => $pg)
             <tr>
                 <td class="text-center">{{ $key + 1 }}</td>
-                <td>{{ $pg->nama }}</td>
+                <td>{{ $pg->bahan_nama ?? '-' }}</td>
                 <td class="text-end">{{ number_format($pg->jumlah, 0, ',', '.') }}</td>
                 <td class="text-end">{{ number_format($pg->harga, 0, ',', '.') }}</td>
                 <td class="text-end">{{ number_format($pg->total, 0, ',', '.') }}</td>

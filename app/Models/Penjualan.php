@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Hold;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Penjualan extends Model
 {
@@ -23,6 +24,7 @@ class Penjualan extends Model
         'bayar',
         'kembalian',
         'user_iduser',
+        'closed_by'
     ];
 
     protected $casts = [
@@ -46,6 +48,13 @@ class Penjualan extends Model
     {
         return $this->hasMany(PenjualanDtl::class, 'penjualan_idpenjualan', 'idpenjualan');
     }
+
+    // di App\Models\Penjualan.php
+    public function hold()
+    {
+        return $this->hasMany(Hold::class, 'kode_transaksi', 'kode_penjualan');
+    }
+
 
     public function scopeRangeTanggal($query, $value1, $value2)
     {

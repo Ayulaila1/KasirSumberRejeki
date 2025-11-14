@@ -18,6 +18,7 @@ class ReturTitipan extends Model
         'produk_idproduk',
         'qty',
         'keterangan',
+        'user_iduser',
         'created_at',
         'updated_at'
     ];
@@ -35,6 +36,7 @@ class ReturTitipan extends Model
             ->orWhere('produk_idproduk', 'like', "%{$value}%")
             ->orWhere('qty', 'like', "%{$value}%")
             ->orWhere('keterangan', 'like', "%{$value}%")
+            ->orWhere('user_iduser', 'like', "%{$value}%")
         ;
     }
 

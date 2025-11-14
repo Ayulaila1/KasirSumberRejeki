@@ -222,7 +222,8 @@ class ProdukComponent extends Component
         $produk->harga_beli = $this->harga_beli;
         $produk->tanggal_kedaluwarsa = $this->tanggal_kedaluwarsa;
         $produk->stok_minimum = $this->stok_minimum;
-        $produk->is_titipan = $this->is_titipan;
+        // 🧠 Tambahkan logika ini:
+        $produk->is_titipan = strtolower($this->jenisproduk) === 'titipan' ? 1 : 0;
 
         $produk->save();
 

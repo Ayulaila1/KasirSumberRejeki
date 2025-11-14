@@ -6,14 +6,9 @@ use Carbon\Carbon;
 use App\Models\Produk;
 use Livewire\Component;
 use App\Models\Supplier;
-// 🔽 1. Tambahkan model Penjualan
 use App\Models\Penjualan;
-// 🔽 1.1 Tambahkan model Pembayaran untuk cek bon
-use App\Models\Pembayaran; // Asumsi ada model Pembayaran atau sejenisnya
 use App\Models\LaporanPendapatan;
 use Illuminate\Support\Facades\Auth;
-// 🔽 1.2 Import DB untuk query lanjutan
-// use Illuminate\Support\Facades\DB;
 
 class AdminDashboard extends Component
 {
@@ -23,7 +18,7 @@ class AdminDashboard extends Component
     public $transaksiTerpilih = null;
 
     public $tahunPendapatan;
-    public $daftarTahun = []; // daftar tahun otomatis dari database
+    public $daftarTahun = [];
     public $bulanProdukTerlaris = 'sekarang';
     public $produkMenipis = [];
     public $totalPendapatan = 0;
@@ -32,7 +27,6 @@ class AdminDashboard extends Component
     public $dataTabel = [];
     public $judulTabel = '';
 
-    // 🔽 2. Tambahkan properti untuk menyimpan data transaksi
     public $transaksiTerakhir = [];
     protected $listeners = ['tutupModal'];
 
@@ -40,21 +34,17 @@ class AdminDashboard extends Component
     {
         $bulanIni = Carbon::now()->format('Y-m');
 
-        // 🔹 Ambil semua tahun yang ada di tabel laporan_pendapatan
         $this->daftarTahun = LaporanPendapatan::selectRaw("LEFT(bulan, 4) as tahun")
             ->distinct()
             ->orderBy('tahun', 'asc')
             ->pluck('tahun')
             ->toArray();
 
-        // 🔹 Kalau ada data, ambil tahun terakhir (terbaru) sebagai default
         $this->tahunPendapatan = end($this->daftarTahun) ?: date('Y');
 
-        // 🔹 Hitung total pendapatan bulan ini
         $this->totalPendapatan = LaporanPendapatan::where('bulan', $bulanIni)
             ->value('total_penjualan') ?? 0;
 
-        // 🔹 Bandingkan dengan bulan sebelumnya
         $totalLalu = LaporanPendapatan::where('bulan', '<', $bulanIni)
             ->orderBy('bulan', 'desc')
             ->value('total_penjualan');
@@ -66,10 +56,7 @@ class AdminDashboard extends Component
         $this->dataPendapatan = $this->ambilDataPendapatan();
         $this->dispatch('renderChartPendapatan', $this->dataPendapatan);
 
-        // 🔹 (opsional) cek stok menipis juga
         $this->cekStokMenipis();
-
-        // 🔽 3. Panggil fungsi untuk mengambil 5 transaksi terbaru
         $this->ambilTransaksiTerakhir();
     }
 
@@ -80,18 +67,24 @@ class AdminDashboard extends Component
 
     public function ambilTransaksiTerakhir($limit = 5)
     {
-        // Query disederhanakan, hanya mengambil dari tabel 'penjualans'
-        $this->transaksiTerakhir = Penjualan::select('penjualans.*')
-            // 🔽 Ganti nama kolom pelanggan sesuai dengan yang ada di tabel 'penjualans'
-            ->selectRaw('customer_name as nama_pelanggan')
-            // 🔽 Tambahkan kolom dummy/virtual 'sisa_pembayaran'
-            // untuk kompatibilitas di Blade, tapi kita tidak menghitungnya
-            ->selectRaw('CASE WHEN status = "bon" THEN 1 ELSE 0 END AS sisa_pembayaran')
+        $this->transaksiTerakhir = Penjualan::with(['penjualandtl', 'hold'])
             ->orderBy('created_at', 'desc')
             ->take($limit)
-            ->get();
-
-        // Catatan: Asumsi kolom 'status' di tabel 'penjualans' berisi 'lunas' atau 'bon'.
+            ->get()
+            ->map(function ($item) {
+                if ($item->penjualanDtl()->count() > 0) {
+                    $item->status = 'lunas';
+                    $item->sisa_pembayaran = 0;
+                } elseif ($item->holds->count() > 0) {
+                    $item->status = 'bon';
+                    $item->sisa_pembayaran = $item->total;
+                } else {
+                    $item->status = 'pending';
+                    $item->sisa_pembayaran = $item->total;
+                }
+                $item->nama_pelanggan = $item->customer_name;
+                return $item;
+            });
     }
 
     public function updatedTahunPendapatan()
@@ -100,33 +93,27 @@ class AdminDashboard extends Component
         $this->dispatch('renderChartPendapatan', $this->dataPendapatan);
     }
 
-
-    // 🔹 Ambil total produk
     public function totalProduk()
     {
         return Produk::count();
     }
 
-    // 🔹 Ambil total supplier
     public function totalSupplier()
     {
         return Supplier::count();
     }
 
-    // 🔹 Fungsi buka/tutup sidebar
     public function toggleSidebar()
     {
         $this->tampilSidebar = !$this->tampilSidebar;
     }
 
-    // 🔹 Pindah antar halaman dashboard
     public function pindahHalaman($halaman)
     {
         $this->halamanSekarang = $halaman;
         $this->tampilSidebar = false;
     }
 
-    // 🔹 Lihat detail transaksi
     public function lihatTransaksi($idTransaksi)
     {
         $this->transaksiTerpilih = $this->ambilDetailTransaksi($idTransaksi);
@@ -138,33 +125,33 @@ class AdminDashboard extends Component
         $this->tampilModalTransaksi = false;
     }
 
-    // 🔹 Logout user
     public function logout()
     {
         Auth::logout();
         return redirect('/login');
     }
 
-    // 🔹 Data dummy transaksi (bisa diganti query real)
     protected function ambilDetailTransaksi($id)
     {
-        $transaksi = [
-            'TRX-20250628-001' => [
-                'id' => 'TRX-20250628-001',
-                'tanggal' => '28 Juni 2025',
-                'pelanggan' => 'Pelanggan 1',
-                'status' => 'Selesai',
-                'items' => [
-                    ['produk' => 'Cappuccino', 'harga' => 'Rp 25.000', 'jumlah' => 2, 'subtotal' => 'Rp 50.000'],
-                    ['produk' => 'Teh Tarik', 'harga' => 'Rp 15.000', 'jumlah' => 1, 'subtotal' => 'Rp 15.000'],
-                    ['produk' => 'Nasi Goreng Spesial', 'harga' => 'Rp 30.000', 'jumlah' => 2, 'subtotal' => 'Rp 60.000'],
-                ],
-                'total' => 'Rp 125.000'
-            ],
-        ];
+        $item = Penjualan::with('penjualandtls', 'holds')->find($id);
+        if (!$item)
+            return null;
 
-        return $transaksi[$id] ?? null;
+        if ($item->penjualandtls->count() > 0) {
+            $item->status = 'lunas';
+            $item->sisa_pembayaran = 0;
+        } elseif ($item->holds->count() > 0) {
+            $item->status = 'bon';
+            $item->sisa_pembayaran = $item->total;
+        } else {
+            $item->status = 'pending';
+            $item->sisa_pembayaran = $item->total;
+        }
+        $item->nama_pelanggan = $item->customer_name;
+        return $item;
     }
+
+
     public function tampilkanData($tipe)
     {
         $this->halamanSekarang = 'detail';
@@ -188,17 +175,27 @@ class AdminDashboard extends Component
                 break;
 
             case 'transaksi-terakhir':
-                // Ambil semua data penjualan tanpa join ke 'pembayarans'
-                $this->dataTabel = Penjualan::select('penjualans.*')
-                    ->selectRaw('customer_name as nama_pelanggan')
-                    ->selectRaw('CASE WHEN status = "bon" THEN 1 ELSE 0 END AS sisa_pembayaran')
+                $this->dataTabel = Penjualan::with(['penjualandtls', 'holds'])
                     ->orderBy('created_at', 'desc')
-                    ->get();
+                    ->get()
+                    ->map(function ($item) {
+                        if ($item->penjualandtls->count() > 0) {
+                            $item->status = 'lunas';
+                            $item->sisa_pembayaran = 0;
+                        } elseif ($item->holds->count() > 0) {
+                            $item->status = 'bon';
+                            $item->sisa_pembayaran = $item->total;
+                        } else {
+                            $item->status = 'pending';
+                            $item->sisa_pembayaran = $item->total;
+                        }
+                        $item->nama_pelanggan = $item->customer_name;
+                        return $item;
+                    });
                 break;
         }
     }
 
-    // 🔹 Ambil data pendapatan bulanan untuk grafik
     public function ambilDataPendapatan()
     {
         $data = LaporanPendapatan::where('bulan', 'like', $this->tahunPendapatan . '%')
@@ -206,7 +203,6 @@ class AdminDashboard extends Component
             ->pluck('total_penjualan', 'bulan')
             ->toArray();
 
-        // Buat array 12 bulan
         $hasil = [];
         for ($i = 1; $i <= 12; $i++) {
             $key = sprintf('%s-%02d', $this->tahunPendapatan, $i);
@@ -216,8 +212,6 @@ class AdminDashboard extends Component
         return $hasil;
     }
 
-
-    // 🔹 Data produk terlaris (dummy)
     public function ambilDataProdukTerlaris()
     {
         return $this->bulanProdukTerlaris === 'lalu'
@@ -225,12 +219,12 @@ class AdminDashboard extends Component
             : [45, 38, 28, 22, 18];
     }
 
-    // 🔹 Cek stok produk yang menipis
     public function cekStokMenipis($batas = 3)
     {
-        $this->produkMenipis = Produk::with('produkDetails.bahan')->get()->filter(function ($produk) use ($batas) {
-            return $produk->stok_tersedia <= $batas;
-        })->sortBy('stok_tersedia');
+        $this->produkMenipis = Produk::with('produkDetails.bahan')
+            ->get()
+            ->filter(fn($produk) => $produk->stok_tersedia <= $batas)
+            ->sortBy('stok_tersedia');
     }
 
     public function render()

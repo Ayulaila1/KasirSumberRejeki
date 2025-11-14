@@ -2975,7 +2975,7 @@
         /* ----------------- POS Layout ----------------- */
         .pos-container {
             display: flex;
-            flex-wrap: wrap;
+            /* flex-wrap: wrap; */
             /* supaya bisa turun di layar kecil */
             height: 100vh;
             font-family: 'Poppins', sans-serif;
@@ -2984,25 +2984,37 @@
 
         /* ----------------- Product Section ----------------- */
         .product-section {
-            flex: 3;
+            flex: 2.5;
             min-width: 300px;
             /* jangan terlalu kecil */
             padding: 20px;
             background: #f8f9fa;
             overflow-y: auto;
+            height: 100vh;
+            box-sizing: border-box;
+
         }
 
-        /* ----------------- Cart Section ----------------- */
-        .cart-section {
-            flex: 1;
-            min-width: 250px;
+        /* ----------------- Cart Section (Kasir) ----------------- */
+        .cart-kasir {
+            flex: 1.5;
+            min-width: 300px;
             background: white;
             border-left: 1px solid #eee;
             display: flex;
             flex-direction: column;
             padding: 15px;
             box-sizing: border-box;
+            height: 100vh;
+            position: relative;
+            /* overflow-y: auto; */
+        }
+
+        .cart-kasir .cart-body {
+            flex: 1;
             overflow-y: auto;
+            padding-bottom: 20px;
+            /* Tambahkan style scrollbar jika perlu, seperti di .custom-modal-body */
         }
 
         /* ----------------- Category Tabs ----------------- */
@@ -3013,6 +3025,21 @@
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
             /* smooth scroll HP */
+        }
+
+        /* Kunci: Jadikan elemen total/tombol di bagian bawah Cart tetap (sticky/fixed) */
+        .cart-kasir .p-3.border-top.mt-3 {
+            position: sticky;
+            /* Tetap di tempat saat .cart-body di-scroll */
+            bottom: -15px;
+            /* Sesuaikan dengan padding .cart-kasir */
+            padding-top: 15px !important;
+            padding-bottom: 15px !important;
+            margin-top: auto;
+            background: white;
+            /* Beri background agar konten di bawahnya tertutup */
+            border-top: 1px solid #eee !important;
+            z-index: 10;
         }
 
         .category-tab {
@@ -3060,6 +3087,16 @@
 
             .product-section {
                 flex: 2.5;
+                height: 100vh;
+                /* Tetap full height */
+
+            }
+
+            .cart-kasir {
+                flex: 1.2;
+                height: 100vh;
+                /* Tetap full height */
+                min-width: 250px;
             }
 
             .cart-section {
@@ -3071,13 +3108,22 @@
             .pos-container {
                 flex-direction: column;
                 height: auto;
+                min-height: 100vh;
             }
 
             .product-section,
-            .cart-section {
+            .cart-kasir {
                 min-width: 100%;
                 flex: unset;
-                margin-bottom: 15px;
+                margin-bottom: 0;
+                height: auto;
+                /* Kembalikan ke auto height di mobile */
+            }
+
+            /* Di mobile, bagian bawah cart kembali ke posisi normal */
+            .cart-kasir .p-3.border-top.mt-3 {
+                position: relative;
+                bottom: 0;
             }
         }
 

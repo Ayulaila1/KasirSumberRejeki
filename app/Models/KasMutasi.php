@@ -27,4 +27,11 @@ class KasMutasi extends Model
     {
         return $this->belongsTo(User::class, 'user_iduser');
     }
+
+    public function scopeRangeTanggal($query, $value1, $value2)
+    {
+        if ($value1 && $value2) {
+            $query->whereBetween('tanggal', [$value1, $value2]);
+        }
+    }
 }

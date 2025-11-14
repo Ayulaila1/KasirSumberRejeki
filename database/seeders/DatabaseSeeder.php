@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
         User::create([
             'name' => 'Admin',
             'email' => 'admin12@gmail.com',
-            'password' => Hash::make('rumitsekali'),
+            'password' => Hash::make('admincafe1'),
             'role' => 'admin',
             'shift' => null, // admin tidak terikat shift
         ]);
@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
         User::create([
             'name' => 'Kasir Shift 1',
             'email' => 'shift1@gmail.com',
-            'password' => Hash::make('shiftsr1'),
+            'password' => Hash::make('kasirr1'),
             'role' => 'kasir',
             'shift' => 1,
         ]);
@@ -35,7 +35,7 @@ class DatabaseSeeder extends Seeder
         User::create([
             'name' => 'Kasir Shift 2',
             'email' => 'shift2@gmail.com',
-            'password' => Hash::make('shiftsr2'),
+            'password' => Hash::make('kasirr2'),
             'role' => 'kasir',
             'shift' => 2,
         ]);
@@ -44,7 +44,7 @@ class DatabaseSeeder extends Seeder
         User::create([
             'name' => 'Kasir Shift 3',
             'email' => 'shift3@gmail.com',
-            'password' => Hash::make('shiftsr3'),
+            'password' => Hash::make('kasirr3'),
             'role' => 'kasir',
             'shift' => 3,
         ]);

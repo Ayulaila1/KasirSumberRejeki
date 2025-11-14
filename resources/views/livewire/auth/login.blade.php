@@ -50,9 +50,9 @@
                 <input type="password" name="password" class="form-control" placeholder="Password" required>
                 <button type="submit" class="btn btn-brown w-100">LOGIN</button>
             </form>
-            <p class="text-center mt-3">Don't have an account? <a href="{{ route('registermiaw') }}"
+            {{-- <p class="text-center mt-3">Don't have an account? <a href="{{ route('registermiaw') }}"
                     class="auth-link">Register</a>
-            </p>
+            </p> --}}
         </div>
     </div>
 

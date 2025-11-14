@@ -77,6 +77,7 @@
                                         <th class="text-center">Shift</th>
                                         <th class="text-center">Total Item</th>
                                         <th class="text-center">Total Harga Beli</th>
+                                        <th class="text-center">Jenis Pembelian</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -134,6 +135,13 @@
                                         });
                                         @endphp
                                         <td class="text-end">Rp {{ number_format($total_hargabeli, 0, ',', '.') }}</td>
+                                        <td>
+                                            @if ($datas->jenis_pembelian == 'titipan')
+                                            <span class="badge bg-warning text-dark">Titipan</span>
+                                            @else
+                                            <span class="badge bg-success">Biasa</span>
+                                            @endif
+                                        </td>
                                         {{-- <td>{{ $datas->created_at }}</td> --}}
                                         {{-- <td>{{ $datas->updated_at }}</td> --}}
                                     </tr>
@@ -212,6 +220,21 @@
                         </div>
                     </div>
 
+                    <div class="form-group row mb-3">
+                        <label for="jenis_pembelian"
+                            class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Jenis Pembelian</label>
+                        <div class="col-12 col-lg-9">
+                            <select id="jenis_pembelian" class="form-control" wire:model="jenis_pembelian">
+                                <option value="">Pilih Jenis Pembelian</option>
+                                <option value="biasa">Biasa</option>
+                                <option value="titipan">Titipan</option>
+                            </select>
+                            @error('jenis_pembelian')
+                            <span class="text-danger" style="font-size: 11.5px;">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+
                     {{-- <div class="form-group row mb-3">
                         <label for="user_iduser" class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">User
                             <span class="text-danger">*</span></label>
@@ -274,6 +297,21 @@
                                 </button>
                             </div>
                             @error('supplier_idsupplier')
+                            <span class="text-danger" style="font-size: 11.5px;">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-3">
+                        <label for="jenis_pembelian"
+                            class="col-12 col-lg-3 fw-bold text-lg-end mb-2 mb-lg-0 label">Jenis Pembelian</label>
+                        <div class="col-12 col-lg-9">
+                            <select id="jenis_pembelian" class="form-control" wire:model="jenis_pembelian">
+                                <option value="">Pilih Jenis Pembelian</option>
+                                <option value="biasa">Biasa</option>
+                                <option value="titipan">Titipan</option>
+                            </select>
+                            @error('jenis_pembelian')
                             <span class="text-danger" style="font-size: 11.5px;">{{ $message }}</span>
                             @enderror
                         </div>

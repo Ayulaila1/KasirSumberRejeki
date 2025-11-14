@@ -89,7 +89,7 @@
             </div>
         </div>
 
-        <div class="cart-section" style="flex: 1.5; margin-left: -10px;">
+        <div class="cart-kasir" style="flex: 1.5;">
             <div class="cart-body">
                 <div class="customer-info">
                     <h4><i class="fas fa-user"></i> Informasi Pelanggan</h4>

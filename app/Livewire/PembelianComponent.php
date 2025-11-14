@@ -19,7 +19,7 @@ class PembelianComponent extends Component
 {
     use WithPagination, WithFileUploads;
 
-    public $idpembelian, $tanggal, $supplier_idsupplier, $user_iduser, $created_at, $updated_at;
+    public $idpembelian, $tanggal, $supplier_idsupplier, $user_iduser, $jenis_pembelian, $created_at, $updated_at;
     public $supplierName;
     public $search = '';
     public $searchlov = '';
@@ -72,6 +72,7 @@ class PembelianComponent extends Component
             'supplier_idsupplier',
             'supplierName',
             'user_iduser',
+            'jenis_pembelian',
             'created_at',
             'updated_at'
         ]);
@@ -90,6 +91,7 @@ class PembelianComponent extends Component
             'tanggal',
             'supplier_idsupplier',
             'user_iduser',
+            'jenis_pembelian',
             'created_at',
             'updated_at',
             'isOpen',
@@ -117,6 +119,7 @@ class PembelianComponent extends Component
         $pembelian->supplier_idsupplier = $this->supplier_idsupplier;
         $pembelian->user_iduser = $user->id;
         $pembelian->shift = $user->shift; // 🟢 otomatis ambil shift kasir yang login
+        $pembelian->jenis_pembelian = $this->jenis_pembelian;
         $pembelian->created_at = $this->created_at ?? now();
         $pembelian->updated_at = $this->updated_at ?? now();
         $pembelian->status = 'unsaved';
@@ -136,10 +139,11 @@ class PembelianComponent extends Component
         $this->supplier_idsupplier = $pembelian->supplier_idsupplier;
         $this->supplierName = $pembelian->supplier->nama ?? '-';
         $this->user_iduser = $pembelian->user_iduser;
+        $this->jenis_pembelian = $pembelian->jenis_pembelian;
         $this->created_at = $pembelian->created_at;
         $this->updated_at = $pembelian->updated_at;
 
-        // $this->isEdit = true;
+        $this->isEdit = true;
 
         $this->dispatch('show-edit-pembelian-modal');
     }
@@ -150,6 +154,7 @@ class PembelianComponent extends Component
             'tanggal' => 'required',
             'supplier_idsupplier' => 'required',
             'user_iduser' => 'required',
+            'jenis_pembelian' => 'required',
             //'created_at' => 'required',
             //'updated_at' => 'required',
         ]);
@@ -158,6 +163,7 @@ class PembelianComponent extends Component
         $pembelian->tanggal = $this->tanggal;
         $pembelian->supplier_idsupplier = $this->supplier_idsupplier;
         $pembelian->user_iduser = $this->user_iduser;
+        $pembelian->jenis_pembelian = $this->jenis_pembelian;
         $pembelian->created_at = $this->created_at;
         $pembelian->updated_at = $this->updated_at;
         $pembelian->save();
@@ -167,8 +173,6 @@ class PembelianComponent extends Component
         $this->dispatch('pembelian-disimpan', ['pesan' => 'Pembelian berhasil diupdate!']);
         $this->dispatch('close-pembelian-modal');
     }
-
-
 
     public function deleteConfirmationPembelian($idpembelian)
     {
@@ -209,12 +213,12 @@ class PembelianComponent extends Component
 
     public function exportToPdf()
     {
-        $headers = ['Tanggal', 'Supplier', 'User', 'Total Item', 'Total Harga Beli'];
+        $headers = ['Tanggal', 'Supplier', 'User', 'Total Item', 'Total Harga Beli', 'Jenis Pembelian'];
         $title = 'Export Data Pembelian';
         $queryResult = $this->dataPembelian();
         $data = [];
         foreach ($queryResult as $result) {
-            $data[] = [$result->tanggal, $result->supplier->nama ?? '-', $result->user->name ?? '-', $result->total_item, $result->total_hargabeli];
+            $data[] = [$result->tanggal, $result->supplier->nama ?? '-', $result->user->name ?? '-', $result->total_item, $result->total_hargabeli, $result->jenis_pembelian];
         }
         $pdf = Pdf::loadView('layouts.pdf_layout', compact('data', 'headers', 'title'));
 

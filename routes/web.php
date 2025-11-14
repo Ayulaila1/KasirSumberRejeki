@@ -36,7 +36,7 @@ Route::get('/', fn() => redirect('/login_1'));
 Route::middleware('guest')->group(function () {
     Route::get('/login_1', [LoginController::class, 'index'])->name('login');
     Route::post('/login', [LoginController::class, 'authenticate'])->name('login.attempt');
-    Route::get('/registermiaw', Register::class)->name('registermiaw');
+    // Route::get('/registermiaw', Register::class)->name('registermiaw');
 });
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
@@ -73,11 +73,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan-pendapatan', LaporanPendapatanComponent::class)->name('laporan.pendapatan');
     Route::get('/laporan/pembukuan', LaporanPembukuanComponent::class)->name('laporan.pembukuan');
 
-    // 📄 Export / Cetak PDF & Excel - Pembukuan
-    Route::get('/laporan/pembukuan/pdf/{tanggal}/{shift}', [LaporanController::class, 'cetakPembukuanPDF'])
-        ->name('laporan.pembukuan.pdf');
-    Route::get('/laporan/pembukuan/excel/{tanggal}/{shift}', [LaporanController::class, 'exportPembukuanExcel'])
-        ->name('laporan.pembukuan.excel');
 
     // 📄 Export / Cetak PDF & Excel - Kas Mutasi
     Route::get('/laporan/kasmutasi/pdf', [LaporanController::class, 'cetakKasMutasiPDF'])

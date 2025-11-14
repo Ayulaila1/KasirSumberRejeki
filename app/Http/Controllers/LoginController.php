@@ -28,7 +28,6 @@ class LoginController extends Controller
             'password' => ['required'],
         ]);
 
-        // 🔒 Batas percobaan login: 5x per menit
         $key = 'login-attempts:' . Str::lower($request->input('email')) . '|' . $request->ip();
 
         if (RateLimiter::tooManyAttempts($key, 5)) {
@@ -39,24 +38,38 @@ class LoginController extends Controller
         }
 
         if (Auth::attempt($credentials)) {
-            RateLimiter::clear($key); // ✅ Reset hitungan jika berhasil login
+            RateLimiter::clear($key);
             $request->session()->regenerate();
 
             $user = Auth::user();
 
-            // 🔹 Admin masuk dashboard
-            if (is_null($user->shift)) {
+            // 🔒 Hanya role admin atau kasir shift 1-3 yang boleh login
+            if (
+                !in_array($user->email, [
+                    'admin12@gmail.com',
+                    'shift1@gmail.com',
+                    'shift2@gmail.com',
+                    'shift3@gmail.com'
+                ])
+            ) {
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'Akun ini tidak memiliki izin untuk login ke sistem kasir.'
+                ]);
+            }
+
+            // ✅ Arahkan ke dashboard sesuai role
+            if ($user->role === 'admin') {
                 return redirect()->route('admin.dashboard');
             }
 
-            // 🔹 Kasir sesuai shift
+            // Kasir berdasarkan shift
             session(['shift' => $user->shift]);
             return redirect()->route('kasir.index')
-                ->with('message', 'Selamat datang di Shift ' . $user->shift);
+                ->with('message', 'Selamat datang, Kasir Shift ' . $user->shift);
         }
 
-        // ❌ Jika gagal login
-        RateLimiter::hit($key, 60); // timeout 60 detik
+        RateLimiter::hit($key, 60);
         return back()->withErrors([
             'email' => 'Email atau password salah.',
         ])->onlyInput('email');

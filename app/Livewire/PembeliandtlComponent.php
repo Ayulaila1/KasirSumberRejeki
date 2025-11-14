@@ -234,6 +234,12 @@ class PembeliandtlComponent extends Component
 
         foreach ($details as $detail) {
 
+            // 🔹 Hitung subtotal otomatis kalau belum ada
+            if (is_null($detail->subtotal) || $detail->subtotal == 0) {
+                $detail->subtotal = $detail->jumlah * $detail->harga_beli;
+                $detail->save();
+            }
+
             // Tambahkan stok bahan (berdasarkan jumlah * isi_per_satuan)
             if ($detail->bahan_idbahan) {
                 $bahan = Bahan::find($detail->bahan_idbahan);

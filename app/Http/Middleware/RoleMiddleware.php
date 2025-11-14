@@ -3,25 +3,21 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class RoleMiddleware
 {
-    public function handle($request, Closure $next, ...$roles)
+    public function handle(Request $request, Closure $next, ...$roles)
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+
+        if (!$user) {
             return redirect()->route('login');
         }
 
-        $user = Auth::user();
-
-        if (!in_array($user->email, ['admin12@gmail.com', 'kasir56@gmail.com'])) {
-            abort(403, 'Tidak diizinkan');
-        }
-
-        // Contoh: admin akses semua, kasir cuma penjualan
-        if ($user->email === 'kasir56@gmail.com' && !in_array('kasir', $roles)) {
-            abort(403, 'Akses hanya untuk kasir');
+        if (!in_array($user->role, $roles)) {
+            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
 
         return $next($request);
